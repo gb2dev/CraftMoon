@@ -16,6 +16,9 @@ sky_material = SubResource("ProceduralSkyMaterial_mi6cl")
 background_mode = 2
 sky = SubResource("Sky_fus1q")
 ambient_light_sky_contribution = 0.1
+sdfgi_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_t3tsx"]
 size = Vector3(100, 1, 100)
