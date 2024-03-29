@@ -3,11 +3,12 @@ extends RayCast3D
 
 @onready var cursor := $Cursor
 @onready var crosshair := $Crosshair
+@onready var object_properties := %"Object Properties" as ObjectProperties
 
 @export var material: BaseMaterial3D
 
-var active := false
-var cursor_distance := target_position.z
+var object_builder_active := false
+var cursor_distance := -2.5
 var vertices: Array[Vector3]
 var st: SurfaceTool
 var mi: MeshInstance3D
@@ -27,12 +28,19 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("object_builder"):
-		active = not active
-		cursor.visible = active
-		crosshair.visible = not active
+	if Input.is_action_just_pressed("object_properties"):
+		object_properties.open(get_collider())
 
-	if not active:
+
+	# Object Builder Toggle
+
+	if Input.is_action_just_pressed("object_builder"):
+		object_builder_active = not object_builder_active
+		cursor.visible = object_builder_active
+		crosshair.visible = not object_builder_active
+		target_position.z = -2.5 if object_builder_active else -5
+
+	if not object_builder_active:
 		return
 
 
