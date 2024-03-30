@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://gwjjy0frd8kj"]
+
+[ext_resource type="Script" path="res://gadgets/gadget.gd" id="1_5ebnv"]
+[ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
+
+[node name="Gadget" type="TextureRect" groups=["Dragging"]]
+offset_right = 128.0
+offset_bottom = 128.0
+mouse_filter = 2
+texture = ExtResource("2_wx2yp")
+script = ExtResource("1_5ebnv")
+
+[node name="Input" type="ColorRect" parent="." groups=["Input"]]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -5.0
+offset_right = 5.0
+offset_bottom = 4.99998
+grow_vertical = 2
+color = Color(0.16, 0.16, 0.8, 1)
+
+[node name="Output" type="Line2D" parent="."]
+z_index = 1
+points = PackedVector2Array(128, 64, 136, 64, 136, 64)
+default_color = Color(0.8, 0.16, 0.16, 1)
+
+[node name="OutputControl" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 128.0
+offset_top = 56.0
+offset_right = 144.0
+offset_bottom = 72.0
+
+[node name="3D" type="Node3D" parent="."]
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="gui_input" from="OutputControl" to="." method="_on_output_control_gui_input"]

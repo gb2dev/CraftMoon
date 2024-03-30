@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbbqxuvepskn0"]
+
+[ext_resource type="Script" path="res://sound_select.gd" id="1_mp8fl"]
+
+[node name="Sound Select" type="Window"]
+title = "Select Sound"
+initial_position = 2
+size = Vector2i(720, 480)
+visible = false
+transient = true
+exclusive = true
+script = ExtResource("1_mp8fl")
+
+[node name="GridContainer" type="GridContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 712.0
+offset_bottom = 431.0
+columns = 2
+
+[node name="CategoryLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Category"
+horizontal_alignment = 1
+
+[node name="SoundLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sound"
+horizontal_alignment = 1
+
+[node name="Categories" type="VBoxContainer" parent="GridContainer"]
+layout_mode = 2
+
+[node name="Sounds" type="VBoxContainer" parent="GridContainer"]
+layout_mode = 2
+
+[node name="success" type="Button" parent="GridContainer/Sounds"]
+layout_mode = 2
+text = "Success"

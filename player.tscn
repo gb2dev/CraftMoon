@@ -1,9 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=13 format=3 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
 [ext_resource type="Script" path="res://object_properties.gd" id="3_tt4lx"]
-[ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="4_wkoap"]
+[ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://item.tscn" id="4_4ckle"]
+[ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
+[ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="6_alnoj"]
+[ext_resource type="Script" path="res://logic_panel.gd" id="6_gu4mb"]
+[ext_resource type="Script" path="res://gadget_properties.gd" id="8_saenl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -23,7 +27,7 @@ emission_enabled = true
 emission = Color(0, 0.733333, 0.733333, 1)
 
 [node name="Player" type="CharacterBody3D"]
-collision_layer = 0
+collision_layer = 2
 script = ExtResource("1_4qesr")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -60,8 +64,9 @@ visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="Object Properties" type="HBoxContainer" parent="."]
+[node name="Object Properties" type="HBoxContainer" parent="." groups=["UI"]]
 unique_name_in_owner = true
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -70,20 +75,50 @@ grow_vertical = 2
 script = ExtResource("3_tt4lx")
 
 [node name="Gadgets" type="Panel" parent="Object Properties"]
-custom_minimum_size = Vector2(300, 0)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(288, 0)
 layout_mode = 2
-mouse_filter = 1
+script = ExtResource("4_ypwlc")
 
-[node name="GadgetItemSelect" type="TextureRect" parent="Object Properties/Gadgets"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-texture = ExtResource("4_wkoap")
-expand_mode = 1
+[node name="MarginContainer" type="MarginContainer" parent="Object Properties/Gadgets"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer"]
+layout_mode = 2
+columns = 4
+
+[node name="AudioGadgetItem" parent="Object Properties/Gadgets/MarginContainer/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+item = ExtResource("6_alnoj")
+
+[node name="Gadget Properties" type="Panel" parent="Object Properties"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(288, 0)
+layout_mode = 2
+script = ExtResource("8_saenl")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Object Properties/Gadget Properties"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Logic" type="Panel" parent="Object Properties"]
 layout_mode = 2
 size_flags_horizontal = 3
-mouse_filter = 1
+script = ExtResource("6_gu4mb")
+
+[connection signal="gui_input" from="Object Properties/Gadgets" to="Object Properties/Gadgets" method="_on_gui_input"]
+[connection signal="gui_input" from="Object Properties/Logic" to="Object Properties/Logic" method="_on_gui_input"]

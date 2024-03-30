@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://vl04tjighggu"]
+[gd_scene load_steps=11 format=3 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
 [ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
@@ -28,6 +28,10 @@ size = Vector3(100, 1, 100)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ckddd"]
 size = Vector3(100, 1, 100)
 
+[sub_resource type="BoxMesh" id="BoxMesh_y0j51"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5pcox"]
+
 [node name="World" type="Node3D"]
 script = ExtResource("1_tjq4l")
 
@@ -47,5 +51,16 @@ surface_material_override/0 = SubResource("StandardMaterial3D_yx8r3")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("BoxShape3D_ckddd")
+
+[node name="Box" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.5, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Box"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
+mesh = SubResource("BoxMesh_y0j51")
+surface_material_override/0 = SubResource("StandardMaterial3D_yx8r3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
+shape = SubResource("BoxShape3D_5pcox")
 
 [node name="Player" parent="." instance=ExtResource("1_8ftwq")]
