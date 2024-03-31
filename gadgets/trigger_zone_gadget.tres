@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://bxtyxckfkon5w"]
+
+[ext_resource type="Texture2D" uid="uid://b8o6ejthe1b6g" path="res://icons/trigger_zone_gadget.svg" id="1_cx6eb"]
+[ext_resource type="Script" path="res://item_data.gd" id="1_dlivo"]
+
+[resource]
+script = ExtResource("1_dlivo")
+name = "Trigger Zone Gadget"
+icon = ExtResource("1_cx6eb")

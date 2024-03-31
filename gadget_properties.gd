@@ -71,40 +71,9 @@ func open(type: StringName, gadget: Gadget) -> void:
 			library_button.pressed.connect(sound_select_instance.show)
 			vbox.add_child(library_button)
 
-			const range_prefix = "Detection range: "
+			add_slider("Range: ", &"Range", 2, 0.1, 50, 0.1, gadget)
 
-			var range_label := Label.new()
-			range_label.text = range_prefix + str(gadget.get_meta(&"Range", 1))
-			vbox.add_child(range_label)
-
-			var range_slider := HSlider.new()
-			range_slider.min_value = 0.1
-			range_slider.max_value = 50.0
-			range_slider.step = 0.1
-			range_slider.value = gadget.get_meta(&"Range", 1)
-			range_slider.value_changed.connect(func(value: float) -> void:
-				gadget.change_property(&"Range", value)
-				range_label.text = range_prefix + str(value)
-				gadget.set_meta(&"Range", value)
-			)
-			vbox.add_child(range_slider)
-
-			const volume_prefix = "Volume: "
-
-			var volume_label := Label.new()
-			volume_label.text = volume_prefix + str(gadget.get_meta(&"Volume", 1))
-			vbox.add_child(volume_label)
-
-			var volume_slider := HSlider.new()
-			volume_slider.max_value = 1
-			volume_slider.step = 0.05
-			volume_slider.value = gadget.get_meta(&"Volume", 1)
-			volume_slider.value_changed.connect(func(value: float) -> void:
-				gadget.change_property(&"Volume", value)
-				volume_label.text = volume_prefix + str(value)
-				gadget.set_meta(&"Volume", value)
-			)
-			vbox.add_child(volume_slider)
+			add_slider("Volume: ", &"Volume", 1, 0, 1, 0.01, gadget)
 
 			var loop_checkbox := CheckBox.new()
 			loop_checkbox.text = "Loop"
@@ -123,3 +92,45 @@ func open(type: StringName, gadget: Gadget) -> void:
 				gadget.set_meta(&"ThreeD", threed_checkbox.button_pressed)
 			)
 			vbox.add_child(threed_checkbox)
+		&"Trigger Zone Gadget":
+			gadget.area_visual.show()
+			gadget_changed.connect(gadget.area_visual.hide, Object.CONNECT_ONE_SHOT)
+
+			var shape_option := OptionButton.new()
+			shape_option.add_item("Ellipsoid")
+			shape_option.add_item("Cuboid")
+			shape_option.selected = gadget.get_meta(&"ZoneShape", 0)
+			shape_option.item_selected.connect(func(index: int) -> void:
+				gadget.change_property(&"ZoneShape", index)
+				gadget.set_meta(&"ZoneShape", index)
+			)
+			vbox.add_child(shape_option)
+
+			add_slider("Zone width: ", &"ZoneWidth", 2, 0.1, 50, 0.1, gadget)
+			add_slider("Zone height: ", &"ZoneHeight", 2, 0.1, 50, 0.1, gadget)
+			add_slider("Zone depth: ", &"ZoneDepth", 2, 0.1, 50, 0.1, gadget)
+
+
+func add_slider(label_prefix: String,
+				property_name: StringName,
+				default_value: Variant,
+				min_value: float,
+				max_value: float,
+				step: float,
+				gadget: Gadget) -> void:
+	var label := Label.new()
+	vbox.add_child(label)
+
+	var slider := HSlider.new()
+	slider.min_value = min_value
+	slider.max_value = max_value
+	slider.step = step
+	slider.value = gadget.get_meta(property_name, default_value)
+	slider.value_changed.connect(func(value: float) -> void:
+		gadget.change_property(property_name, value)
+		label.text = label_prefix + str(value)
+		gadget.set_meta(property_name, value)
+	)
+	vbox.add_child(slider)
+
+	label.text = label_prefix + str(slider.value)

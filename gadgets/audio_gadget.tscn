@@ -73,12 +73,9 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		audio_player.play()
 "
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_f3qo2"]
-radius = 1.0
+[sub_resource type="SphereShape3D" id="SphereShape3D_7iwj3"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_w0ing"]
-radius = 1.0
-height = 2.0
+[sub_resource type="SphereMesh" id="SphereMesh_uy5ei"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i6q1g"]
 transparency = 1
@@ -90,16 +87,17 @@ albedo_color = Color(0, 1, 0.498039, 0.196078)
 script = SubResource("GDScript_ngmur")
 
 [node name="Area3D" type="Area3D" parent="3D" index="0"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 collision_layer = 0
 collision_mask = 2
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="3D/Area3D" index="0"]
-shape = SubResource("SphereShape3D_f3qo2")
+shape = SubResource("SphereShape3D_7iwj3")
 
 [node name="AreaVisual" type="MeshInstance3D" parent="3D/Area3D" index="1"]
 visible = false
-mesh = SubResource("SphereMesh_w0ing")
+mesh = SubResource("SphereMesh_uy5ei")
 surface_material_override/0 = SubResource("StandardMaterial3D_i6q1g")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="3D/Area3D" index="2"]
