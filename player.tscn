@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=14 format=3 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
 [ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="6_alnoj"]
 [ext_resource type="Script" path="res://logic_panel.gd" id="6_gu4mb"]
+[ext_resource type="Resource" uid="uid://caec04as55inh" path="res://gadgets/audio_gadget.tres" id="7_hq56j"]
 [ext_resource type="Script" path="res://gadget_properties.gd" id="8_saenl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
@@ -99,6 +100,7 @@ columns = 4
 [node name="AudioGadgetItem" parent="Object Properties/Gadgets/MarginContainer/GridContainer" instance=ExtResource("4_4ckle")]
 layout_mode = 2
 item = ExtResource("6_alnoj")
+item_data = ExtResource("7_hq56j")
 
 [node name="Gadget Properties" type="Panel" parent="Object Properties"]
 unique_name_in_owner = true

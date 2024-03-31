@@ -6,22 +6,17 @@
 script/source = "extends Gadget
 
 
-@onready var audio_player := $AudioStreamPlayer as AudioStreamPlayer
+@onready var area := $\"3D/Area3D\" as Area3D
+
+var audio_player
 
 
 func _ready() -> void:
-	audio_player.finished.connect(func() -> void:
-		if is_instance_valid(gadget_connected_to_output):
-			gadget_connected_to_output.execute_once()
-	)
+	change_property(&\"ThreeD\", false)
 
 
 func execute_once() -> void:
 	audio_player.play()
-
-
-func execute_continuous() -> void:
-	pass
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -31,6 +26,45 @@ func change_property(property: StringName, value: Variant) -> void:
 				audio_player.stream = load(value)
 			else:
 				audio_player.stream = AudioStreamOggVorbis.load_from_file(value)
+		&\"Range\":
+			area.scale = Vector3.ONE * value
+		&\"Volume\":
+			audio_player.volume_db = linear_to_db(value)
+		&\"Loop\":
+			if value:
+				audio_player.finished.connect(audio_player.play)
+			else:
+				audio_player.finished.disconnect(audio_player.play)
+		&\"ThreeD\":
+			var stream: AudioStream
+			var loop := false
+			var volume := 0.0
+
+			if is_instance_valid(audio_player):
+				audio_player.queue_free()
+
+				# Old audio player properties
+				stream = audio_player.stream
+				loop = audio_player.finished.is_connected(audio_player.play)
+				volume = audio_player.volume_db
+
+			if value:
+				audio_player = AudioStreamPlayer3D.new()
+			else:
+				audio_player = AudioStreamPlayer.new()
+
+			# Set same properties for new audio player
+			audio_player.stream = stream
+			if loop:
+				change_property(&\"Loop\", loop)
+			audio_player.volume_db = volume
+
+			audio_player.finished.connect(func() -> void:
+				if is_instance_valid(gadget_connected_to_output):
+					gadget_connected_to_output.execute_once()
+			)
+
+			area.add_child(audio_player)
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
@@ -39,12 +73,10 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 "
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_f3qo2"]
-radius = 2.0
+radius = 1.0
 
 [node name="AudioGadget" instance=ExtResource("1_6ljti")]
 script = SubResource("GDScript_ngmur")
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." index="3"]
 
 [node name="Area3D" type="Area3D" parent="3D" index="0"]
 collision_layer = 0
@@ -53,5 +85,7 @@ monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="3D/Area3D" index="0"]
 shape = SubResource("SphereShape3D_f3qo2")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="3D/Area3D" index="1"]
 
 [connection signal="body_entered" from="3D/Area3D" to="." method="_on_area_3d_body_entered"]

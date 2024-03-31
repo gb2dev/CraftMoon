@@ -16,7 +16,11 @@ sky_material = SubResource("ProceduralSkyMaterial_mi6cl")
 background_mode = 2
 sky = SubResource("Sky_fus1q")
 ambient_light_sky_contribution = 0.1
+ssao_enabled = true
 sdfgi_enabled = true
+glow_enabled = true
+glow_intensity = 0.4
+glow_strength = 0.6
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0
 
@@ -39,7 +43,8 @@ script = ExtResource("1_tjq4l")
 environment = SubResource("Environment_0voyy")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 10, 0)
+transform = Transform3D(0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, -0.612372, 0.353553, 0, 10, 0)
+shadow_enabled = true
 
 [node name="Floor" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)

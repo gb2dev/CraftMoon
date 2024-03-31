@@ -28,7 +28,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 	vbox.add_child(label)
 
 	match type:
-		&"AudioGadget":
+		&"Audio Gadget":
 			const selected_sound_prefix = "Selected sound: "
 
 			var select_sound_label := Label.new()
@@ -65,3 +65,56 @@ func open(type: StringName, gadget: Gadget) -> void:
 			library_button.text = "Select Library Sound"
 			library_button.pressed.connect(sound_select_instance.show)
 			vbox.add_child(library_button)
+
+			const range_prefix = "Detection range: "
+
+			var range_label := Label.new()
+			range_label.text = range_prefix + str(gadget.get_meta(&"Range", 1))
+			vbox.add_child(range_label)
+
+			var range_slider := HSlider.new()
+			range_slider.min_value = 0.1
+			range_slider.max_value = 50.0
+			range_slider.step = 0.1
+			range_slider.value = gadget.get_meta(&"Range", 1)
+			range_slider.value_changed.connect(func(value: float) -> void:
+				gadget.change_property(&"Range", value)
+				range_label.text = range_prefix + str(value)
+				gadget.set_meta(&"Range", value)
+			)
+			vbox.add_child(range_slider)
+
+			const volume_prefix = "Volume: "
+
+			var volume_label := Label.new()
+			volume_label.text = volume_prefix + str(gadget.get_meta(&"Volume", 1))
+			vbox.add_child(volume_label)
+
+			var volume_slider := HSlider.new()
+			volume_slider.max_value = 1
+			volume_slider.step = 0.05
+			volume_slider.value = gadget.get_meta(&"Volume", 1)
+			volume_slider.value_changed.connect(func(value: float) -> void:
+				gadget.change_property(&"Volume", value)
+				volume_label.text = volume_prefix + str(value)
+				gadget.set_meta(&"Volume", value)
+			)
+			vbox.add_child(volume_slider)
+
+			var loop_checkbox := CheckBox.new()
+			loop_checkbox.text = "Loop"
+			loop_checkbox.button_pressed = gadget.get_meta(&"Loop", false)
+			loop_checkbox.pressed.connect(func() -> void:
+				gadget.change_property(&"Loop", loop_checkbox.button_pressed)
+				gadget.set_meta(&"Loop", loop_checkbox.button_pressed)
+			)
+			vbox.add_child(loop_checkbox)
+
+			var threed_checkbox := CheckBox.new()
+			threed_checkbox.text = "3D"
+			threed_checkbox.button_pressed = gadget.get_meta(&"ThreeD", false)
+			threed_checkbox.pressed.connect(func() -> void:
+				gadget.change_property(&"ThreeD", threed_checkbox.button_pressed)
+				gadget.set_meta(&"ThreeD", threed_checkbox.button_pressed)
+			)
+			vbox.add_child(threed_checkbox)

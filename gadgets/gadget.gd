@@ -1,5 +1,5 @@
 class_name Gadget
-extends Control
+extends TextureRect
 
 
 signal open_properties
@@ -19,7 +19,7 @@ var gadget_connected_to_output: Gadget:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	execute_once()
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -87,11 +87,11 @@ func attach_to_object(o: PhysicsBody3D) -> void:
 	o.add_child(node_3d)
 
 
+func set_icon(t: Texture2D) -> void:
+	texture = t
+
+
 func execute_once() -> void:
-	pass
-
-
-func execute_continous() -> void:
 	pass
 
 
