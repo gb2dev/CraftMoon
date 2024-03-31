@@ -18,6 +18,7 @@ func _process(delta: float) -> void:
 	if visible and Input.is_action_just_pressed("ui_cancel") and not get_tree().get_first_node_in_group("Dragging"):
 		if gadget_properties.visible:
 			gadget_properties.visible = false
+			gadget_properties.gadget_changed.emit()
 			gadgets.visible = true
 		else:
 			toggle(object)

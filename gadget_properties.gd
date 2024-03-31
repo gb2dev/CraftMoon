@@ -2,6 +2,8 @@ class_name GadgetProperties
 extends Panel
 
 
+signal gadget_changed
+
 const SOUND_SELECT = preload("res://sound_select.tscn")
 
 @onready var vbox := $VBoxContainer as VBoxContainer
@@ -29,6 +31,9 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 	match type:
 		&"Audio Gadget":
+			gadget.area_visual.show()
+			gadget_changed.connect(gadget.area_visual.hide, Object.CONNECT_ONE_SHOT)
+
 			const selected_sound_prefix = "Selected sound: "
 
 			var select_sound_label := Label.new()

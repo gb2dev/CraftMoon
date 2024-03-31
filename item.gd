@@ -26,6 +26,9 @@ func _on_gui_input(event: InputEvent) -> void:
 			get_tree().current_scene.add_child(gadget)
 			gadget.attach_to_object(object_properties.object)
 			gadget.set_icon(item_data.icon)
+			gadget.open_properties.connect(func() -> void:
+				gadget_properties.gadget_changed.emit()
+			)
 			gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
 			gadget.open_properties.connect(gadgets.hide)
 			accept_event()
