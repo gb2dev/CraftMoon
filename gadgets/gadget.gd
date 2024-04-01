@@ -9,13 +9,11 @@ signal open_properties
 @onready var output_control := $OutputControl as Control
 @onready var node_3d := $"3D"
 
-var input_data: Variant
+var input_signal_data: Array[Variant] = [null] # Index 0 = Power
+var signal_powered := true
+var pulse_powered := true
 var just_dragged_output := false
-var gadget_connected_to_output: Gadget:
-	set(value):
-		if is_instance_valid(gadget_connected_to_output) and value == null:
-			gadget_connected_to_output.input_data = null
-		gadget_connected_to_output = value
+var gadget_connected_to_output: Gadget
 
 
 # Called when the node enters the scene tree for the first time.
@@ -25,6 +23,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	input_signal(delta)
+
 	if is_in_group("Dragging"):
 		# Dragging Gadget
 		position = get_global_mouse_position() - size / 2
@@ -48,7 +48,8 @@ func _process(delta: float) -> void:
 
 			if Input.is_action_just_pressed("action") and not just_dragged_output:
 				if gadget_connected_to_output:
-					gadget_connected_to_output.input_data = false
+					# TODO: Make this work with multiple outputs
+					output_signal(0, false)
 				else:
 					output.points[2] = output.points[1]
 					output_control.position = output.points[1] - output_control.size / 2
@@ -66,17 +67,15 @@ func _process(delta: float) -> void:
 func _notification(what: int) -> void:
 	if (what == NOTIFICATION_PREDELETE):
 		node_3d.queue_free()
-		if is_instance_valid(gadget_connected_to_output):
-			gadget_connected_to_output.input_data = null
+		# TODO: Make this work with multiple outputs (run this one every output)
+		output_signal(0, false)
 
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		if not get_tree().get_first_node_in_group("Dragging"):
 			# Drag Gadget
-			var scene := get_tree().current_scene
-			get_parent().remove_child(self)
-			scene.add_child(self)
+			top_level = true
 			add_to_group("Dragging")
 			mouse_filter = Control.MOUSE_FILTER_IGNORE
 			accept_event()
@@ -91,6 +90,34 @@ func _on_output_control_gui_input(event: InputEvent) -> void:
 			output.add_to_group("Dragging")
 			output_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			just_dragged_output = true
+
+
+# Run manually. Normally needs "signal_powered" check.
+func input_signal(_delta: float) -> void:
+	pass
+
+# Run every frame. Normally needs "pulse_powered" check if there is more than one input (Power).
+func input_pulse(_input_index: int, _data: Variant) -> void:
+	pass
+
+
+func output_signal(_output_index: int, data: Variant) -> void:
+	if is_instance_valid(gadget_connected_to_output):
+		# TODO: Figure out correct input index
+		gadget_connected_to_output.input_signal_data[0] = data
+		gadget_connected_to_output.signal_powered = data == null or data == true
+		output_pulse(0, data)
+
+
+func output_pulse(_output_index: int, data: Variant) -> void:
+	if is_instance_valid(gadget_connected_to_output):
+		# TODO: Figure out correct input index
+		gadget_connected_to_output.pulse_powered = data == null or data == true
+		gadget_connected_to_output.input_pulse(0, data)
+
+
+func change_property(_property: StringName, _value: Variant) -> void:
+	pass
 
 
 func update_connection_positions() -> void:
@@ -113,15 +140,8 @@ func update_connection_positions() -> void:
 func attach_to_object(o: PhysicsBody3D) -> void:
 	remove_child(node_3d)
 	o.add_child(node_3d)
+	input_pulse(0, true)
 
 
 func set_icon(t: Texture2D) -> void:
 	texture = t
-
-
-func execute_once() -> void:
-	pass
-
-
-func change_property(property: StringName, value: Variant) -> void:
-	pass

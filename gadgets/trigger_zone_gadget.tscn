@@ -1,39 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://dl21ovk7gcqja"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_hvmox"]
-
-[sub_resource type="GDScript" id="GDScript_cqorx"]
-script/source = "extends Gadget
-
-
-@onready var area := $\"3D/Area3D\" as Area3D
-@onready var area_visual := $\"3D/Area3D/AreaVisual\" as MeshInstance3D
-@onready var collision_shape := $\"3D/Area3D/CollisionShape3D\" as CollisionShape3D
-
-
-func change_property(property: StringName, value: Variant) -> void:
-	match property:
-		&\"ZoneShape\":
-			match value:
-				0:
-					collision_shape.shape = SphereShape3D.new()
-					area_visual.mesh = SphereMesh.new()
-				1:
-					collision_shape.shape = BoxShape3D.new()
-					area_visual.mesh = BoxMesh.new()
-		&\"ZoneWidth\":
-			area.scale.x = value
-		&\"ZoneHeight\":
-			area.scale.y = value
-		&\"ZoneDepth\":
-			area.scale.z = value
-
-
-func _on_area_3d_body_entered(body: Node3D) -> void:
-	if input_data == null:
-		if is_instance_valid(gadget_connected_to_output):
-			gadget_connected_to_output.execute_once()
-"
+[ext_resource type="Script" path="res://gadgets/trigger_zone_gadget.gd" id="2_npfhb"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_7iwj3"]
 
@@ -46,10 +14,10 @@ shading_mode = 0
 albedo_color = Color(0, 1, 0.498039, 0.196078)
 
 [node name="TriggerZoneGadget" instance=ExtResource("1_hvmox")]
-script = SubResource("GDScript_cqorx")
+script = ExtResource("2_npfhb")
 
 [node name="OutputControl" parent="." index="2"]
-tooltip_text = "Player Detected"
+tooltip_text = "Player Inside Trigger Zone (Signal)"
 
 [node name="Area3D" type="Area3D" parent="3D" index="0"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
@@ -66,3 +34,4 @@ mesh = SubResource("SphereMesh_uy5ei")
 surface_material_override/0 = SubResource("StandardMaterial3D_nflld")
 
 [connection signal="body_entered" from="3D/Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="3D/Area3D" to="." method="_on_area_3d_body_exited"]

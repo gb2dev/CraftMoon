@@ -16,8 +16,12 @@ func _on_gui_input(event: InputEvent) -> void:
 		var gadget := get_tree().get_first_node_in_group("Dragging") as Gadget
 		if gadget:
 			# Place Gadget
-			gadget.get_parent().remove_child(gadget)
-			add_child(gadget)
+			if gadget.get_parent() == self:
+				gadget.top_level = false
+			else:
+				gadget.get_parent().remove_child(gadget)
+				add_child(gadget)
+
 			gadget.remove_from_group("Dragging")
 			gadget.position = get_local_mouse_position() - gadget.size / 2
 			gadget.position = gadget.position.clamp(Vector2.ZERO, size - gadget.size)

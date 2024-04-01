@@ -27,6 +27,7 @@ color = Color(1, 0.466667, 0.2, 1)
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
 default_color = Color(0.2, 0.733333, 1, 1)
+antialiased = true
 
 [node name="OutputControl" type="Control" parent="." groups=["Output"]]
 anchors_preset = 0

@@ -6,7 +6,7 @@ signal gadget_changed
 
 const SOUND_SELECT = preload("res://sound_select.tscn")
 
-@onready var vbox := $VBoxContainer as VBoxContainer
+@onready var vbox := $MarginContainer/VBoxContainer as VBoxContainer
 
 
 # Called when the node enters the scene tree for the first time.
@@ -111,6 +111,23 @@ func open(type: StringName, gadget: Gadget) -> void:
 			add_slider("Zone depth: ", &"ZoneDepth", 2, 0.1, 50, 0.1, gadget)
 		&"Look Sensor Gadget":
 			pass
+		&"Timer Gadget":
+			var oneshot_checkbox := CheckBox.new()
+			oneshot_checkbox.text = "One shot"
+			oneshot_checkbox.button_pressed = gadget.get_meta(&"OneShot", true)
+			oneshot_checkbox.pressed.connect(func() -> void:
+				gadget.change_property(&"OneShot", oneshot_checkbox.button_pressed)
+				gadget.set_meta(&"OneShot", oneshot_checkbox.button_pressed)
+			)
+			vbox.add_child(oneshot_checkbox)
+
+			add_slider("Wait time: ", &"WaitTime", 1, 0.1, 60, 0.1, gadget)
+		&"Counter Gadget":
+			add_slider("Target count: ", &"TargetCount", 1, 1, 100, 1, gadget)
+		&"Mover Gadget":
+			add_slider("Movement direction X: ", &"MovementDirectionX", 0, -100, 100, 0.1, gadget)
+			add_slider("Movement direction Y: ", &"MovementDirectionY", 0, -100, 100, 0.1, gadget)
+			add_slider("Movement direction Z: ", &"MovementDirectionZ", 0, -100, 100, 0.1, gadget)
 
 
 func add_slider(label_prefix: String,
