@@ -48,6 +48,9 @@ albedo_color = Color(0, 1, 0.498039, 0.196078)
 [node name="TriggerZoneGadget" instance=ExtResource("1_hvmox")]
 script = SubResource("GDScript_cqorx")
 
+[node name="OutputControl" parent="." index="2"]
+tooltip_text = "Player Detected"
+
 [node name="Area3D" type="Area3D" parent="3D" index="0"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 collision_layer = 0

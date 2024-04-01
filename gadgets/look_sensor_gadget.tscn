@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2bf7nocvxdpt"]
+
+[ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_iwj6v"]
+
+[sub_resource type="GDScript" id="GDScript_mx1xy"]
+script/source = "extends Gadget
+
+
+@onready var visible_notifier := $\"3D/VisibleOnScreenNotifier3D\" as VisibleOnScreenNotifier3D
+
+
+func change_property(property: StringName, value: Variant) -> void:
+	pass
+
+
+func _on_visible_on_screen_notifier_3d_screen_entered() -> void:
+	if is_instance_valid(gadget_connected_to_output):
+		gadget_connected_to_output.execute_once()
+"
+
+[node name="LookSensorGadget" instance=ExtResource("1_iwj6v")]
+script = SubResource("GDScript_mx1xy")
+
+[node name="OutputControl" parent="." index="2"]
+tooltip_text = "Visible On Screen"
+
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="3D" index="0"]
+aabb = AABB(-0.5, -0.5, -0.5, 1, 1, 1)
+
+[connection signal="screen_entered" from="3D/VisibleOnScreenNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_entered"]

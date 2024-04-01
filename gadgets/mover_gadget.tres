@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://cjibdh73f81ei"]
+
+[ext_resource type="Texture2D" uid="uid://eiv8fggy3jlq" path="res://icons/mover_gadget.svg" id="1_3wohn"]
+[ext_resource type="Script" path="res://item_data.gd" id="1_ehujy"]
+
+[resource]
+script = ExtResource("1_ehujy")
+name = "Mover Gadget"
+icon = ExtResource("1_3wohn")

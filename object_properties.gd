@@ -26,9 +26,9 @@ func _process(delta: float) -> void:
 
 func toggle(o: PhysicsBody3D):
 	if o:
+		object = o
 		visible = not visible
 		if visible:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		else:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
-		object = o

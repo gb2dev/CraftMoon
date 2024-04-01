@@ -21,5 +21,12 @@ func _on_gui_input(event: InputEvent) -> void:
 			gadget.remove_from_group("Dragging")
 			gadget.position = get_local_mouse_position() - gadget.size / 2
 			gadget.position = gadget.position.clamp(Vector2.ZERO, size - gadget.size)
+			gadget.update_connection_positions()
 			#gadget.position = gadget.position.snapped(Vector2(128, 128))
 			gadget.mouse_filter = Control.MOUSE_FILTER_STOP
+
+
+func _on_visibility_changed() -> void:
+	if get_parent().visible:
+		for gadget: Gadget in get_children():
+			gadget.visible = get_parent().object == gadget.node_3d.get_parent()

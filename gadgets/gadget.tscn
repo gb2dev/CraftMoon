@@ -11,7 +11,7 @@ texture = ExtResource("2_wx2yp")
 expand_mode = 1
 script = ExtResource("1_5ebnv")
 
-[node name="Input" type="ColorRect" parent="." groups=["Input"]]
+[node name="InputControl" type="ColorRect" parent="." groups=["Input"]]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
@@ -20,14 +20,15 @@ offset_top = -5.0
 offset_right = 5.0
 offset_bottom = 4.99998
 grow_vertical = 2
-color = Color(0.16, 0.16, 0.8, 1)
+tooltip_text = "Power"
+color = Color(1, 0.466667, 0.2, 1)
 
 [node name="Output" type="Line2D" parent="."]
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
-default_color = Color(0.8, 0.16, 0.16, 1)
+default_color = Color(0.2, 0.733333, 1, 1)
 
-[node name="OutputControl" type="Control" parent="."]
+[node name="OutputControl" type="Control" parent="." groups=["Output"]]
 anchors_preset = 0
 offset_left = 64.0
 offset_top = 24.0

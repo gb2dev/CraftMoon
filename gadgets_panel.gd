@@ -17,3 +17,4 @@ func _on_gui_input(event: InputEvent) -> void:
 		if gadget:
 			# Delete Gadget
 			gadget.queue_free()
+			gadget.update_connection_positions()

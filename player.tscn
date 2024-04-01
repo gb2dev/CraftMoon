@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=24 format=3 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -11,6 +11,14 @@
 [ext_resource type="PackedScene" uid="uid://dl21ovk7gcqja" path="res://gadgets/trigger_zone_gadget.tscn" id="8_i3oyc"]
 [ext_resource type="Script" path="res://gadget_properties.gd" id="8_saenl"]
 [ext_resource type="Resource" uid="uid://bxtyxckfkon5w" path="res://gadgets/trigger_zone_gadget.tres" id="9_odca5"]
+[ext_resource type="PackedScene" uid="uid://c2bf7nocvxdpt" path="res://gadgets/look_sensor_gadget.tscn" id="10_p8hru"]
+[ext_resource type="Resource" uid="uid://coynjbvda5rxv" path="res://gadgets/look_sensor_gadget.tres" id="11_2hcwe"]
+[ext_resource type="PackedScene" uid="uid://b58iek08ffik4" path="res://gadgets/timer_gadget.tscn" id="12_aol6q"]
+[ext_resource type="Resource" uid="uid://b0jic3u3x4twu" path="res://gadgets/timer_gadget.tres" id="12_q2k8v"]
+[ext_resource type="Resource" uid="uid://bwt7c3pq2r3ck" path="res://gadgets/counter_gadget.tres" id="13_0jkaf"]
+[ext_resource type="PackedScene" uid="uid://b0076wtaytvt8" path="res://gadgets/counter_gadget.tscn" id="14_dehu2"]
+[ext_resource type="Resource" uid="uid://cjibdh73f81ei" path="res://gadgets/mover_gadget.tres" id="14_hfbkh"]
+[ext_resource type="PackedScene" uid="uid://52rwqsmbiy8c" path="res://gadgets/mover_gadget.tscn" id="16_f2ou7"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -79,7 +87,7 @@ script = ExtResource("3_tt4lx")
 
 [node name="Gadgets" type="Panel" parent="Object Properties"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(288, 0)
+custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
 script = ExtResource("4_ypwlc")
 
@@ -95,24 +103,113 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Object Properties/Gadgets/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Gadgets"
+
+[node name="TabContainer" type="TabContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Sensors" type="MarginContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="AudioGadgetItem" parent="Object Properties/Gadgets/MarginContainer/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="TriggerZoneGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" instance=ExtResource("4_4ckle")]
 layout_mode = 2
+tooltip_text = "Trigger Zone Gadget"
+item = ExtResource("8_i3oyc")
+item_data = ExtResource("9_odca5")
+
+[node name="LookSensorGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+tooltip_text = "Look Sensor Gadget"
+item = ExtResource("10_p8hru")
+item_data = ExtResource("11_2hcwe")
+
+[node name="Outputs" type="MarginContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Outputs"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="AudioGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Outputs/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+tooltip_text = "Audio Gadget"
 item = ExtResource("6_alnoj")
 item_data = ExtResource("7_hq56j")
 
-[node name="TriggerZoneGadgetItem" parent="Object Properties/Gadgets/MarginContainer/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="Logic" type="MarginContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
 layout_mode = 2
-item = ExtResource("8_i3oyc")
-item_data = ExtResource("9_odca5")
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="TimerGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+tooltip_text = "Timer Gadget"
+item = ExtResource("12_aol6q")
+item_data = ExtResource("12_q2k8v")
+
+[node name="CounterGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+tooltip_text = "Counter Gadget"
+item = ExtResource("14_dehu2")
+item_data = ExtResource("13_0jkaf")
+
+[node name="Movement" type="MarginContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="MoverGadgetItem" parent="Object Properties/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" instance=ExtResource("4_4ckle")]
+layout_mode = 2
+tooltip_text = "Mover Gadget"
+item = ExtResource("16_f2ou7")
+item_data = ExtResource("14_hfbkh")
 
 [node name="Gadget Properties" type="Panel" parent="Object Properties"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(288, 0)
+custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
 script = ExtResource("8_saenl")
 
@@ -131,3 +228,4 @@ script = ExtResource("6_gu4mb")
 
 [connection signal="gui_input" from="Object Properties/Gadgets" to="Object Properties/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/Logic" to="Object Properties/Logic" method="_on_gui_input"]
+[connection signal="visibility_changed" from="Object Properties/Logic" to="Object Properties/Logic" method="_on_visibility_changed"]

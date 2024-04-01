@@ -109,6 +109,8 @@ func open(type: StringName, gadget: Gadget) -> void:
 			add_slider("Zone width: ", &"ZoneWidth", 2, 0.1, 50, 0.1, gadget)
 			add_slider("Zone height: ", &"ZoneHeight", 2, 0.1, 50, 0.1, gadget)
 			add_slider("Zone depth: ", &"ZoneDepth", 2, 0.1, 50, 0.1, gadget)
+		&"Look Sensor Gadget":
+			pass
 
 
 func add_slider(label_prefix: String,
