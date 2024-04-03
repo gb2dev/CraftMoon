@@ -13,7 +13,7 @@ func _process(delta: float) -> void:
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
-		var gadget := get_tree().get_first_node_in_group("Dragging") as Gadget
+		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
 			# Delete Gadget
 			gadget.queue_free()

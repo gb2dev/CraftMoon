@@ -28,8 +28,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("properties"):
-		for control: Control in get_tree().get_nodes_in_group("UI"):
+	if Input.is_action_just_pressed(&"properties"):
+		for control: Control in get_tree().get_nodes_in_group(&"UI"):
 			if control.visible:
 				return
 
@@ -38,7 +38,7 @@ func _process(_delta: float) -> void:
 
 	# Object Builder Toggle
 
-	if Input.is_action_just_pressed("object_builder"):
+	if Input.is_action_just_pressed(&"object_builder"):
 		object_builder_active = not object_builder_active
 		cursor.visible = object_builder_active
 		crosshair.visible = not object_builder_active
@@ -50,10 +50,10 @@ func _process(_delta: float) -> void:
 
 	# Cursor
 
-	if Input.is_action_just_pressed("cursor_forward"):
+	if Input.is_action_just_pressed(&"cursor_forward"):
 		cursor_distance -= 0.5
 		target_position.z -= 0.5
-	elif Input.is_action_just_pressed("cursor_back"):
+	elif Input.is_action_just_pressed(&"cursor_back"):
 		cursor_distance += 0.5
 		target_position.z += 0.5
 	cursor_distance = clampf(cursor_distance, -10.5, -0.5)
@@ -71,11 +71,11 @@ func _process(_delta: float) -> void:
 
 	# Object Construction
 
-	if Input.is_action_just_pressed("1"):
+	if Input.is_action_just_pressed(&"1"):
 		construction_mode = 0
-	elif Input.is_action_just_pressed("2"):
+	elif Input.is_action_just_pressed(&"2"):
 		construction_mode = 1
-	elif Input.is_action_just_pressed("3"):
+	elif Input.is_action_just_pressed(&"3"):
 		construction_mode = 2
 
 	match construction_mode:
@@ -90,7 +90,7 @@ func _process(_delta: float) -> void:
 					Draw3D.line(vertices[-1], vertices[-2], Color.BLACK, 1)
 					Draw3D.line(vertices[-1], cursor.global_position, Color.BLACK, 1)
 
-			if Input.is_action_just_pressed("action"):
+			if Input.is_action_just_pressed(&"action"):
 				vertices.append(cursor.global_position)
 				st.add_vertex(cursor.global_position)
 
@@ -125,7 +125,7 @@ func _process(_delta: float) -> void:
 				Draw3D.line(pos_1, cursor.global_position, Color.BLACK, 1)
 				Draw3D.line(pos_2, cursor.global_position, Color.BLACK, 1)
 
-			if Input.is_action_just_pressed("action"):
+			if Input.is_action_just_pressed(&"action"):
 				if construction_stage == 1:
 					vertices.append(pos_1)
 					st.add_vertex(pos_1)
@@ -191,7 +191,7 @@ func _process(_delta: float) -> void:
 				Draw3D.line(pos_5, cursor.global_position, Color.BLACK, 1)
 				Draw3D.line(pos_6, cursor.global_position, Color.BLACK, 1)
 
-			if Input.is_action_just_pressed("action"):
+			if Input.is_action_just_pressed(&"action"):
 				if construction_stage == 1:
 					# Back 1
 
@@ -333,7 +333,7 @@ func _process(_delta: float) -> void:
 
 	# Collision Creation
 
-	if Input.is_action_just_pressed("ui_accept"):
+	if Input.is_action_just_pressed(&"ui_accept"):
 		mi.create_convex_collision()
 		vertices = []
 		new_object()

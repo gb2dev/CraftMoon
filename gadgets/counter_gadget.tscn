@@ -22,5 +22,5 @@ step = 1.0
 fill_mode = 3
 show_percentage = false
 
-[node name="OutputControl" parent="." index="3"]
-tooltip_text = "Count Full (Signal)"
+[node name="OutputControl0" parent="OutputControls" index="0"]
+tooltip_text = "Counter Full (Signal)"

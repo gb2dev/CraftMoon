@@ -21,7 +21,7 @@ max_value = 1.0
 fill_mode = 3
 show_percentage = false
 
-[node name="OutputControl" parent="." index="3"]
+[node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Timer Finished (Pulse)"
 
 [node name="Timer" type="Timer" parent="." index="5"]

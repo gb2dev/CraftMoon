@@ -16,7 +16,7 @@ albedo_color = Color(0, 1, 0.498039, 0.196078)
 [node name="AudioGadget" instance=ExtResource("1_6ljti")]
 script = ExtResource("2_lt4un")
 
-[node name="OutputControl" parent="." index="2"]
+[node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Sound Finished Playing (Pulse)"
 
 [node name="Area3D" type="Area3D" parent="3D" index="0"]

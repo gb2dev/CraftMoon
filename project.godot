@@ -23,6 +23,10 @@ Draw3D="*res://draw_3d.gd"
 
 gdscript/warnings/untyped_declaration=1
 
+[filesystem]
+
+import/blender/enabled=false
+
 [gui]
 
 timers/tooltip_delay_sec=0.1

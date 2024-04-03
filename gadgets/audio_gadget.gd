@@ -8,13 +8,12 @@ var audio_player
 
 
 func _ready() -> void:
+	super._ready()
 	change_property(&"ThreeD", false)
 
 
 func input_pulse(_input_index: int, _data: Variant) -> void:
-	print("X")
-	if pulse_powered:
-		audio_player.play()
+	audio_player.play()
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -65,5 +64,5 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_area_3d_body_entered(_body: Node3D) -> void:
-	if signal_powered:
+	if is_input_powered(0):
 		audio_player.play()

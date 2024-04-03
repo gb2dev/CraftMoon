@@ -20,7 +20,7 @@ func _process(delta: float) -> void:
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
-		if not get_tree().get_first_node_in_group("Dragging"):
+		if not get_tree().get_first_node_in_group(&"Dragging"):
 			# Create new Gadget
 			var gadget := item.instantiate() as Gadget
 			get_tree().current_scene.add_child(gadget)

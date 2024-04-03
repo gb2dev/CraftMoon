@@ -16,8 +16,8 @@ albedo_color = Color(0, 1, 0.498039, 0.196078)
 [node name="TriggerZoneGadget" instance=ExtResource("1_hvmox")]
 script = ExtResource("2_npfhb")
 
-[node name="OutputControl" parent="." index="2"]
-tooltip_text = "Player Inside Trigger Zone (Signal)"
+[node name="OutputControl0" parent="OutputControls" index="0"]
+tooltip_text = "Player Detected (Signal)"
 
 [node name="Area3D" type="Area3D" parent="3D" index="0"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)

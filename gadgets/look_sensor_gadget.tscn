@@ -6,7 +6,7 @@
 [node name="LookSensorGadget" instance=ExtResource("1_iwj6v")]
 script = ExtResource("2_y110u")
 
-[node name="OutputControl" parent="." index="2"]
+[node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Visible On Screen (Signal)"
 
 [node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="3D" index="0"]

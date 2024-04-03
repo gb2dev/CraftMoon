@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=5 format=3 uid="uid://gwjjy0frd8kj"]
 
 [ext_resource type="Script" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
+[ext_resource type="Script" path="res://input_control.gd" id="3_gd2ll"]
+[ext_resource type="Script" path="res://output_control.gd" id="3_mgsla"]
 
 [node name="Gadget" type="TextureRect" groups=["Dragging"]]
 offset_right = 64.0
@@ -11,32 +13,59 @@ texture = ExtResource("2_wx2yp")
 expand_mode = 1
 script = ExtResource("1_5ebnv")
 
-[node name="InputControl" type="ColorRect" parent="." groups=["Input"]]
+[node name="InputControls" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -5.0
-offset_right = 5.0
-offset_bottom = 4.99998
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 4.0
 grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="InputControl0" type="ColorRect" parent="InputControls" groups=["InputControl"]]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
 tooltip_text = "Power"
 color = Color(1, 0.466667, 0.2, 1)
+script = ExtResource("3_gd2ll")
 
-[node name="Output" type="Line2D" parent="."]
+[node name="Outputs" type="Node2D" parent="."]
+
+[node name="Output0" type="Line2D" parent="Outputs"]
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
 default_color = Color(0.2, 0.733333, 1, 1)
 antialiased = true
 
-[node name="OutputControl" type="Control" parent="." groups=["Output"]]
+[node name="OutputControls" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="OutputControl0" type="Control" parent="OutputControls" groups=["OutputControl"]]
+layout_mode = 3
 anchors_preset = 0
-offset_left = 64.0
-offset_top = 24.0
-offset_right = 80.0
-offset_bottom = 40.0
+offset_top = -8.0
+offset_right = 16.0
+offset_bottom = 8.0
+script = ExtResource("3_mgsla")
+
+[node name="DebugRectangle" type="ColorRect" parent="OutputControls/OutputControl0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="3D" type="Node3D" parent="."]
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
-[connection signal="gui_input" from="OutputControl" to="." method="_on_output_control_gui_input"]
