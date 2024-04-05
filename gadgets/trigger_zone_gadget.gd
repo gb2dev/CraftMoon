@@ -25,7 +25,7 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	if is_input_powered(0):
+	if is_input_data_powered(0):
 		output_signal(0, true)
 
 

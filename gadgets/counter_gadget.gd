@@ -15,7 +15,9 @@ func input_pulse(input_index: int, _data: Variant) -> void:
 			if current_count < target_count:
 				current_count += 1
 				bar.value = current_count
-				output_signal(0, true)
+
+				if current_count == target_count:
+					output_signal(0, true)
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -23,6 +25,5 @@ func change_property(property: StringName, value: Variant) -> void:
 		&"TargetCount":
 			current_count = min(current_count, value)
 			target_count = value
-			if current_count != target_count:
-				output_signal(0, false)
+			output_signal(0, current_count == target_count)
 			bar.max_value = value

@@ -12,8 +12,8 @@ enum ConnectionChange {
 }
 
 @onready var input_controls := $InputControls.get_children()
-@onready var output_controls := $OutputControls.get_children()
-@onready var outputs := $Outputs.get_children()
+@onready var output_controls := $OutputControls.get_children()#.map(put_in_array)
+@onready var outputs := $Outputs.get_children()#.map(put_in_array)
 @onready var node_3d := $"3D"
 
 var just_dragged_output := false
@@ -21,6 +21,7 @@ var just_dragged_output := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# TODO: Get correct output instance
 	for output_control: OutputControl in output_controls:
 		var output_index := int(output_control.name.trim_prefix("OutputControl"))
 		output_control.gui_input.connect(_on_output_control_gui_input.bind(output_index))
@@ -39,6 +40,7 @@ func _process(delta: float) -> void:
 		for output_control: OutputControl in output_controls:
 			if output_control.is_in_group(&"Dragging"):
 				# Dragging Output
+				# TODO: Get correct output instance
 				var output_index := int(output_control.name.trim_prefix("OutputControl"))
 				var output := outputs[output_index]
 				var mouse_pos := get_global_mouse_position()
@@ -143,6 +145,8 @@ func input_pulse(_input_index: int, _data: Variant) -> void:
 
 func output_signal(output_index: int, data: Variant) -> void:
 	var output_control := output_controls[output_index] as OutputControl
+	# TODO: Get correct output instance
+	#for output_control: OutputControl in output_controls[output_index]:
 	var gadget := output_control.target_gadget
 	if is_instance_valid(gadget):
 		var input_control := gadget.input_controls[output_control.target_input] as InputControl
@@ -160,6 +164,8 @@ func output_signal(output_index: int, data: Variant) -> void:
 
 func output_pulse(output_index: int, data: Variant) -> void:
 	var output_control := output_controls[output_index] as OutputControl
+	# TODO: Get correct output instance
+	#for output_control: OutputControl in output_controls[output_index]:
 	var gadget := output_control.target_gadget
 	if is_instance_valid(gadget):
 		gadget.input_pulse(output_control.target_input, data)
@@ -175,7 +181,7 @@ func update_connection(
 		gadget: Gadget,
 		input_index: int
 ) -> void:
-	var output := outputs[output_index]
+	var output := outputs[output_index] as Line2D
 	var output_control := output_controls[output_index] as OutputControl
 
 	if type != ConnectionChange.DISCONNECT:
@@ -198,6 +204,26 @@ func update_connection(
 		output_control.target_gadget = gadget
 		output_control.target_input = input_index
 		output_signal(output_index, false)
+
+		# Create New Output
+		#output_control = OutputControl.new()
+		#$OutputControls.add_child(output_control)
+		#output_control.size = Vector2.ONE * 16
+		#output_control.position = Vector2(0, -8)
+		#output_control.add_to_group(&"OutputControl")
+		#output_control.gui_input.connect(
+			#_on_output_control_gui_input.bind(
+				#output_index, output_controls[output_index].size() - 1
+			#)
+		#)
+		#output_controls[output_index].append(output_control)
+
+		#output = Line2D.new()
+		#$Outputs.add_child(output)
+		#output.points = [Vector2(64, 32), Vector2(72, 32), Vector2(72, 32)]
+		#output.default_color = Color("#33bbff")
+		#output.z_index = 1
+		#outputs[output_index].append(output)
 	else:
 		output.points[2] = output.points[1]
 		output_control.position = output.position - Vector2(0, output_control.size.y / 2)
@@ -209,12 +235,19 @@ func update_connection(
 			gadget.input_controls[input_index].output_controls.erase(output_control)
 			gadget.input_controls[input_index].outputs.erase(output)
 
+		#if type == ConnectionChange.DELETE or type == ConnectionChange.CANCEL:
+			#if output_controls[output_index].size() > 1:
+				#outputs[output_index].pop_back().queue_free()
+				#output_controls[output_index].pop_back().queue_free()
+			#output = outputs[output_index].back()
+			#output_control = output_controls[output_index].back()
+
 
 func update_connection_positions() -> void:
 	for output_control: OutputControl in output_controls:
 		if is_instance_valid(output_control.target_gadget):
 			var output_index := int(output_control.name.trim_prefix("OutputControl"))
-			var output := outputs[output_index]
+			var output := outputs[output_index] as Line2D
 			output.points[2] = output.to_local(
 				output_control.target_gadget.global_position
 				+ Vector2(0, output_control.target_gadget.size.y / 2)
@@ -258,6 +291,15 @@ func set_icon(t: Texture2D) -> void:
 	texture = t
 
 
-func is_input_powered(input_index: int) -> bool:
+func is_input_data_powered(input_index: int) -> bool:
+	var data: Variant = get_input_data(input_index)
+	return data == null or not is_zero_approx(data)
+
+
+func get_input_data(input_index: int) -> Variant:
 	var input_control := input_controls[input_index] as InputControl
-	return input_control.data == null or not is_zero_approx(input_control.data)
+	return input_control.data
+
+
+func put_in_array(value: Variant) -> Variant:
+	return [value]

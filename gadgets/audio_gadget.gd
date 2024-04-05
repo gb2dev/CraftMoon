@@ -64,5 +64,5 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_area_3d_body_entered(_body: Node3D) -> void:
-	if is_input_powered(0):
+	if get_input_data(0) == null:
 		audio_player.play()

@@ -36,7 +36,6 @@ script = ExtResource("3_gd2ll")
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
 default_color = Color(0.2, 0.733333, 1, 1)
-antialiased = true
 
 [node name="OutputControls" type="Control" parent="."]
 layout_mode = 1
@@ -50,21 +49,11 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="OutputControl0" type="Control" parent="OutputControls" groups=["OutputControl"]]
-layout_mode = 3
 anchors_preset = 0
 offset_top = -8.0
 offset_right = 16.0
 offset_bottom = 8.0
 script = ExtResource("3_mgsla")
-
-[node name="DebugRectangle" type="ColorRect" parent="OutputControls/OutputControl0"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="3D" type="Node3D" parent="."]
 

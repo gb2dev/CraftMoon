@@ -5,7 +5,7 @@ var movement_direction := Vector3.ZERO
 
 
 func input_signal(delta: float) -> void:
-	if is_input_powered(0):
+	if is_input_data_powered(0):
 		node_3d.get_parent().position += movement_direction * delta
 
 

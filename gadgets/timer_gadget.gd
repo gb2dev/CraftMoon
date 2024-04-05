@@ -8,7 +8,7 @@ var first_shot := true
 
 
 func input_signal(_delta: float) -> void:
-	timer.paused = not is_input_powered(0)
+	timer.paused = not is_input_data_powered(0)
 	if not first_shot:
 		bar.value = 1 - timer.time_left / timer.wait_time
 
@@ -28,5 +28,5 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_timer_timeout() -> void:
-	if is_input_powered(0):
+	if is_input_data_powered(0):
 		output_pulse(0, true)
