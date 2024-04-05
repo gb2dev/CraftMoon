@@ -48,7 +48,7 @@ grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="OutputControl0" type="Control" parent="OutputControls" groups=["OutputControl"]]
+[node name="OutputControl0" type="Control" parent="OutputControls" groups=["NeverConnected", "OutputControl"]]
 anchors_preset = 0
 offset_top = -8.0
 offset_right = 16.0
