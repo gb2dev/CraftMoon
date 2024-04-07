@@ -12,8 +12,9 @@ func _ready() -> void:
 	change_property(&"ThreeD", false)
 
 
-func input_pulse(_input_index: int, _data: Variant) -> void:
-	audio_player.play()
+func input(_delta: float) -> void:
+	if is_input_pulse(0):
+		audio_player.play()
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -57,7 +58,7 @@ func change_property(property: StringName, value: Variant) -> void:
 			audio_player.volume_db = volume
 
 			audio_player.finished.connect(func() -> void:
-				output_pulse(0, true)
+				output(0, true, true)
 			)
 
 			area.add_child(audio_player)

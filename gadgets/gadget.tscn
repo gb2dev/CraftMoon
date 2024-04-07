@@ -27,12 +27,12 @@ alignment = 1
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 tooltip_text = "Power"
-color = Color(1, 0.466667, 0.2, 1)
+color = Color(1, 0.27451, 0.196078, 1)
 script = ExtResource("3_gd2ll")
 
-[node name="Outputs" type="Node2D" parent="."]
+[node name="OutputVisuals" type="Node2D" parent="."]
 
-[node name="Output0" type="Line2D" parent="Outputs"]
+[node name="OutputVisual0" type="Line2D" parent="OutputVisuals"]
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
 default_color = Color(0.2, 0.733333, 1, 1)
@@ -48,7 +48,7 @@ grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="OutputControl0" type="Control" parent="OutputControls" groups=["NeverConnected", "OutputControl"]]
+[node name="OutputControl0" type="Control" parent="OutputControls" groups=["OutputControl"]]
 anchors_preset = 0
 offset_top = -8.0
 offset_right = 16.0

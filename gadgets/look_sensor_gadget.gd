@@ -9,9 +9,8 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_visible_on_screen_notifier_3d_screen_entered() -> void:
-	if is_input_data_powered(0):
-		output_signal(0, true)
+	output(0, true)
 
 
 func _on_visible_on_screen_notifier_3d_screen_exited() -> void:
-	output_signal(0, false)
+	output(0, false)

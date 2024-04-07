@@ -1,6 +1,6 @@
 class_name InputControl
 extends ColorRect
 
-var data: Variant
 var output_controls: Array[OutputControl]
-var outputs: Array[Line2D]
+var output_visuals: Array[Line2D]
+var is_powered: bool

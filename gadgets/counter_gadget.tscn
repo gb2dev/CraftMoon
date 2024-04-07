@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://b0076wtaytvt8"]
+[gd_scene load_steps=5 format=3 uid="uid://b0076wtaytvt8"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_xna3w"]
 [ext_resource type="Script" path="res://gadgets/counter_gadget.gd" id="2_xgda2"]
+[ext_resource type="Script" path="res://input_control.gd" id="3_vyuno"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ttg4v"]
 
@@ -21,6 +22,20 @@ max_value = 1.0
 step = 1.0
 fill_mode = 3
 show_percentage = false
+
+[node name="InputControl1" type="ColorRect" parent="InputControls" index="1" groups=["InputControl"]]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+tooltip_text = "Add to Counter"
+color = Color(1, 0.466667, 0.2, 1)
+script = ExtResource("3_vyuno")
+
+[node name="InputControl2" type="ColorRect" parent="InputControls" index="2" groups=["InputControl"]]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+tooltip_text = "Reset Counter"
+color = Color(1, 0.466667, 0.2, 1)
+script = ExtResource("3_vyuno")
 
 [node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Counter Full (Signal)"

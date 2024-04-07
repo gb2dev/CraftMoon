@@ -28,5 +28,4 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_timer_timeout() -> void:
-	if is_input_data_powered(0):
-		output_pulse(0, true)
+	output(0, true)
