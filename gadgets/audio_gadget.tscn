@@ -36,3 +36,4 @@ surface_material_override/0 = SubResource("StandardMaterial3D_i6q1g")
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="3D/Area3D" index="2"]
 
 [connection signal="body_entered" from="3D/Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="3D/Area3D" to="." method="_on_area_3d_body_exited"]

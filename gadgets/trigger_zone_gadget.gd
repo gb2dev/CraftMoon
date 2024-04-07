@@ -6,12 +6,6 @@ extends Gadget
 @onready var collision_shape := $"3D/Area3D/CollisionShape3D" as CollisionShape3D
 
 
-func input_signal(_delta: float) -> void:
-	# TODO: Don't do this every frame
-	if not is_input_data_powered(0):
-		output(0, false)
-
-
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"ZoneShape":

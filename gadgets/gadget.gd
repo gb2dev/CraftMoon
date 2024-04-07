@@ -148,6 +148,10 @@ func input(_delta: float) -> void:
 func output(output_index: int, data: Variant, pulse := false) -> void:
 	for output_control: OutputControl in output_controls[output_index]:
 		output_control.data = data
+		if output_control.target_input == 0 and data == false:
+			if is_instance_valid(output_control.target_gadget):
+				for i in output_control.target_gadget.output_controls.size():
+					output_control.target_gadget.output(i, false)
 		if pulse and data != null:
 			output_control.set_deferred(&"data", false)
 
@@ -265,8 +269,6 @@ func update_connection_positions() -> void:
 func attach_to_object(o: PhysicsBody3D) -> void:
 	remove_child(node_3d)
 	o.add_child(node_3d)
-	# TODO: Is this needed?
-	#input_pulse(0, true)
 
 
 func set_icon(t: Texture2D) -> void:
@@ -275,7 +277,7 @@ func set_icon(t: Texture2D) -> void:
 
 func is_input_pulse(input_index: int, ignore_null := true) -> bool:
 	var value := is_input_data_powered(input_index, ignore_null)
-	var pulse: bool = not input_controls[0].is_powered and value
+	var pulse: bool = not input_controls[input_index].is_powered and value
 	input_controls[input_index].is_powered = value
 	return pulse
 

@@ -5,6 +5,7 @@ extends Gadget
 @onready var area_visual := $"3D/Area3D/AreaVisual" as MeshInstance3D
 
 var audio_player
+var inside_area := false
 
 
 func _ready() -> void:
@@ -30,7 +31,11 @@ func change_property(property: StringName, value: Variant) -> void:
 			audio_player.volume_db = linear_to_db(value)
 		&"Loop":
 			if value:
-				audio_player.finished.connect(audio_player.play)
+				audio_player.finished.connect(func() -> void:
+					var data: Variant = get_input_data(0)
+					if data == null and inside_area or data == true:
+						audio_player.play()
+				)
 			else:
 				audio_player.finished.disconnect(audio_player.play)
 		&"ThreeD":
@@ -65,5 +70,11 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_area_3d_body_entered(_body: Node3D) -> void:
+	# TODO: Add different modes
+	inside_area = true
 	if get_input_data(0) == null:
 		audio_player.play()
+
+
+func _on_area_3d_body_exited(_body: Node3D) -> void:
+	inside_area = false
