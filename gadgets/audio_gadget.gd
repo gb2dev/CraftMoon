@@ -6,14 +6,22 @@ extends Gadget
 
 var audio_player
 var inside_area := false
+var is_pulse: bool
 
 
 func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
 	input_pulse.connect(func(input_index: int) -> void:
+		is_pulse = false
 		audio_player.play()
+		check_pulse.call_deferred()
 	)
+
+
+func check_pulse() -> void:
+	if get_input_data(0) == false:
+		is_pulse = true
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -29,14 +37,15 @@ func change_property(property: StringName, value: Variant) -> void:
 			audio_player.volume_db = linear_to_db(value)
 		&"Loop":
 			if value:
-				audio_player.finished.connect(func() -> void:
-					# FIXME: Make loop work for pulse
-					var data: Variant = get_input_data(0)
-					if data == null and inside_area or data == true:
-						audio_player.play()
-				)
+				if not audio_player.finished.is_connected(audio_player.play):
+					audio_player.finished.connect(func() -> void:
+						var data: Variant = get_input_data(0)
+						if data == null and inside_area or data == true or is_pulse:
+							audio_player.play()
+					)
 			else:
-				audio_player.finished.disconnect(audio_player.play)
+				if audio_player.finished.is_connected(audio_player.play):
+					audio_player.finished.disconnect(audio_player.play)
 		&"ThreeD":
 			var stream: AudioStream
 			var loop := false
