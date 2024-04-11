@@ -168,9 +168,14 @@ func update_connection(
 	var output_visual := output_visuals[output_index][output_location[0]] as Line2D
 
 	if type == ConnectionChange.DISCONNECT:
-		if output_control.is_in_group(&"Freeable"):
-			output_visuals[output_index].pop_back().queue_free()
+		if output_controls[output_index].back() != output_control:
 			output_controls[output_index].pop_back().queue_free()
+			output_visuals[output_index].pop_back().queue_free()
+
+		output_controls[output_index].erase(output_control)
+		output_controls[output_index].append(output_control)
+		output_visuals[output_index].append(output_visual)
+		output_visuals[output_index].erase(output_visual)
 	else:
 		output_control.remove_from_group(&"Dragging")
 		output_control.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -186,8 +191,6 @@ func update_connection(
 	)
 
 	if type == ConnectionChange.CONNECT:
-		output_control.add_to_group(&"Freeable")
-		output_visual.add_to_group(&"Freeable")
 		gadget.input_controls[input_index].output_controls.append(output_control)
 		gadget.input_controls[input_index].output_visuals.append(output_visual)
 		output_control.target_gadget = gadget
@@ -199,7 +202,7 @@ func update_connection(
 		$OutputControls.add_child(output_control)
 		output_control.size = Vector2.ONE * 16
 		output_control.position = Vector2(0, -8)
-		output_control.data = output_controls[output_index][0].data
+		output_control.data = output_controls[output_index].back().data
 		output_control.add_to_group(&"OutputControl")
 		output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_controls[output_index].append(output_control)
@@ -213,10 +216,6 @@ func update_connection(
 	else:
 		output_visual.points[2] = output_visual.points[1]
 		output_control.position = output_visual.position - Vector2(0, output_control.size.y / 2)
-		
-		if type == ConnectionChange.CANCEL or type == ConnectionChange.DELETE:
-			output_control.remove_from_group(&"Freeable")
-
 		output_control.target_gadget = null
 
 		if gadget:
