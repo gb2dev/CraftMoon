@@ -149,10 +149,6 @@ func input(_delta: float) -> void:
 func output(output_index: int, data: Variant, pulse := false) -> void:
 	for output_control: OutputControl in output_controls[output_index]:
 		output_control.data = data
-		#if output_control.target_input == 0 and data == false:
-			#if is_instance_valid(output_control.target_gadget):
-				#for i in output_control.target_gadget.output_controls.size():
-					#output_control.target_gadget.output(i, false)
 		if pulse and data != null:
 			output_control.set_deferred(&"data", false)
 
@@ -214,9 +210,6 @@ func update_connection(
 		output_visual.default_color = Color("#33bbff")
 		output_visual.z_index = 1
 		output_visuals[output_index].append(output_visual)
-
-		# FIXME: Is this right?
-		#output(output_index, false)
 	else:
 		output_visual.points[2] = output_visual.points[1]
 		output_control.position = output_visual.position - Vector2(0, output_control.size.y / 2)
@@ -238,13 +231,16 @@ func update_connection_positions() -> void:
 				var output_visual := output_visuals[output_index][
 					find_nested_array_item(output_controls, output_control)[0]
 				] as Line2D
+				var input_control := output_control.target_gadget.input_controls[
+					output_control.target_input
+				] as InputControl
 				output_visual.points[2] = output_visual.to_local(
-					output_control.target_gadget.global_position
-					+ Vector2(0, output_control.target_gadget.size.y / 2)
+					input_control.global_position
+					+ Vector2(0, input_control.size.y / 2)
 				)
 				output_control.global_position = (
-					output_control.target_gadget.global_position
-					+ Vector2(0, output_control.target_gadget.size.y / 2)
+					input_control.global_position
+					+ Vector2(0, input_control.size.y / 2)
 					- Vector2(output_control.size.x, output_control.size.y / 2)
 				)
 
@@ -261,12 +257,12 @@ func update_connection_positions() -> void:
 					)
 				else:
 					output_visual.points[2] = output_visual.to_local(
-						output_control.target_gadget.global_position
-						+ Vector2(0, output_control.target_gadget.size.y / 2)
+						input_control.global_position
+						+ Vector2(0, input_control.size.y / 2)
 					)
 					output_control.global_position = (
-						output_control.target_gadget.global_position
-						+ Vector2(0, output_control.target_gadget.size.y / 2)
+						input_control.global_position
+						+ Vector2(0, input_control.size.y / 2)
 						- Vector2(output_control.size.x, output_control.size.y / 2)
 					)
 
