@@ -168,6 +168,9 @@ func update_connection(
 	var output_visual := output_visuals[output_index][output_location[0]] as Line2D
 
 	if type == ConnectionChange.DISCONNECT:
+		if gadget:
+			gadget.input_data_changed.call_deferred(input_index)
+
 		if output_controls[output_index].back() != output_control:
 			output_controls[output_index].pop_back().queue_free()
 			output_visuals[output_index].pop_back().queue_free()
@@ -198,6 +201,7 @@ func update_connection(
 		gadget.input_data_changed(input_index)
 
 		# Create New Output
+
 		output_control = OutputControl.new()
 		$OutputControls.add_child(output_control)
 		output_control.size = Vector2.ONE * 16
@@ -210,6 +214,7 @@ func update_connection(
 		output_visual = Line2D.new()
 		$OutputVisuals.add_child(output_visual)
 		output_visual.points = [Vector2(64, 32), Vector2(72, 32), Vector2(72, 32)]
+		output_visual.width = 8
 		output_visual.default_color = Color("#33bbff")
 		output_visual.z_index = 1
 		output_visuals[output_index].append(output_visual)

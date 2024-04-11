@@ -35,6 +35,7 @@ script = ExtResource("3_gd2ll")
 [node name="OutputVisual0" type="Line2D" parent="OutputVisuals"]
 z_index = 1
 points = PackedVector2Array(64, 32, 72, 32, 72, 32)
+width = 8.0
 default_color = Color(0.2, 0.733333, 1, 1)
 
 [node name="OutputControls" type="Control" parent="."]
