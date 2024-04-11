@@ -10,8 +10,9 @@ var first_shot := true
 func _ready() -> void:
 	super._ready()
 	input_pulse.connect(func(input_index: int) -> void:
-		timer.start()
-		first_shot = false
+		if is_input_data_powered(0):
+			timer.start()
+			first_shot = false
 	)
 
 

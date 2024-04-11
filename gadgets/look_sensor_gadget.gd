@@ -6,9 +6,11 @@ extends Gadget
 var is_visible_on_screen: bool
 
 
-func is_powered_change() -> void:
-	if is_visible_on_screen:
-		output(0, is_visible_on_screen)
+func _ready() -> void:
+	super._ready()
+	input_pulse.connect(func(input_index: int) -> void:
+		output(0, is_input_data_powered(0) and is_visible_on_screen)
+	)
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -18,10 +20,12 @@ func change_property(property: StringName, value: Variant) -> void:
 func _on_visible_on_screen_notifier_3d_screen_entered() -> void:
 	is_visible_on_screen = true
 
-	output(0, is_visible_on_screen)
+	if is_input_data_powered(0, false):
+		output(0, is_visible_on_screen)
 
 
 func _on_visible_on_screen_notifier_3d_screen_exited() -> void:
 	is_visible_on_screen = false
 
-	output(0, is_visible_on_screen)
+	if is_input_data_powered(0, false):
+		output(0, is_visible_on_screen)

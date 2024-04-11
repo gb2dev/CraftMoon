@@ -8,6 +8,14 @@ extends Gadget
 var is_player_detected: bool
 
 
+func _ready() -> void:
+	super._ready()
+	change_property(&"ThreeD", false)
+	input_pulse.connect(func(input_index: int) -> void:
+		output(0, is_input_data_powered(0) and is_player_detected)
+	)
+
+
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"ZoneShape":
@@ -29,10 +37,12 @@ func change_property(property: StringName, value: Variant) -> void:
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	is_player_detected = true
 
-	output(0, is_player_detected)
+	if is_input_data_powered(0, false):
+		output(0, is_player_detected)
 
 
 func _on_area_3d_body_exited(body: Node3D) -> void:
 	is_player_detected = false
 
-	output(0, is_player_detected)
+	if is_input_data_powered(0, false):
+		output(0, is_player_detected)

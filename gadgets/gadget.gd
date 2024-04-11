@@ -268,8 +268,7 @@ func update_connection_positions() -> void:
 
 
 func input_data_changed(input_index: int) -> void:
-	if is_input_data_powered(input_index):
-		input_pulse.emit(input_index)
+	input_pulse.emit(input_index)
 
 
 func attach_to_object(o: PhysicsBody3D) -> void:
