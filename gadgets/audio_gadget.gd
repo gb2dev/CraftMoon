@@ -11,11 +11,9 @@ var inside_area := false
 func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
-
-
-func input(_delta: float) -> void:
-	if is_input_pulse(0):
+	input_pulse.connect(func(input_index: int) -> void:
 		audio_player.play()
+	)
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -32,6 +30,7 @@ func change_property(property: StringName, value: Variant) -> void:
 		&"Loop":
 			if value:
 				audio_player.finished.connect(func() -> void:
+					# FIXME: Make loop work for pulse
 					var data: Variant = get_input_data(0)
 					if data == null and inside_area or data == true:
 						audio_player.play()

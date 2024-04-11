@@ -7,14 +7,19 @@ extends Gadget
 var first_shot := true
 
 
+func _ready() -> void:
+	super._ready()
+	input_pulse.connect(func(input_index: int) -> void:
+		timer.start()
+		first_shot = false
+	)
+
+
 func input(_delta: float) -> void:
-	timer.paused = not is_input_data_powered(0)
 	if not first_shot:
 		bar.value = 1 - timer.time_left / timer.wait_time
 
-	if is_input_pulse(0, false):
-		timer.start()
-		first_shot = false
+	timer.paused = not is_input_data_powered(0)
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -26,4 +31,5 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_timer_timeout() -> void:
+	# TODO: Add signal output
 	output(0, true, true)

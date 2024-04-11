@@ -5,6 +5,8 @@ extends Gadget
 @onready var area_visual := $"3D/Area3D/AreaVisual" as MeshInstance3D
 @onready var collision_shape := $"3D/Area3D/CollisionShape3D" as CollisionShape3D
 
+var is_player_detected: bool
+
 
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
@@ -25,8 +27,12 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	output(0, true)
+	is_player_detected = true
+
+	output(0, is_player_detected)
 
 
 func _on_area_3d_body_exited(body: Node3D) -> void:
-	output(0, false)
+	is_player_detected = false
+
+	output(0, is_player_detected)
