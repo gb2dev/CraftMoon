@@ -4,6 +4,7 @@ extends Control
 
 @onready var gadgets := %"Gadgets"
 @onready var gadget_properties := %"Gadget Properties" as GadgetProperties
+@onready var tab_container := $TabContainer
 
 var object: PhysicsBody3D
 
@@ -37,9 +38,12 @@ func close() -> void:
 			gadget_properties.visible = false
 			gadget_properties.gadget_changed.emit()
 			gadgets.visible = true
-		else:
-			toggle(object)
+			if tab_container.current_tab == 1:
+				return
+
+		toggle(object)
 
 
 func close_on_free() -> void:
-	toggle(object)
+	if visible:
+		toggle(object)

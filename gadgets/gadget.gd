@@ -4,6 +4,7 @@ extends TextureRect
 
 signal input_pulse(input_index: int)
 signal open_properties
+signal property_update(value: Variant)
 
 enum ConnectionChange {
 	CONNECT,

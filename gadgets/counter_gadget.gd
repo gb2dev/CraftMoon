@@ -3,7 +3,10 @@ extends Gadget
 
 @onready var bar := $ProgressBar as ProgressBar
 
-var current_count := 0
+var current_count := 0:
+	set(value):
+		property_update.emit(value)
+		current_count = value
 var target_count := 1
 
 

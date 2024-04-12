@@ -130,6 +130,9 @@ func open(type: StringName, gadget: Gadget) -> void:
 			target.value_changed.connect(func(value: float) -> void:
 				current.max_value = value
 			)
+			gadget.property_update.connect(func(value: float) -> void:
+				current.value = value
+			)
 		&"Mover Gadget":
 			add_slider("Movement direction X: ", &"MovementDirectionX", 0, -100, 100, 0.1, gadget)
 			add_slider("Movement direction Y: ", &"MovementDirectionY", 0, -100, 100, 0.1, gadget)
