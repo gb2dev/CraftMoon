@@ -11,11 +11,11 @@ var is_pulse: bool
 func _ready() -> void:
 	super._ready()
 	input_pulse.connect(func(input_index: int) -> void:
-		print(is_input_data_powered(0))
 		if is_input_data_powered(0):
 			timer.start()
 			first_shot = false
 			check_pulse.call_deferred()
+			output(1, false)
 	)
 
 
@@ -40,5 +40,5 @@ func change_property(property: StringName, value: Variant) -> void:
 
 
 func _on_timer_timeout() -> void:
-	# TODO: Add signal output
 	output(0, true, true)
+	output(1, true)

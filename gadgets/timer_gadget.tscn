@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://b58iek08ffik4"]
+[gd_scene load_steps=5 format=4 uid="uid://b58iek08ffik4"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_0cjpd"]
 [ext_resource type="Script" path="res://gadgets/timer_gadget.gd" id="2_jixhu"]
+[ext_resource type="Script" path="res://output_control.gd" id="3_1svt4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_itddp"]
 
@@ -21,8 +22,29 @@ max_value = 1.0
 fill_mode = 3
 show_percentage = false
 
+[node name="OutputVisual0" parent="OutputVisuals" index="0"]
+position = Vector2(0, -8)
+
+[node name="OutputVisual1" type="Line2D" parent="OutputVisuals" index="1"]
+z_index = 1
+position = Vector2(0, 8)
+points = PackedVector2Array(64, 32, 72, 32, 72, 32)
+width = 8.0
+default_color = Color(0.2, 0.733333, 1, 1)
+
 [node name="OutputControl0" parent="OutputControls" index="0"]
+offset_top = -16.0
+offset_bottom = 0.0
 tooltip_text = "Timer Finished (Pulse)"
+
+[node name="OutputControl1" type="Control" parent="OutputControls" index="1" groups=["OutputControl"]]
+auto_translate_mode = 1
+layout_mode = 3
+anchors_preset = 0
+offset_right = 16.0
+offset_bottom = 16.0
+tooltip_text = "Sound Finished Playing (Signal)"
+script = ExtResource("3_1svt4")
 
 [node name="Timer" type="Timer" parent="." index="5"]
 one_shot = true

@@ -205,7 +205,7 @@ func update_connection(
 		output_control = OutputControl.new()
 		$OutputControls.add_child(output_control)
 		output_control.size = Vector2.ONE * 16
-		output_control.position = Vector2(0, -8)
+		output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
 		output_control.data = output_controls[output_index].back().data
 		output_control.add_to_group(&"OutputControl")
 		output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
@@ -213,6 +213,7 @@ func update_connection(
 
 		output_visual = Line2D.new()
 		$OutputVisuals.add_child(output_visual)
+		output_visual.position = Vector2(0, -8 * (output_controls.size() - 1) + output_index * 16)
 		output_visual.points = [Vector2(64, 32), Vector2(72, 32), Vector2(72, 32)]
 		output_visual.width = 8
 		output_visual.default_color = Color("#33bbff")
