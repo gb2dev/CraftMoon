@@ -5,22 +5,30 @@ extends Gadget
 @onready var bar := $ProgressBar as ProgressBar
 
 var first_shot := true
+var is_pulse: bool
 
 
 func _ready() -> void:
 	super._ready()
 	input_pulse.connect(func(input_index: int) -> void:
+		print(is_input_data_powered(0))
 		if is_input_data_powered(0):
 			timer.start()
 			first_shot = false
+			check_pulse.call_deferred()
 	)
+
+
+func check_pulse() -> void:
+	if get_input_data(0) == false:
+		is_pulse = true
 
 
 func input(_delta: float) -> void:
 	if not first_shot:
 		bar.value = 1 - timer.time_left / timer.wait_time
 
-	timer.paused = not is_input_data_powered(0)
+	timer.paused = not is_input_data_powered(0) and not is_pulse
 
 
 func change_property(property: StringName, value: Variant) -> void:
