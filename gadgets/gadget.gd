@@ -103,6 +103,7 @@ func _notification(what: int) -> void:
 		if is_instance_valid(node_3d):
 			node_3d.queue_free()
 		for output_index in output_controls.size():
+			output(output_index, null)
 			for output_control: OutputControl in output_controls[output_index]:
 				var output_visual := output_visuals[output_index][
 					find_nested_array_item(output_controls, output_control)[0]
