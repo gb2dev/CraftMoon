@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=4 uid="uid://b8saypygfl3cx"]
+
+[ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_vtjj2"]
+[ext_resource type="Script" path="res://gadgets/look_at_rotator_gadget.gd" id="2_21680"]
+
+[node name="LookAtRotatorGadget" instance=ExtResource("1_vtjj2")]
+script = ExtResource("2_21680")

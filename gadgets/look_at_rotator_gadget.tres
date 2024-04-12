@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://dtx7johfsvrx7"]
+
+[ext_resource type="Script" path="res://item_data.gd" id="1_drjkt"]
+[ext_resource type="Texture2D" uid="uid://3k8lyescfmqm" path="res://icons/look_at_rotator_gadget.svg" id="1_oabf1"]
+
+[resource]
+script = ExtResource("1_drjkt")
+name = "Look At Rotator Gadget"
+icon = ExtResource("1_oabf1")

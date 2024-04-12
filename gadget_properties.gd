@@ -147,9 +147,9 @@ func add_slider(label_prefix: String,
 	slider.value = gadget.get_meta(property_name, default_value)
 	slider.value_changed.connect(func(value: float) -> void:
 		gadget.change_property(property_name, value)
-		label.text = label_prefix + str(value)
+		label.text = label_prefix + str(snappedf(value, step))
 		gadget.set_meta(property_name, value)
 	)
 	vbox.add_child(slider)
 
-	label.text = label_prefix + str(slider.value)
+	label.text = label_prefix + str(snappedf(slider.value, step))
