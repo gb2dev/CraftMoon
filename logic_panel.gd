@@ -1,6 +1,9 @@
 extends Panel
 
 
+@onready var object_properties := %"Object Properties" as ObjectProperties
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -33,4 +36,4 @@ func _on_gui_input(event: InputEvent) -> void:
 func _on_visibility_changed() -> void:
 	if get_parent().visible:
 		for gadget: Gadget in get_children():
-			gadget.visible = get_parent().object == gadget.node_3d.get_parent()
+			gadget.visible = object_properties.object == gadget.node_3d.get_parent()

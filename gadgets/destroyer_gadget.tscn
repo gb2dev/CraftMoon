@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=4 uid="uid://bveeg0yuju7de"]
+
+[ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_6y5nv"]
+[ext_resource type="Script" path="res://gadgets/destroyer_gadget.gd" id="2_h3msj"]
+
+[node name="DestroyerGadget" instance=ExtResource("1_6y5nv")]
+script = ExtResource("2_h3msj")

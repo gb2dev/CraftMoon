@@ -1,10 +1,12 @@
-[gd_scene load_steps=27 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=36 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
+[ext_resource type="Texture2D" uid="uid://cliaiig1uhis4" path="res://icons/crosshair.svg" id="3_ipjr0"]
 [ext_resource type="Script" path="res://object_properties.gd" id="3_tt4lx"]
 [ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://item.tscn" id="4_4ckle"]
 [ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
+[ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="5_8uss7"]
 [ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="6_alnoj"]
 [ext_resource type="Script" path="res://logic_panel.gd" id="6_gu4mb"]
 [ext_resource type="Resource" uid="uid://caec04as55inh" path="res://gadgets/audio_gadget.tres" id="7_hq56j"]
@@ -18,9 +20,16 @@
 [ext_resource type="Resource" uid="uid://bwt7c3pq2r3ck" path="res://gadgets/counter_gadget.tres" id="13_0jkaf"]
 [ext_resource type="PackedScene" uid="uid://b0076wtaytvt8" path="res://gadgets/counter_gadget.tscn" id="14_dehu2"]
 [ext_resource type="Resource" uid="uid://cjibdh73f81ei" path="res://gadgets/mover_gadget.tres" id="14_hfbkh"]
+[ext_resource type="PackedScene" uid="uid://bveeg0yuju7de" path="res://gadgets/destroyer_gadget.tscn" id="14_urjv6"]
+[ext_resource type="Resource" uid="uid://bqmk6je8y6j4s" path="res://gadgets/destroyer_gadget.tres" id="15_x87ok"]
 [ext_resource type="PackedScene" uid="uid://52rwqsmbiy8c" path="res://gadgets/mover_gadget.tscn" id="16_f2ou7"]
+[ext_resource type="Resource" uid="uid://cq3b402dh2ku6" path="res://gadgets/randomizer_gadget.tres" id="16_qcibn"]
+[ext_resource type="PackedScene" uid="uid://clpfjgijn4b0k" path="res://gadgets/randomizer_gadget.tscn" id="16_ql82x"]
 [ext_resource type="PackedScene" uid="uid://b8saypygfl3cx" path="res://gadgets/look_at_rotator_gadget.tscn" id="18_oedu1"]
 [ext_resource type="Resource" uid="uid://dtx7johfsvrx7" path="res://gadgets/look_at_rotator_gadget.tres" id="19_eaoe2"]
+[ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="22_6glbq"]
+[ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="22_a247p"]
+[ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -40,10 +49,7 @@ emission_enabled = true
 emission = Color(0, 0.733333, 0.733333, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bn4ce"]
-content_margin_left = 10.0
 content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
 draw_center = false
 
 [node name="Player" type="CharacterBody3D"]
@@ -64,51 +70,48 @@ target_position = Vector3(0, 0, -5)
 script = ExtResource("2_346j3")
 material = SubResource("StandardMaterial3D_odc42")
 
-[node name="Crosshair" type="ColorRect" parent="Pivot/Camera3D/Editor"]
+[node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -2.5
-offset_top = -2.5
-offset_right = 2.5
-offset_bottom = 2.5
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 mouse_filter = 2
-color = Color(0, 0, 0, 1)
+texture = ExtResource("3_ipjr0")
 
 [node name="Cursor" type="MeshInstance3D" parent="Pivot/Camera3D/Editor"]
 visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="CloseButton" type="Button" parent="."]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -50.0
-offset_top = 10.0
-offset_bottom = 41.0
-grow_horizontal = 0
-text = "Close"
-
 [node name="Object Properties" type="Control" parent="." groups=["UI"]]
 unique_name_in_owner = true
+visible = false
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
 offset_top = 10.0
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_tt4lx")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
-layout_mode = 2
-offset_right = 1152.0
-offset_bottom = 638.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bn4ce")
@@ -149,10 +152,12 @@ theme_override_constants/separation = 10
 [node name="Label" type="Label" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Gadgets"
+label_settings = ExtResource("5_8uss7")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+tab_alignment = 1
 current_tab = 0
 
 [node name="Sensors" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
@@ -202,6 +207,13 @@ tooltip_text = "Audio Gadget"
 item = ExtResource("6_alnoj")
 item_data = ExtResource("7_hq56j")
 
+[node name="DestroyerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" instance=ExtResource("4_4ckle")]
+auto_translate_mode = 1
+layout_mode = 2
+tooltip_text = "Destroyer Gadget"
+item = ExtResource("14_urjv6")
+item_data = ExtResource("15_x87ok")
+
 [node name="Logic" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
@@ -228,6 +240,20 @@ layout_mode = 2
 tooltip_text = "Counter Gadget"
 item = ExtResource("14_dehu2")
 item_data = ExtResource("13_0jkaf")
+
+[node name="RandomizerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+auto_translate_mode = 1
+layout_mode = 2
+tooltip_text = "Randomizer Gadget"
+item = ExtResource("16_ql82x")
+item_data = ExtResource("16_qcibn")
+
+[node name="NotGateGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+auto_translate_mode = 1
+layout_mode = 2
+tooltip_text = "Not Gate Gadget"
+item = ExtResource("22_a247p")
+item_data = ExtResource("23_oywyv")
 
 [node name="Movement" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
@@ -284,6 +310,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("6_gu4mb")
 
+[node name="CloseButton" type="Button" parent="Object Properties"]
+layout_mode = 1
+offset_right = 32.0
+offset_bottom = 32.0
+tooltip_text = "Close (Escape)"
+icon = ExtResource("22_6glbq")
+
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]
+[connection signal="pressed" from="Object Properties/CloseButton" to="Object Properties" method="close"]

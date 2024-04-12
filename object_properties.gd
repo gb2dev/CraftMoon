@@ -15,7 +15,24 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if visible and Input.is_action_just_pressed(&"ui_cancel") and not get_tree().get_first_node_in_group(&"Dragging"):
+	if visible and Input.is_action_just_pressed(&"ui_cancel"):
+		close()
+
+
+func toggle(o: PhysicsBody3D):
+	if o:
+		object = o
+		if not o.tree_exiting.is_connected(close_on_free):
+			o.tree_exiting.connect(close_on_free)
+		visible = not visible
+		if visible:
+			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+		else:
+			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+
+
+func close() -> void:
+	if not get_tree().get_first_node_in_group(&"Dragging"):
 		if gadget_properties.visible:
 			gadget_properties.visible = false
 			gadget_properties.gadget_changed.emit()
@@ -24,11 +41,5 @@ func _process(delta: float) -> void:
 			toggle(object)
 
 
-func toggle(o: PhysicsBody3D):
-	if o:
-		object = o
-		visible = not visible
-		if visible:
-			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-		else:
-			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+func close_on_free() -> void:
+	toggle(object)

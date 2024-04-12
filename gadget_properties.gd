@@ -5,6 +5,7 @@ extends Panel
 signal gadget_changed
 
 const SOUND_SELECT = preload("res://sound_select.tscn")
+const TITLE_LABEL_SETTINGS = preload("res://title_label_settings.tres")
 
 @onready var vbox := $MarginContainer/VBoxContainer as VBoxContainer
 
@@ -26,6 +27,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 	visible = true
 
 	var label := Label.new()
+	label.label_settings = TITLE_LABEL_SETTINGS
 	label.text = tr(type)
 	vbox.add_child(label)
 
@@ -123,7 +125,11 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 			add_slider("Wait time: ", &"WaitTime", 1, 0.1, 60, 0.1, gadget)
 		&"Counter Gadget":
-			add_slider("Target count: ", &"TargetCount", 1, 1, 100, 1, gadget)
+			var current := add_slider("Current count: ", &"CurrentCount", 0, 0, 1, 1, gadget)
+			var target := add_slider("Target count: ", &"TargetCount", 1, 1, 100, 1, gadget)
+			target.value_changed.connect(func(value: float) -> void:
+				current.max_value = value
+			)
 		&"Mover Gadget":
 			add_slider("Movement direction X: ", &"MovementDirectionX", 0, -100, 100, 0.1, gadget)
 			add_slider("Movement direction Y: ", &"MovementDirectionY", 0, -100, 100, 0.1, gadget)
@@ -136,7 +142,7 @@ func add_slider(label_prefix: String,
 				min_value: float,
 				max_value: float,
 				step: float,
-				gadget: Gadget) -> void:
+				gadget: Gadget) -> Slider:
 	var label := Label.new()
 	vbox.add_child(label)
 
@@ -153,3 +159,5 @@ func add_slider(label_prefix: String,
 	vbox.add_child(slider)
 
 	label.text = label_prefix + str(snappedf(slider.value, step))
+
+	return slider

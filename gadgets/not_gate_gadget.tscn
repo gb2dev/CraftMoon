@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=4 uid="uid://d2o5jxi0c85j7"]
+
+[ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_8fhs5"]
+[ext_resource type="Script" path="res://gadgets/not_gate_gadget.gd" id="2_da30a"]
+
+[node name="NotGateGadget" instance=ExtResource("1_8fhs5")]
+script = ExtResource("2_da30a")
+
+[node name="OutputControl0" parent="OutputControls" index="0"]
+tooltip_text = "Inverted Power"

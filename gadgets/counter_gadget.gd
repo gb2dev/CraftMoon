@@ -33,6 +33,12 @@ func _ready() -> void:
 
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
+		&"CurrentCount":
+			current_count = value
+			bar.value = current_count
+
+			if current_count == target_count:
+				output(0, is_input_data_powered(0, false))
 		&"TargetCount":
 			current_count = min(current_count, value)
 			target_count = value

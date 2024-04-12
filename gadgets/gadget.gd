@@ -15,7 +15,7 @@ enum ConnectionChange {
 @onready var input_controls := $InputControls.get_children()
 @onready var output_controls := $OutputControls.get_children().map(put_in_array)
 @onready var output_visuals := $OutputVisuals.get_children().map(put_in_array)
-@onready var node_3d := $"3D"
+@onready var node_3d := $"3D" as Node3D
 
 var just_dragged_output := false
 
@@ -99,7 +99,8 @@ func _process(delta: float) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
-		node_3d.queue_free()
+		if is_instance_valid(node_3d):
+			node_3d.queue_free()
 		for output_index in output_controls.size():
 			for output_control: OutputControl in output_controls[output_index]:
 				var output_visual := output_visuals[output_index][

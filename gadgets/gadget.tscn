@@ -1,9 +1,22 @@
-[gd_scene load_steps=5 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=6 format=4 uid="uid://gwjjy0frd8kj"]
 
 [ext_resource type="Script" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
 [ext_resource type="Script" path="res://input_control.gd" id="3_gd2ll"]
 [ext_resource type="Script" path="res://output_control.gd" id="3_mgsla"]
+
+[sub_resource type="GDScript" id="GDScript_8cspe"]
+script/source = "extends Node3D
+
+
+@onready var parent := get_parent()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
+		if is_instance_valid(parent):
+			parent.queue_free()
+"
 
 [node name="Gadget" type="TextureRect" groups=["Dragging"]]
 offset_right = 64.0
@@ -57,5 +70,6 @@ offset_bottom = 8.0
 script = ExtResource("3_mgsla")
 
 [node name="3D" type="Node3D" parent="."]
+script = SubResource("GDScript_8cspe")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

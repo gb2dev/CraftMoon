@@ -29,6 +29,7 @@ import/blender/enabled=false
 
 [gui]
 
+theme/custom_font="res://fonts/dinish.otf"
 timers/tooltip_delay_sec=0.1
 
 [input]
@@ -118,3 +119,7 @@ properties={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[rendering]
+
+anti_aliasing/quality/screen_space_aa=1

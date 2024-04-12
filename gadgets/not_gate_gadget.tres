@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://tabgp4v1imc4"]
+
+[ext_resource type="Texture2D" uid="uid://bxuuyhwak4bdw" path="res://icons/not_gate_gadget.svg" id="1_7bd4w"]
+[ext_resource type="Script" path="res://item_data.gd" id="1_164se"]
+
+[resource]
+script = ExtResource("1_164se")
+name = "Not Gate Gadget"
+icon = ExtResource("1_7bd4w")
