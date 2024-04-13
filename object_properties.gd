@@ -33,15 +33,21 @@ func toggle(o: PhysicsBody3D):
 
 
 func close() -> void:
-	if not get_tree().get_first_node_in_group(&"Dragging"):
-		if gadget_properties.visible:
-			gadget_properties.visible = false
-			gadget_properties.gadget_changed.emit()
-			gadgets.visible = true
-			if tab_container.current_tab == 1:
-				return
+	if get_tree().get_first_node_in_group(&"Dragging"):
+		return
 
-		toggle(object)
+	var exclusive_window := get_tree().get_first_node_in_group(&"ExclusiveWindow") as Window
+	if exclusive_window and exclusive_window.visible:
+		return
+
+	if gadget_properties.visible:
+		gadget_properties.visible = false
+		gadget_properties.gadget_changed.emit()
+		gadgets.visible = true
+		if tab_container.current_tab == 1:
+			return
+
+	toggle(object)
 
 
 func close_on_free() -> void:

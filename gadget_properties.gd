@@ -40,7 +40,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 			var select_sound_label := Label.new()
 			select_sound_label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
-			select_sound_label.text = selected_sound_prefix + gadget.get_meta(&"Sound", "None")
+			select_sound_label.text = selected_sound_prefix + gadget.get_meta(&"SoundName", "None")
 			vbox.add_child(select_sound_label)
 
 			var file_dialog := FileDialog.new()
@@ -52,6 +52,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 				gadget.change_property(&"Sound", path)
 				select_sound_label.text = selected_sound_prefix + path
 				gadget.set_meta(&"Sound", path)
+				gadget.set_meta(&"SoundName", path)
 			)
 			vbox.add_child(file_dialog)
 
@@ -61,10 +62,12 @@ func open(type: StringName, gadget: Gadget) -> void:
 			vbox.add_child(custom_button)
 
 			var sound_select_instance := SOUND_SELECT.instantiate() as SoundSelect
-			sound_select_instance.select_sound.connect(func(sound: String) -> void:
-				gadget.change_property(&"Sound", "res://sounds/" + sound + ".wav")
-				select_sound_label.text = selected_sound_prefix + sound
-				gadget.set_meta(&"Sound", sound)
+			sound_select_instance.select_sound.connect(
+				func(sound: String, sound_name: String) -> void:
+					gadget.change_property(&"Sound", "res://sounds/" + sound + ".wav")
+					select_sound_label.text = selected_sound_prefix + sound_name
+					gadget.set_meta(&"Sound", sound)
+					gadget.set_meta(&"SoundName", sound_name)
 			)
 			vbox.add_child(sound_select_instance)
 

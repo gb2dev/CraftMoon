@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://cbbqxuvepskn0"]
+[gd_scene load_steps=2 format=4 uid="uid://cbbqxuvepskn0"]
 
 [ext_resource type="Script" path="res://sound_select.gd" id="1_mp8fl"]
 
-[node name="Sound Select" type="Window"]
+[node name="Sound Select" type="Window" groups=["ExclusiveWindow"]]
 title = "Select Sound"
 initial_position = 2
-size = Vector2i(720, 480)
+size = Vector2i(600, 400)
 visible = false
 transient = true
 exclusive = true
@@ -19,12 +19,14 @@ offset_bottom = 431.0
 columns = 2
 
 [node name="CategoryLabel" type="Label" parent="GridContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Category"
 horizontal_alignment = 1
 
 [node name="SoundLabel" type="Label" parent="GridContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Sound"
@@ -33,9 +35,30 @@ horizontal_alignment = 1
 [node name="Categories" type="VBoxContainer" parent="GridContainer"]
 layout_mode = 2
 
-[node name="Sounds" type="VBoxContainer" parent="GridContainer"]
+[node name="Categories" type="TabContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="User Interface" type="MarginContainer" parent="Categories"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Categories/User Interface"]
 layout_mode = 2
 
-[node name="success" type="Button" parent="GridContainer/Sounds"]
+[node name="success" type="Button" parent="Categories/User Interface/VBoxContainer"]
 layout_mode = 2
 text = "Success"
+
+[node name="failure" type="Button" parent="Categories/User Interface/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Failure"
