@@ -1,1 +1,9 @@
 extends Gadget
+
+
+func _ready() -> void:
+	super._ready()
+	input_pulse.connect(func(input_index: int) -> void:
+		if is_input_data_powered(0):
+			output(0, true, false, true)
+	)

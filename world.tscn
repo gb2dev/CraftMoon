@@ -1,9 +1,9 @@
-[gd_scene load_steps=14 format=4 uid="uid://vl04tjighggu"]
+[gd_scene load_steps=12 format=4 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
 [ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
-[ext_resource type="Texture2D" uid="uid://0x4lekoiwfoy" path="res://textures/checkerboard/dark/texture.png" id="2_25e72"]
-[ext_resource type="Texture2D" uid="uid://c7jhy6vtfh6dr" path="res://textures/checkerboard/orange/texture.png" id="3_g16g7"]
+[ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="2_htbds"]
+[ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="3_fph1l"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mi6cl"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -29,18 +29,10 @@ volumetric_fog_density = 0.0
 [sub_resource type="BoxMesh" id="BoxMesh_t3tsx"]
 size = Vector3(100, 1, 100)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yx8r3"]
-albedo_texture = ExtResource("2_25e72")
-uv1_triplanar = true
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_ckddd"]
 size = Vector3(100, 1, 100)
 
 [sub_resource type="BoxMesh" id="BoxMesh_y0j51"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dhb1b"]
-albedo_texture = ExtResource("3_g16g7")
-uv1_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5pcox"]
 
@@ -60,18 +52,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
 mesh = SubResource("BoxMesh_t3tsx")
-surface_material_override/0 = SubResource("StandardMaterial3D_yx8r3")
+surface_material_override/0 = ExtResource("2_htbds")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("BoxShape3D_ckddd")
 
 [node name="Box" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.5, -2.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.5, -2.5)
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Box"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
 mesh = SubResource("BoxMesh_y0j51")
-surface_material_override/0 = SubResource("StandardMaterial3D_dhb1b")
+surface_material_override/0 = ExtResource("3_fph1l")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
 shape = SubResource("BoxShape3D_5pcox")

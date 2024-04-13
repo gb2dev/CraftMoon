@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
 [ext_resource type="Texture2D" uid="uid://cliaiig1uhis4" path="res://icons/crosshair.svg" id="3_ipjr0"]
+[ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="3_qrqeb"]
 [ext_resource type="Script" path="res://object_properties.gd" id="3_tt4lx"]
 [ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://item.tscn" id="4_4ckle"]
 [ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
@@ -34,10 +35,6 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_odc42"]
-cull_mode = 2
-albedo_color = Color(0.647059, 0, 0, 1)
-
 [sub_resource type="SphereMesh" id="SphereMesh_i3lu0"]
 radius = 0.025
 height = 0.05
@@ -68,7 +65,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 [node name="Editor" type="RayCast3D" parent="Pivot/Camera3D"]
 target_position = Vector3(0, 0, -5)
 script = ExtResource("2_346j3")
-material = SubResource("StandardMaterial3D_odc42")
+material = ExtResource("3_qrqeb")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 anchors_preset = 8

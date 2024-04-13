@@ -5,6 +5,7 @@ extends Gadget
 
 var current_count := 0:
 	set(value):
+		set_meta(&"CurrentCount", value)
 		property_update.emit(value)
 		current_count = value
 var target_count := 1

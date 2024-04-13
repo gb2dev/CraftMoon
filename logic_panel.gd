@@ -36,4 +36,7 @@ func _on_gui_input(event: InputEvent) -> void:
 func _on_visibility_changed() -> void:
 	if get_parent().visible:
 		for gadget: Gadget in get_children():
-			gadget.visible = object_properties.object == gadget.node_3d.get_parent()
+			if object_properties.object.get_parent() is VisualInstance3D:
+				gadget.visible = object_properties.object.get_parent() == gadget.node_3d.get_parent()
+			else:
+				gadget.visible = object_properties.object == gadget.node_3d.get_parent()

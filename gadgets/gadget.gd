@@ -19,6 +19,7 @@ enum ConnectionChange {
 @onready var node_3d := $"3D" as Node3D
 
 var just_dragged_output := false
+var random_output_controls: Array
 
 
 # Called when the node enters the scene tree for the first time.
@@ -149,11 +150,20 @@ func input(_delta: float) -> void:
 	pass
 
 
-func output(output_index: int, data: Variant, pulse := false) -> void:
+func output(output_index: int, data: Variant, pulse := false, random := false) -> void:
 	for output_control: OutputControl in output_controls[output_index]:
-		output_control.data = data
+		output_control.data = data and not random
 		if pulse and data != null:
 			output_control.set_deferred(&"data", false)
+
+	if random:
+		if random_output_controls.is_empty():
+			random_output_controls = output_controls[output_index].duplicate()
+			random_output_controls.resize(random_output_controls.size() - 1)
+			random_output_controls.shuffle()
+
+		if not random_output_controls.is_empty():
+			random_output_controls.pop_back().data = data
 
 
 func change_property(_property: StringName, _value: Variant) -> void:
@@ -281,7 +291,11 @@ func input_data_changed(input_index: int) -> void:
 
 func attach_to_object(o: PhysicsBody3D) -> void:
 	remove_child(node_3d)
-	o.add_child(node_3d)
+	if o.get_parent() is VisualInstance3D:
+		o.get_parent().add_child(node_3d)
+		node_3d.position = o.get_parent().get_aabb().get_center()
+	else:
+		o.add_child(node_3d)
 
 
 func set_icon(t: Texture2D) -> void:

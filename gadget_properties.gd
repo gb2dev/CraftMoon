@@ -125,13 +125,26 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 			add_slider("Wait time: ", &"WaitTime", 1, 0.1, 60, 0.1, gadget)
 		&"Counter Gadget":
-			var current := add_slider("Current count: ", &"CurrentCount", 0, 0, 1, 1, gadget)
+			var current := add_slider(
+				"Current count: ",
+				&"CurrentCount",
+				0,
+				0,
+				gadget.get_meta(&"TargetCount", 1),
+				1,
+				gadget
+			)
 			var target := add_slider("Target count: ", &"TargetCount", 1, 1, 100, 1, gadget)
 			target.value_changed.connect(func(value: float) -> void:
 				current.max_value = value
 			)
-			gadget.property_update.connect(func(value: float) -> void:
-				current.value = value
+			var update_value := func(value: float) -> void:
+				if current:
+					current.value = value
+			gadget.property_update.connect(update_value)
+			gadget_changed.connect(
+				gadget.property_update.disconnect.bind(update_value),
+				Object.CONNECT_ONE_SHOT
 			)
 		&"Mover Gadget":
 			add_slider("Movement direction X: ", &"MovementDirectionX", 0, -100, 100, 0.1, gadget)
