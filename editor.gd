@@ -1,6 +1,8 @@
 extends RayCast3D
 
 
+const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
+
 @onready var cursor := $Cursor
 @onready var crosshair := $Crosshair
 @onready var object_properties := %"Object Properties" as ObjectProperties
@@ -8,6 +10,14 @@ extends RayCast3D
 @export var material: BaseMaterial3D
 
 var object_builder_active := false
+var highlighted_mi: MeshInstance3D:
+	set(value):
+		if highlighted_mi != value:
+			if highlighted_mi:
+				highlighted_mi.material_overlay = null
+			if value:
+				value.material_overlay = HIGHLIGHT_MATERIAL
+			highlighted_mi = value
 var cursor_distance := -2.5
 var vertices: Array[Vector3]
 var st: SurfaceTool
@@ -45,6 +55,16 @@ func _process(_delta: float) -> void:
 		target_position.z = -2.5 if object_builder_active else -5
 
 	if not object_builder_active:
+		for control: Control in get_tree().get_nodes_in_group(&"UI"):
+			if control.visible:
+				return
+
+		if get_collider():
+			if get_collider().get_child(0) is MeshInstance3D:
+				highlighted_mi = get_collider().get_child(0)
+				return
+		highlighted_mi = null
+
 		return
 
 

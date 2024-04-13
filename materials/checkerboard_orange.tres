@@ -3,7 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://c7jhy6vtfh6dr" path="res://textures/checkerboard/orange/texture.png" id="1_j70un"]
 
 [resource]
-cull_mode = 2
-shading_mode = 0
 albedo_texture = ExtResource("1_j70un")
 uv1_triplanar = true

@@ -62,3 +62,8 @@ text = "Success"
 auto_translate_mode = 1
 layout_mode = 2
 text = "Failure"
+
+[node name="notification" type="Button" parent="Categories/User Interface/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Notification"

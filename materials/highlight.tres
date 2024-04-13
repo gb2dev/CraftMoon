@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=4 uid="uid://b1b3lugj0tbb0"]
+
+[ext_resource type="Shader" path="res://materials/highlight.gdshader" id="1_rf56h"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_rf56h")
