@@ -6,7 +6,7 @@ extends Control
 @onready var gadget_properties := %"Gadget Properties" as GadgetProperties
 @onready var tab_container := $TabContainer
 
-var object: PhysicsBody3D
+var object: CSGShape3D
 
 
 # Called when the node enters the scene tree for the first time.
@@ -20,7 +20,7 @@ func _process(delta: float) -> void:
 		close()
 
 
-func toggle(o: PhysicsBody3D):
+func toggle(o: CSGShape3D):
 	if o:
 		object = o
 		if not o.tree_exiting.is_connected(close_on_free):
@@ -53,3 +53,8 @@ func close() -> void:
 func close_on_free() -> void:
 	if visible:
 		toggle(object)
+
+
+
+func _on_collision_check_box_toggled(toggled_on: bool) -> void:
+	object.use_collision = toggled_on

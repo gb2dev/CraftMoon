@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://crqxykfy7df4q"]
+[gd_scene load_steps=2 format=4 uid="uid://crqxykfy7df4q"]
 
-[ext_resource type="Script" path="res://item.gd" id="2_xj85w"]
+[ext_resource type="Script" path="res://gadget_item.gd" id="2_xj85w"]
 
 [node name="Item" type="TextureRect"]
 custom_minimum_size = Vector2(64, 64)

@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=4 uid="uid://r57cg16q4rki"]
+
+[ext_resource type="ButtonGroup" uid="uid://bq757s60eitwd" path="res://material_button_group.tres" id="1_4dgrl"]
+[ext_resource type="Script" path="res://material_item.gd" id="1_vd4rs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eekc2"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.113725, 0.607843, 0.533333, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="MaterialItem" type="Button"]
+custom_minimum_size = Vector2(64, 64)
+theme_override_styles/pressed = SubResource("StyleBoxFlat_eekc2")
+toggle_mode = true
+button_group = ExtResource("1_4dgrl")
+expand_icon = true
+script = ExtResource("1_vd4rs")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

@@ -289,7 +289,7 @@ func input_data_changed(input_index: int) -> void:
 	input_pulse.emit(input_index)
 
 
-func attach_to_object(o: PhysicsBody3D) -> void:
+func attach_to_object(o: Node3D) -> void:
 	remove_child(node_3d)
 	if o.get_parent() is VisualInstance3D:
 		o.get_parent().add_child(node_3d)

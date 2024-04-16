@@ -1,20 +1,24 @@
-[gd_scene load_steps=38 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=46 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
 [ext_resource type="Texture2D" uid="uid://cliaiig1uhis4" path="res://icons/crosshair.svg" id="3_ipjr0"]
 [ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="3_qrqeb"]
 [ext_resource type="Script" path="res://object_properties.gd" id="3_tt4lx"]
-[ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://item.tscn" id="4_4ckle"]
+[ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://gadget_item.tscn" id="4_4ckle"]
 [ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
 [ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="5_8uss7"]
 [ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="6_alnoj"]
 [ext_resource type="Script" path="res://logic_panel.gd" id="6_gu4mb"]
+[ext_resource type="PackedScene" uid="uid://r57cg16q4rki" path="res://material_item.tscn" id="7_8516d"]
 [ext_resource type="Resource" uid="uid://caec04as55inh" path="res://gadgets/audio_gadget.tres" id="7_hq56j"]
 [ext_resource type="PackedScene" uid="uid://dl21ovk7gcqja" path="res://gadgets/trigger_zone_gadget.tscn" id="8_i3oyc"]
+[ext_resource type="Texture2D" uid="uid://c7jhy6vtfh6dr" path="res://textures/checkerboard/orange/texture.png" id="8_pkph7"]
 [ext_resource type="Script" path="res://gadget_properties.gd" id="8_saenl"]
+[ext_resource type="Material" uid="uid://dqfagp1m6bcop" path="res://materials/bricks/bricks.tres" id="8_swd8g"]
 [ext_resource type="Resource" uid="uid://bxtyxckfkon5w" path="res://gadgets/trigger_zone_gadget.tres" id="9_odca5"]
 [ext_resource type="PackedScene" uid="uid://c2bf7nocvxdpt" path="res://gadgets/look_sensor_gadget.tscn" id="10_p8hru"]
+[ext_resource type="Script" path="res://item_data.gd" id="10_vwbuf"]
 [ext_resource type="Resource" uid="uid://coynjbvda5rxv" path="res://gadgets/look_sensor_gadget.tres" id="11_2hcwe"]
 [ext_resource type="PackedScene" uid="uid://b58iek08ffik4" path="res://gadgets/timer_gadget.tscn" id="12_aol6q"]
 [ext_resource type="Resource" uid="uid://b0jic3u3x4twu" path="res://gadgets/timer_gadget.tres" id="12_q2k8v"]
@@ -31,6 +35,7 @@
 [ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="22_6glbq"]
 [ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="22_a247p"]
 [ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
+[ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="32_v4hxm"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -51,6 +56,31 @@ emission = Color(0, 0.733333, 0.733333, 1)
 content_margin_top = 10.0
 draw_center = false
 
+[sub_resource type="Resource" id="Resource_xgfgq"]
+script = ExtResource("10_vwbuf")
+name = "Bricks"
+icon = ExtResource("32_v4hxm")
+
+[sub_resource type="Resource" id="Resource_2wruj"]
+script = ExtResource("10_vwbuf")
+name = "Checkerboard"
+icon = ExtResource("8_pkph7")
+
+[sub_resource type="GDScript" id="GDScript_wy2up"]
+script/source = "extends Label
+
+
+@onready var slider := $\"../GravitySlider\" as Slider
+
+
+func _ready() -> void:
+	_on_h_slider_value_changed(slider.value)
+
+
+func _on_h_slider_value_changed(value: float) -> void:
+	text = \"Gravity: \" + str(snappedf(value, slider.step))
+"
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2utn1"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -69,6 +99,7 @@ shape = SubResource("BoxShape3D_1njnr")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
 mesh = SubResource("CapsuleMesh_hjorb")
 
 [node name="Pivot" type="Node3D" parent="."]
@@ -127,14 +158,86 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bn4ce")
 tab_alignment = 1
-current_tab = 1
+current_tab = 0
 
 [node name="Object Properties" type="Control" parent="Object Properties/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
+[node name="Panel" type="Panel" parent="Object Properties/TabContainer/Object Properties"]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 326.0
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Object Properties/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Material" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material"]
+layout_mode = 2
+text = "Material"
+label_settings = ExtResource("5_8uss7")
+
+[node name="GridContainer" type="GridContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material"]
+layout_mode = 2
+columns = 10
+
+[node name="BricksMaterialItem" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+button_pressed = true
+item = ExtResource("8_swd8g")
+item_data = SubResource("Resource_xgfgq")
+object_properties = NodePath("../../../../../../../..")
+
+[node name="CheckerboardMaterialItem" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("3_qrqeb")
+item_data = SubResource("Resource_2wruj")
+object_properties = NodePath("../../../../../../../..")
+
+[node name="Physics" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="PhysicsLabel" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+layout_mode = 2
+text = "Physics"
+label_settings = ExtResource("5_8uss7")
+
+[node name="CollisionCheckBox" type="CheckBox" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+layout_mode = 2
+button_pressed = true
+text = "Collision"
+
+[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+layout_mode = 2
+script = SubResource("GDScript_wy2up")
+
+[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+layout_mode = 2
+min_value = -50.0
+max_value = 50.0
+step = 0.1
+value = 9.8
+
 [node name="Logic" type="HBoxContainer" parent="Object Properties/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -331,6 +434,8 @@ icon = ExtResource("22_6glbq")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_2utn1")
 
+[connection signal="toggled" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
+[connection signal="value_changed" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravitySlider" to="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravityLabel" method="_on_h_slider_value_changed"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]

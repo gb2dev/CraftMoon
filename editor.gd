@@ -10,14 +10,14 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 @export var material: BaseMaterial3D
 
 var object_builder_active := false
-var highlighted_mi: MeshInstance3D:
+var highlighted_geometry: GeometryInstance3D:
 	set(value):
-		if highlighted_mi != value:
-			if highlighted_mi:
-				highlighted_mi.material_overlay = null
+		if highlighted_geometry != value:
+			if highlighted_geometry:
+				highlighted_geometry.material_overlay = null
 			if value:
 				value.material_overlay = HIGHLIGHT_MATERIAL
-			highlighted_mi = value
+			highlighted_geometry = value
 var cursor_distance := -2.5
 var vertices: Array[Vector3]
 var st: SurfaceTool
@@ -38,14 +38,6 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"properties"):
-		for control: Control in get_tree().get_nodes_in_group(&"UI"):
-			if control.visible:
-				return
-
-		object_properties.toggle(get_collider())
-
-
 	# Object Builder Toggle
 
 	if Input.is_action_just_pressed(&"object_builder"):
@@ -53,17 +45,26 @@ func _process(_delta: float) -> void:
 		cursor.visible = object_builder_active
 		crosshair.visible = not object_builder_active
 		target_position.z = -2.5 if object_builder_active else -5
+		highlighted_geometry = null
 
 	if not object_builder_active:
+		if Input.is_action_just_pressed(&"properties"):
+			for control: Control in get_tree().get_nodes_in_group(&"UI"):
+				if control.visible:
+					return
+
+			if get_collider() is CSGShape3D:
+				object_properties.toggle(get_collider())
+
 		for control: Control in get_tree().get_nodes_in_group(&"UI"):
 			if control.visible:
 				return
 
 		if get_collider():
-			if get_collider().get_child(0) is MeshInstance3D:
-				highlighted_mi = get_collider().get_child(0)
+			if get_collider() is CSGShape3D:
+				highlighted_geometry = get_collider()
 				return
-		highlighted_mi = null
+		highlighted_geometry = null
 
 		return
 
