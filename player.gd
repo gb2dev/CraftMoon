@@ -19,7 +19,19 @@ var doubletap_time = DOUBLETAP_DELAY
 var last_keycode = 0
 
 
+
+func _enter_tree() -> void:
+	set_multiplayer_authority(name.to_int())
+
+
+func _ready() -> void:
+	camera.current = is_multiplayer_authority()
+
+
 func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		return
+
 	doubletap_time -= delta
 
 	# Add the gravity.
@@ -51,6 +63,9 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not is_multiplayer_authority():
+		return
+
 	var mouse_motion := event as InputEventMouseMotion
 	if mouse_motion and DisplayServer.mouse_get_mode() == DisplayServer.MOUSE_MODE_CAPTURED:
 		pivot.rotate_y(-mouse_motion.relative.x * MOUSE_SENSITIVITY)

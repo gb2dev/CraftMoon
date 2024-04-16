@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=38 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -35,6 +35,8 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_hjorb"]
+
 [sub_resource type="SphereMesh" id="SphereMesh_i3lu0"]
 radius = 0.025
 height = 0.05
@@ -49,6 +51,14 @@ emission = Color(0, 0.733333, 0.733333, 1)
 content_margin_top = 10.0
 draw_center = false
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2utn1"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Pivot/Camera3D:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 script = ExtResource("1_4qesr")
@@ -56,6 +66,10 @@ script = ExtResource("1_4qesr")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_1njnr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_hjorb")
 
 [node name="Pivot" type="Node3D" parent="."]
 
@@ -313,6 +327,9 @@ offset_right = 32.0
 offset_bottom = 32.0
 tooltip_text = "Close (Escape)"
 icon = ExtResource("22_6glbq")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_2utn1")
 
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]

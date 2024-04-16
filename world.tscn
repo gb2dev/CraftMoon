@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=4 uid="uid://vl04tjighggu"]
+[gd_scene load_steps=13 format=4 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
 [ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="2_htbds"]
 [ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="3_fph1l"]
+[ext_resource type="Script" path="res://menu.gd" id="5_r4y2q"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mi6cl"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -68,4 +69,18 @@ surface_material_override/0 = ExtResource("3_fph1l")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
 shape = SubResource("BoxShape3D_5pcox")
 
-[node name="Player" parent="." instance=ExtResource("1_8ftwq")]
+[node name="Menu" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_r4y2q")
+player_scene = ExtResource("1_8ftwq")
+
+[node name="JoinButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Join"
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://player.tscn")
+spawn_path = NodePath("..")
+
+[connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]
