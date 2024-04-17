@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://bqmk6je8y6j4s"]
 
-[ext_resource type="Texture2D" uid="uid://bo54qavhlyk31" path="res://icons/destroyer_gadget.svg" id="1_20eli"]
+[ext_resource type="Texture2D" uid="uid://bo54qavhlyk31" path="res://icons/gadgets/destroyer_gadget.svg" id="1_20eli"]
 [ext_resource type="Script" path="res://item_data.gd" id="1_eiwjm"]
 
 [resource]

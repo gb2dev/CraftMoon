@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://caec04as55inh"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://caec04as55inh"]
 
-[ext_resource type="Texture2D" uid="uid://btanjr213wn5h" path="res://icons/audio_gadget.svg" id="1_klg2i"]
+[ext_resource type="Texture2D" uid="uid://btanjr213wn5h" path="res://icons/gadgets/audio_gadget.svg" id="1_klg2i"]
 [ext_resource type="Script" path="res://item_data.gd" id="1_lncyy"]
 
 [resource]

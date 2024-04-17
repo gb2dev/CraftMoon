@@ -70,7 +70,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if mouse_motion and DisplayServer.mouse_get_mode() == DisplayServer.MOUSE_MODE_CAPTURED:
 		pivot.rotate_y(-mouse_motion.relative.x * MOUSE_SENSITIVITY)
 		camera.rotate_x(-mouse_motion.relative.y * MOUSE_SENSITIVITY)
-		camera.rotation.x = clampf(camera.global_rotation.x, deg_to_rad(-180), deg_to_rad(360))
+		camera.rotation.x = clampf(camera.rotation.x, -PI / 2, PI / 2)
 
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		if last_keycode == event.keycode and doubletap_time >= 0: 

@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=4 uid="uid://nvpidlfc70k1"]
+
+[ext_resource type="Script" path="res://input_prompt.gd" id="1_wyslp"]
+
+[node name="InputPrompt" type="HBoxContainer"]
+theme_override_constants/separation = 0
+script = ExtResource("1_wyslp")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2

@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=47 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="22_a247p"]
 [ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
 [ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="32_v4hxm"]
+[ext_resource type="PackedScene" uid="uid://nvpidlfc70k1" path="res://input_prompt.tscn" id="37_l81ie"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -433,6 +434,42 @@ icon = ExtResource("22_6glbq")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_2utn1")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -52.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Control" type="Control" parent="Panel/HBoxContainer"]
+layout_mode = 2
+
+[node name="PropertiesInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
+layout_mode = 2
+action = &"properties"
+
+[node name="ObjectBuilderInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
+layout_mode = 2
+action = &"object_builder"
+
+[node name="UICancelInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
+layout_mode = 2
+action = &"ui_cancel"
 
 [connection signal="toggled" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
 [connection signal="value_changed" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravitySlider" to="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravityLabel" method="_on_h_slider_value_changed"]

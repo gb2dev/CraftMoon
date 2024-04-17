@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://coynjbvda5rxv"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://coynjbvda5rxv"]
 
 [ext_resource type="Script" path="res://item_data.gd" id="1_blxcq"]
-[ext_resource type="Texture2D" uid="uid://dkv8546mfqm0n" path="res://icons/look_sensor_gadget.svg" id="1_fkea8"]
+[ext_resource type="Texture2D" uid="uid://dkv8546mfqm0n" path="res://icons/gadgets/look_sensor_gadget.svg" id="1_fkea8"]
 
 [resource]
 script = ExtResource("1_blxcq")
