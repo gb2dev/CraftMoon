@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://input_prompt.gd" id="1_wyslp"]
 
-[node name="InputPrompt" type="HBoxContainer"]
+[node name="InputPrompt" type="HBoxContainer" groups=["InputPrompt"]]
 theme_override_constants/separation = 0
 script = ExtResource("1_wyslp")
 

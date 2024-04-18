@@ -7,7 +7,7 @@ signal gadget_changed
 const SOUND_SELECT = preload("res://sound_select.tscn")
 const TITLE_LABEL_SETTINGS = preload("res://title_label_settings.tres")
 
-@onready var vbox := $MarginContainer/VBoxContainer as VBoxContainer
+@export var vbox: VBoxContainer
 
 
 # Called when the node enters the scene tree for the first time.

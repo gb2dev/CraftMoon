@@ -55,6 +55,7 @@ surface_material_override/0 = ExtResource("2_htbds")
 shape = SubResource("BoxShape3D_ckddd")
 
 [node name="Menu" type="VBoxContainer" parent="."]
+process_mode = 3
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("5_r4y2q")

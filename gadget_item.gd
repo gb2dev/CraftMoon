@@ -3,7 +3,8 @@ extends TextureRect
 
 @onready var object_properties := %"Object Properties" as ObjectProperties
 @onready var gadget_properties := %"Gadget Properties" as GadgetProperties
-@onready var gadgets := %"Gadgets"
+
+@export var gadgets_panel: GadgetsPanel
 @export var item: PackedScene
 @export var item_data: ItemData
 
@@ -30,5 +31,5 @@ func _on_gui_input(event: InputEvent) -> void:
 				gadget_properties.gadget_changed.emit()
 			)
 			gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
-			gadget.open_properties.connect(gadgets.hide)
+			gadget.open_properties.connect(gadgets_panel.hide)
 			accept_event()

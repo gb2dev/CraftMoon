@@ -17,7 +17,23 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if Input.is_action_just_pressed(&"fullscreen"):
+		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+	if Input.is_action_just_pressed(&"ui_cancel"):
+		for control: Control in get_tree().get_nodes_in_group(&"UI"):
+			if control.visible:
+				return
+
+		get_tree().paused = not get_tree().paused
+		visible = get_tree().paused
+		if get_tree().paused:
+			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+		else:
+			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
 func add_player(id := 1) -> void:

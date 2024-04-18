@@ -3,10 +3,11 @@ extends RayCast3D
 
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
-@onready var cursor := $Cursor
-@onready var crosshair := $Crosshair
 @onready var object_properties := %"Object Properties" as ObjectProperties
+@onready var input_display := %InputDisplay as InputDisplay
 
+@export var crosshair: TextureRect
+@export var cursor: Node3D
 @export var material: BaseMaterial3D
 
 var object_builder_active := false
@@ -34,6 +35,7 @@ var mouse_y_delta: float
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	new_object()
+	set_object_builder_active(false)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -41,11 +43,7 @@ func _process(_delta: float) -> void:
 	# Object Builder Toggle
 
 	if Input.is_action_just_pressed(&"object_builder"):
-		object_builder_active = not object_builder_active
-		cursor.visible = object_builder_active
-		crosshair.visible = not object_builder_active
-		target_position.z = -2.5 if object_builder_active else -5
-		highlighted_geometry = null
+		set_object_builder_active(not object_builder_active)
 
 	if not object_builder_active:
 		if Input.is_action_just_pressed(&"properties"):
@@ -63,6 +61,8 @@ func _process(_delta: float) -> void:
 		if get_collider():
 			if get_collider() is CSGShape3D:
 				highlighted_geometry = get_collider()
+				if Input.is_action_just_pressed(&"destroy"):
+					highlighted_geometry.queue_free()
 				return
 		highlighted_geometry = null
 
@@ -370,3 +370,22 @@ func new_object() -> void:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	mi = MeshInstance3D.new()
 	get_tree().current_scene.add_child.call_deferred(mi)
+
+
+func set_object_builder_active(value: bool) -> void:
+	object_builder_active = value
+	cursor.visible = object_builder_active
+	crosshair.visible = not object_builder_active
+	target_position.z = -2.5 if object_builder_active else -5
+	highlighted_geometry = null
+
+	input_display.clear_input_prompts()
+	if object_builder_active:
+		input_display.add_input_prompt(&"1", tr(&"Triangle"))
+		input_display.add_input_prompt(&"2", tr(&"Rectangle"))
+		input_display.add_input_prompt(&"3", tr(&"Cuboid"))
+	else:
+		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
+		input_display.add_input_prompt(&"object_builder")
+		input_display.add_input_prompt(&"properties")
+		input_display.add_input_prompt(&"destroy")

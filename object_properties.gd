@@ -2,9 +2,9 @@ class_name ObjectProperties
 extends Control
 
 
-@onready var gadgets := %"Gadgets"
-@onready var gadget_properties := %"Gadget Properties" as GadgetProperties
-@onready var tab_container := $TabContainer
+@export var gadgets_panel: GadgetsPanel
+@export var gadget_properties: GadgetProperties
+@export var tab_container: TabContainer
 
 var object: CSGShape3D
 
@@ -43,7 +43,7 @@ func close() -> void:
 	if gadget_properties.visible:
 		gadget_properties.visible = false
 		gadget_properties.gadget_changed.emit()
-		gadgets.visible = true
+		gadgets_panel.visible = true
 		if tab_container.current_tab == 1:
 			return
 

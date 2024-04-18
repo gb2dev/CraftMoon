@@ -7,8 +7,8 @@ const JUMP_VELOCITY = 4.5
 const MOUSE_SENSITIVITY = 0.002
 const DOUBLETAP_DELAY = 0.25
 
-@onready var pivot := $Pivot
-@onready var camera := $Pivot/Camera3D
+@export var pivot: Node3D
+@export var camera: Camera3D
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -17,7 +17,6 @@ var fly := false
 
 var doubletap_time = DOUBLETAP_DELAY
 var last_keycode = 0
-
 
 
 func _enter_tree() -> void:

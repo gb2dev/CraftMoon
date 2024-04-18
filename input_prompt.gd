@@ -1,10 +1,16 @@
+class_name InputPrompt
 extends Control
 
 
 @onready var texture_rect := $TextureRect as TextureRect
 @onready var label := $Label as Label
 
-@export var action: StringName
+@export var action: StringName:
+	set(value):
+		action = value
+		text = tr(action)
+
+var text: String
 
 
 # Called when the node enters the scene tree for the first time.
@@ -18,10 +24,10 @@ func _on_device_changed(next_device: String, index: int):
 	var input_string := InputHelper.get_label_for_input(input_event)
 	var texture_path := "res://icons/input/" + next_device + "/" + input_string + ".svg"
 	if ResourceLoader.exists(texture_path):
-		label.text = tr(action)
+		label.text = text
 		texture_rect.texture = load(texture_path)
 		texture_rect.show()
 	else:
-		label.text = "[" + input_string + "] " + tr(action)
+		label.text = "[" + input_string + "] " + text
 		texture_rect.texture = null
 		texture_rect.hide()

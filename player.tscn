@@ -36,7 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="22_a247p"]
 [ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
 [ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="32_v4hxm"]
-[ext_resource type="PackedScene" uid="uid://nvpidlfc70k1" path="res://input_prompt.tscn" id="37_l81ie"]
+[ext_resource type="Script" path="res://input_display.gd" id="37_hedid"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -90,9 +90,11 @@ properties/1/path = NodePath("Pivot/Camera3D:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("pivot", "camera")]
 collision_layer = 2
 script = ExtResource("1_4qesr")
+pivot = NodePath("Pivot")
+camera = NodePath("Pivot/Camera3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -108,9 +110,11 @@ mesh = SubResource("CapsuleMesh_hjorb")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D"]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor")]
 target_position = Vector3(0, 0, -5)
 script = ExtResource("2_346j3")
+crosshair = NodePath("Crosshair")
+cursor = NodePath("Cursor")
 material = ExtResource("3_qrqeb")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
@@ -135,7 +139,7 @@ visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="Object Properties" type="Control" parent="." groups=["UI"]]
+[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container") groups=["UI"]]
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
@@ -149,6 +153,9 @@ offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_tt4lx")
+gadgets_panel = NodePath("TabContainer/Logic/Gadgets")
+gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
+tab_container = NodePath("TabContainer")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
 layout_mode = 1
@@ -289,15 +296,17 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="TriggerZoneGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="TriggerZoneGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Trigger Zone Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("8_i3oyc")
 item_data = ExtResource("9_odca5")
 
-[node name="LookSensorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="LookSensorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Look Sensor Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("10_p8hru")
 item_data = ExtResource("11_2hcwe")
 
@@ -316,16 +325,18 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="AudioGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="AudioGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Audio Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("6_alnoj")
 item_data = ExtResource("7_hq56j")
 
-[node name="DestroyerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="DestroyerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 auto_translate_mode = 1
 layout_mode = 2
 tooltip_text = "Destroyer Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("14_urjv6")
 item_data = ExtResource("15_x87ok")
 
@@ -344,29 +355,33 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="TimerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="TimerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Timer Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("12_aol6q")
 item_data = ExtResource("12_q2k8v")
 
-[node name="CounterGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="CounterGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Counter Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("14_dehu2")
 item_data = ExtResource("13_0jkaf")
 
-[node name="RandomizerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="RandomizerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 auto_translate_mode = 1
 layout_mode = 2
 tooltip_text = "Randomizer Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("16_ql82x")
 item_data = ExtResource("16_qcibn")
 
-[node name="NotGateGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="NotGateGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 auto_translate_mode = 1
 layout_mode = 2
 tooltip_text = "Not Gate Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("22_a247p")
 item_data = ExtResource("23_oywyv")
 
@@ -385,25 +400,28 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="MoverGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="MoverGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 layout_mode = 2
 tooltip_text = "Mover Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("16_f2ou7")
 item_data = ExtResource("14_hfbkh")
 
-[node name="LookAtRotatorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" instance=ExtResource("4_4ckle")]
+[node name="LookAtRotatorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("4_4ckle")]
 auto_translate_mode = 1
 layout_mode = 2
 tooltip_text = "Look At Rotator Gadget"
+gadgets_panel = NodePath("../../../../../..")
 item = ExtResource("18_oedu1")
 item_data = ExtResource("19_eaoe2")
 
-[node name="Gadget Properties" type="Panel" parent="Object Properties/TabContainer/Logic"]
+[node name="Gadget Properties" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("vbox")]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
 script = ExtResource("8_saenl")
+vbox = NodePath("MarginContainer/VBoxContainer")
 
 [node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadget Properties"]
 layout_mode = 1
@@ -435,7 +453,8 @@ icon = ExtResource("22_6glbq")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_2utn1")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="InputDisplay" type="Panel" parent="." node_paths=PackedStringArray("hbox")]
+unique_name_in_owner = true
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
@@ -446,8 +465,10 @@ offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("37_hedid")
+hbox = NodePath("HBoxContainer")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -456,20 +477,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
 
-[node name="Control" type="Control" parent="Panel/HBoxContainer"]
+[node name="Control" type="Control" parent="InputDisplay/HBoxContainer"]
 layout_mode = 2
-
-[node name="PropertiesInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
-layout_mode = 2
-action = &"properties"
-
-[node name="ObjectBuilderInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
-layout_mode = 2
-action = &"object_builder"
-
-[node name="UICancelInputPrompt" parent="Panel/HBoxContainer" instance=ExtResource("37_l81ie")]
-layout_mode = 2
-action = &"ui_cancel"
 
 [connection signal="toggled" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
 [connection signal="value_changed" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravitySlider" to="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravityLabel" method="_on_h_slider_value_changed"]
