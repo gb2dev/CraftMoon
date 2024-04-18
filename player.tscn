@@ -102,7 +102,6 @@ shape = SubResource("BoxShape3D_1njnr")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-visible = false
 mesh = SubResource("CapsuleMesh_hjorb")
 
 [node name="Pivot" type="Node3D" parent="."]
