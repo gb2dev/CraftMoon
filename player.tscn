@@ -109,12 +109,13 @@ mesh = SubResource("CapsuleMesh_hjorb")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor")]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player")]
 target_position = Vector3(0, 0, -5)
 script = ExtResource("2_346j3")
 crosshair = NodePath("Crosshair")
 cursor = NodePath("Cursor")
 material = ExtResource("3_qrqeb")
+audio_player = NodePath("../../../AudioStreamPlayer")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 anchors_preset = 8
@@ -161,6 +162,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_bottom = -52.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bn4ce")
@@ -452,32 +454,30 @@ icon = ExtResource("22_6glbq")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_2utn1")
 
-[node name="InputDisplay" type="Panel" parent="." node_paths=PackedStringArray("hbox")]
+[node name="InputDisplay" type="PanelContainer" parent="." node_paths=PackedStringArray("hbox")]
 unique_name_in_owner = true
-anchors_preset = 12
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 10.0
 offset_top = -52.0
-offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
 script = ExtResource("37_hedid")
-hbox = NodePath("HBoxContainer")
+hbox = NodePath("MarginContainer/HBoxContainer")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="InputDisplay"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay/MarginContainer"]
+layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Control" type="Control" parent="InputDisplay/HBoxContainer"]
-layout_mode = 2
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="toggled" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
 [connection signal="value_changed" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravitySlider" to="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravityLabel" method="_on_h_slider_value_changed"]

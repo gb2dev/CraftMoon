@@ -1,6 +1,8 @@
 extends RayCast3D
 
 
+const SOUND_DESTROY = preload("res://sounds/destroy.wav")
+const SOUND_POPUP = preload("res://sounds/popup.wav")
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
 @onready var object_properties := %"Object Properties" as ObjectProperties
@@ -9,6 +11,7 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 @export var crosshair: TextureRect
 @export var cursor: Node3D
 @export var material: BaseMaterial3D
+@export var audio_player: AudioStreamPlayer
 
 var object_builder_active := false
 var highlighted_geometry: GeometryInstance3D:
@@ -52,6 +55,8 @@ func _process(_delta: float) -> void:
 					return
 
 			if get_collider() is CSGShape3D:
+				audio_player.stream = SOUND_POPUP
+				audio_player.play()
 				object_properties.toggle(get_collider())
 
 		for control: Control in get_tree().get_nodes_in_group(&"UI"):
@@ -62,6 +67,8 @@ func _process(_delta: float) -> void:
 			if get_collider() is CSGShape3D:
 				highlighted_geometry = get_collider()
 				if Input.is_action_just_pressed(&"destroy"):
+					audio_player.stream = SOUND_DESTROY
+					audio_player.play()
 					highlighted_geometry.queue_free()
 				return
 		highlighted_geometry = null
@@ -386,6 +393,7 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"3", tr(&"Cuboid"))
 	else:
 		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
+		input_display.add_input_prompt(&"customize_player")
 		input_display.add_input_prompt(&"object_builder")
 		input_display.add_input_prompt(&"properties")
 		input_display.add_input_prompt(&"destroy")

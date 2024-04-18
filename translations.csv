@@ -1,5 +1,7 @@
 keys,en,de
 ui_cancel,Close,Schließen
+customize_player,Customize Player,Spieler anpassen
 object_builder,Object Builder,Objekt-Ersteller
 properties,Object Properties,Objekt-Eigenschaften
 destroy,Destroy Object,Objekt Zerstören
+Pause Menu,,Pause-Menü

@@ -74,4 +74,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.5, -1.5)
 material_override = ExtResource("3_bo5ty")
 use_collision = true
 
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, -1.5)
+material_override = ExtResource("3_bo5ty")
+use_collision = true
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.5, -1.5)
+material_override = ExtResource("3_bo5ty")
+use_collision = true
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.5, -1.5)
+material_override = ExtResource("3_bo5ty")
+use_collision = true
+
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]
