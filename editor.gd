@@ -3,7 +3,6 @@ extends RayCast3D
 
 
 const SOUND_DESTROY = preload("res://sounds/destroy.wav")
-
 const SOUND_CLICK = preload("res://sounds/click.wav")
 const SOUND_PLACE = preload("res://sounds/place.wav")
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
@@ -164,7 +163,6 @@ func _process(_delta: float) -> void:
 				vertices.append(cursor.global_position)
 				if construction_stage == 1:
 					var size := vertices[-2] - vertices[-1]
-					print(size)
 					if not (
 						is_zero_approx(size.x) and is_zero_approx(size.y)
 						or
