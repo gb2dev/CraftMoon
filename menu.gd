@@ -5,6 +5,7 @@ const SOUND_MENU = preload("res://sounds/menu.wav")
 
 @export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
+@export var background_dim: ColorRect
 
 var peer := ENetMultiplayerPeer.new()
 
@@ -34,6 +35,7 @@ func _process(delta: float) -> void:
 
 		get_tree().paused = not get_tree().paused
 		visible = get_tree().paused
+		background_dim.visible = get_tree().paused
 		if get_tree().paused:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 			audio_player.stream = SOUND_MENU
@@ -43,9 +45,10 @@ func _process(delta: float) -> void:
 
 
 func add_player(id := 1) -> void:
-	var player := player_scene.instantiate()
+	var player := player_scene.instantiate() as Player
 	player.name = str(id)
 	get_tree().current_scene.add_child.call_deferred(player)
+	visibility_changed.connect(player.editor.toggle_ui)
 
 
 func _on_join_button_pressed() -> void:
@@ -53,3 +56,7 @@ func _on_join_button_pressed() -> void:
 	hide()
 	peer.create_client("localhost", 7000)
 	multiplayer.multiplayer_peer = peer
+
+
+func _on_quit_button_pressed() -> void:
+	get_tree().quit()

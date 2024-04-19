@@ -1,3 +1,4 @@
+class_name Editor
 extends RayCast3D
 
 
@@ -115,11 +116,11 @@ func _process(_delta: float) -> void:
 			var construction_stage := vertices.size() % 3
 
 			if construction_stage > 0:
-				Draw3D.line(vertices[-construction_stage], cursor.global_position, Color.BLACK, 1)
+				Draw3D.line(vertices[-construction_stage], cursor.global_position, Color.WHITE, 1)
 
 				if construction_stage == 2:
-					Draw3D.line(vertices[-1], vertices[-2], Color.BLACK, 1)
-					Draw3D.line(vertices[-1], cursor.global_position, Color.BLACK, 1)
+					Draw3D.line(vertices[-1], vertices[-2], Color.WHITE, 1)
+					Draw3D.line(vertices[-1], cursor.global_position, Color.WHITE, 1)
 
 			if Input.is_action_just_pressed(&"action"):
 				vertices.append(cursor.global_position)
@@ -153,10 +154,10 @@ func _process(_delta: float) -> void:
 					pos_2.z = vertices[-1].z
 					pos_2.x = vertices[-1].x
 
-				Draw3D.line(vertices[-1], pos_1, Color.BLACK, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.BLACK, 1)
-				Draw3D.line(pos_1, cursor.global_position, Color.BLACK, 1)
-				Draw3D.line(pos_2, cursor.global_position, Color.BLACK, 1)
+				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
+				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
+				Draw3D.line(pos_1, cursor.global_position, Color.WHITE, 1)
+				Draw3D.line(pos_2, cursor.global_position, Color.WHITE, 1)
 
 			if Input.is_action_just_pressed(&"action"):
 				if construction_stage == 1:
@@ -213,18 +214,18 @@ func _process(_delta: float) -> void:
 				pos_6 = cursor.global_position
 				pos_6.z = vertices[-1].z
 
-				Draw3D.line(vertices[-1], pos_1, Color.BLACK, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.BLACK, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.BLACK, 1)
-				Draw3D.line(pos_1, pos_4, Color.BLACK, 1)
-				Draw3D.line(pos_2, pos_5, Color.BLACK, 1)
-				Draw3D.line(pos_3, pos_6, Color.BLACK, 1)
-				Draw3D.line(pos_1, pos_6, Color.BLACK, 1)
-				Draw3D.line(pos_2, pos_4, Color.BLACK, 1)
-				Draw3D.line(pos_3, pos_5, Color.BLACK, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.BLACK, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.BLACK, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.BLACK, 1)
+				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
+				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
+				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
+				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
+				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
+				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
+				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
+				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
+				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
+				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
+				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
+				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
 
 			if Input.is_action_just_pressed(&"action"):
 				if construction_stage == 1:
@@ -397,6 +398,7 @@ func set_object_builder_active(value: bool) -> void:
 
 	input_display.clear_input_prompts()
 	if object_builder_active:
+		input_display.add_input_prompt(&"action", tr(&"Place Shape Point"))
 		input_display.add_input_prompt(&"1", tr(&"Triangle"))
 		input_display.add_input_prompt(&"2", tr(&"Rectangle"))
 		input_display.add_input_prompt(&"3", tr(&"Cuboid"))
@@ -406,3 +408,9 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"object_builder")
 		input_display.add_input_prompt(&"properties")
 		input_display.add_input_prompt(&"destroy")
+		input_display.add_input_prompt(&"jump", tr(&"(Double Tap) Fly"))
+
+
+func toggle_ui() -> void:
+	crosshair.visible = not crosshair.visible
+	input_display.visible = not input_display.visible

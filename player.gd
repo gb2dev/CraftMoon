@@ -8,6 +8,7 @@ const DOUBLETAP_DELAY = 0.25
 
 @export var pivot: Node3D
 @export var camera: Camera3D
+@export var editor: Editor
 
 var joypad_look: Vector2
 var joypad_look_curve: float = 3.0
@@ -26,8 +27,7 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var fly := false
 
-var doubletap_time = DOUBLETAP_DELAY
-var last_keycode = 0
+var doubletap_time := DOUBLETAP_DELAY
 
 
 func _enter_tree() -> void:
@@ -38,8 +38,8 @@ func _ready() -> void:
 	camera.current = is_multiplayer_authority()
 
 
-func _process(delta: float) -> void:
-	var look_input = Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
+func _process(_delta: float) -> void:
+	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
 
 	if joypad_look_inverted_x:
 		look_input.x *= -1
@@ -71,6 +71,12 @@ func _physics_process(delta: float) -> void:
 
 	doubletap_time -= delta
 
+	if Input.is_action_just_pressed(&"jump"):
+		if doubletap_time >= 0:
+			fly = not fly
+		else:
+			doubletap_time = DOUBLETAP_DELAY
+
 	# Add the gravity.
 	if not is_on_floor() and not fly:
 		velocity.y -= gravity * delta
@@ -82,13 +88,18 @@ func _physics_process(delta: float) -> void:
 	if fly:
 		if Input.is_action_pressed(&"jump"):
 			velocity.y = JUMP_VELOCITY
+		elif Input.is_action_pressed(&"crouch"):
+			velocity.y = -JUMP_VELOCITY
 		else:
 			velocity.y = 0
 
 	# Get the input direction and handle the movement/deceleration.
 	var input_dir := Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
 	var pivot_basis := pivot.transform.basis as Basis
-	var direction := (pivot_basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction := (pivot_basis * Vector3(input_dir.x, 0, input_dir.y)).clamp(
+		-Vector3.ONE,
+		Vector3.ONE
+	)
 	if direction:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
@@ -105,22 +116,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	var mouse_motion := event as InputEventMouseMotion
 	if mouse_motion and DisplayServer.mouse_get_mode() == DisplayServer.MOUSE_MODE_CAPTURED:
-		var input = event.relative
+		var input := event.relative as Vector2
 		if mouse_look_inverted_x:
 			input.x *= -1
 		if mouse_look_inverted_y:
 			input.y *= -1
 
-		var look_delta = Vector3(-input.x, 0, -input.y) * mouse_look_sensitivity / 500
+		var look_delta := Vector3(-input.x, 0, -input.y) * mouse_look_sensitivity / 500
 
 		pivot.rotate_y(look_delta.x)
 		camera.rotate_x(look_delta.z)
-
-	if event is InputEventKey and event.is_pressed() and not event.is_echo():
-		if last_keycode == event.keycode and doubletap_time >= 0: 
-			if event.keycode == 32:
-				fly = not fly
-			last_keycode = 0
-		else:
-			last_keycode = event.keycode
-		doubletap_time = DOUBLETAP_DELAY

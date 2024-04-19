@@ -1,10 +1,12 @@
-[gd_scene load_steps=11 format=4 uid="uid://vl04tjighggu"]
+[gd_scene load_steps=14 format=4 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
 [ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="2_htbds"]
 [ext_resource type="Material" uid="uid://dqfagp1m6bcop" path="res://materials/bricks/bricks.tres" id="3_bo5ty"]
 [ext_resource type="Script" path="res://menu.gd" id="5_r4y2q"]
+[ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="5_xpg20"]
+[ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="6_6viyk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mi6cl"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -33,6 +35,19 @@ size = Vector3(100, 1, 100)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ckddd"]
 size = Vector3(100, 1, 100)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7xoqe"]
+bg_color = Color(0.180392, 0.180392, 0.180392, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.976471, 0.976471, 0.976471, 1)
+corner_radius_top_left = 64
+corner_radius_top_right = 64
+corner_radius_bottom_right = 64
+corner_radius_bottom_left = 64
+corner_detail = 20
+
 [node name="World" type="Node3D"]
 script = ExtResource("1_tjq4l")
 
@@ -54,17 +69,80 @@ surface_material_override/0 = ExtResource("2_htbds")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("BoxShape3D_ckddd")
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player")]
+[node name="BackgroundDim" type="ColorRect" parent="."]
+visible = false
+z_index = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.392157)
+
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim")]
 process_mode = 3
-offset_right = 40.0
-offset_bottom = 40.0
+visible = false
+z_index = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -223.0
+offset_top = -162.0
+offset_right = 223.0
+offset_bottom = 62.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 10
 script = ExtResource("5_r4y2q")
 player_scene = ExtResource("1_8ftwq")
 audio_player = NodePath("../AudioStreamPlayer")
+background_dim = NodePath("../BackgroundDim")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Panel" type="PanelContainer" parent="Menu/HBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7xoqe")
+
+[node name="TextureRect" type="TextureRect" parent="Menu/HBoxContainer/Panel"]
+custom_minimum_size = Vector2(118, 118)
+layout_mode = 2
+texture = ExtResource("5_xpg20")
+expand_mode = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/HBoxContainer"]
+layout_mode = 2
+
+[node name="LevelNameLabel" type="Label" parent="Menu/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Your Moon"
+label_settings = ExtResource("6_6viyk")
+
+[node name="TextEdit" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "Description"
+context_menu_enabled = false
+
+[node name="Control" type="Control" parent="Menu"]
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="Menu"]
+layout_mode = 2
 
 [node name="JoinButton" type="Button" parent="Menu"]
 layout_mode = 2
 text = "Join"
+
+[node name="QuitButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Quit"
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://player.tscn")
@@ -93,3 +171,4 @@ use_collision = true
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]
+[connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]

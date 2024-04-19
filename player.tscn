@@ -90,11 +90,12 @@ properties/1/path = NodePath("Pivot/Camera3D:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("pivot", "camera")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("pivot", "camera", "editor")]
 collision_layer = 2
 script = ExtResource("1_4qesr")
 pivot = NodePath("Pivot")
 camera = NodePath("Pivot/Camera3D")
+editor = NodePath("Pivot/Camera3D/Editor")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
