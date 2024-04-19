@@ -3,6 +3,8 @@ extends RayCast3D
 
 const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 const SOUND_POPUP = preload("res://sounds/popup.wav")
+const SOUND_CLICK = preload("res://sounds/click.wav")
+const SOUND_PLACE = preload("res://sounds/place.wav")
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
 @onready var object_properties := %"Object Properties" as ObjectProperties
@@ -12,6 +14,7 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 @export var cursor: Node3D
 @export var material: BaseMaterial3D
 @export var audio_player: AudioStreamPlayer
+@export var player: Player
 
 var object_builder_active := false
 var highlighted_geometry: GeometryInstance3D:
@@ -49,19 +52,19 @@ func _process(_delta: float) -> void:
 		set_object_builder_active(not object_builder_active)
 
 	if not object_builder_active:
-		if Input.is_action_just_pressed(&"properties"):
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
+		for control: Control in get_tree().get_nodes_in_group(&"UI"):
+			if control.visible:
+				return
 
+		if Input.is_action_just_pressed(&"properties"):
 			if get_collider() is CSGShape3D:
 				audio_player.stream = SOUND_POPUP
 				audio_player.play()
 				object_properties.toggle(get_collider())
-
-		for control: Control in get_tree().get_nodes_in_group(&"UI"):
-			if control.visible:
-				return
+		elif Input.is_action_just_pressed(&"customize_player"):
+			audio_player.stream = SOUND_POPUP
+			audio_player.play()
+			object_properties.toggle(player)
 
 		if get_collider():
 			if get_collider() is CSGShape3D:
@@ -124,6 +127,8 @@ func _process(_delta: float) -> void:
 
 				if not vertices.is_empty():
 					if construction_stage == 2:
+						audio_player.stream = SOUND_PLACE
+						audio_player.play()
 						st.generate_normals()
 						mi.mesh = st.commit()
 						mi.set_surface_override_material(0, material)
@@ -172,6 +177,8 @@ func _process(_delta: float) -> void:
 
 					st.generate_normals()
 
+					audio_player.stream = SOUND_PLACE
+					audio_player.play()
 					mi.mesh = st.commit()
 					mi.set_surface_override_material(0, material)
 				else:
@@ -352,6 +359,8 @@ func _process(_delta: float) -> void:
 
 					st.generate_normals()
 
+					audio_player.stream = SOUND_PLACE
+					audio_player.play()
 					mi.mesh = st.commit()
 					mi.set_surface_override_material(0, material)
 				else:

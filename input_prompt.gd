@@ -16,7 +16,7 @@ var text: String
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	InputHelper.device_changed.connect(_on_device_changed)
-	_on_device_changed(InputHelper.guess_device_name(), 0)
+	_on_device_changed(InputHelper.device, 0)
 
 
 func _on_device_changed(next_device: String, index: int):

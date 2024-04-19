@@ -5,8 +5,10 @@ extends Control
 @export var gadgets_panel: GadgetsPanel
 @export var gadget_properties: GadgetProperties
 @export var tab_container: TabContainer
+@export var object_vbox: VBoxContainer
+@export var player_vbox: VBoxContainer
 
-var object: CSGShape3D
+var object: Node3D
 
 
 # Called when the node enters the scene tree for the first time.
@@ -20,7 +22,7 @@ func _process(delta: float) -> void:
 		close()
 
 
-func toggle(o: CSGShape3D):
+func toggle(o: Node3D):
 	if o:
 		object = o
 		if not o.tree_exiting.is_connected(close_on_free):
@@ -28,6 +30,12 @@ func toggle(o: CSGShape3D):
 		visible = not visible
 		if visible:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+			if object is Player:
+				object_vbox.hide()
+				player_vbox.show()
+			else:
+				object_vbox.show()
+				player_vbox.hide()
 		else:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
@@ -53,7 +61,6 @@ func close() -> void:
 func close_on_free() -> void:
 	if visible:
 		toggle(object)
-
 
 
 func _on_collision_check_box_toggled(toggled_on: bool) -> void:

@@ -109,13 +109,14 @@ mesh = SubResource("CapsuleMesh_hjorb")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player")]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player", "player")]
 target_position = Vector3(0, 0, -5)
 script = ExtResource("2_346j3")
 crosshair = NodePath("Crosshair")
 cursor = NodePath("Cursor")
 material = ExtResource("3_qrqeb")
 audio_player = NodePath("../../../AudioStreamPlayer")
+player = NodePath("../../..")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 anchors_preset = 8
@@ -139,7 +140,7 @@ visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container") groups=["UI"]]
+[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox") groups=["UI"]]
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
@@ -156,6 +157,8 @@ script = ExtResource("3_tt4lx")
 gadgets_panel = NodePath("TabContainer/Logic/Gadgets")
 gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
 tab_container = NodePath("TabContainer")
+object_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Object")
+player_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Player")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
 layout_mode = 1
@@ -169,18 +172,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_bn4ce")
 tab_alignment = 1
 current_tab = 0
 
-[node name="Object Properties" type="Control" parent="Object Properties/TabContainer"]
+[node name="Properties" type="Control" parent="Object Properties/TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Panel" type="Panel" parent="Object Properties/TabContainer/Object Properties"]
+[node name="Panel" type="Panel" parent="Object Properties/TabContainer/Properties"]
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 326.0
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Object Properties/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Properties/Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -192,58 +195,88 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer"]
+[node name="Object" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Material" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer"]
+[node name="Material" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material"]
+[node name="Label" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material"]
 layout_mode = 2
 text = "Material"
 label_settings = ExtResource("5_8uss7")
 
-[node name="GridContainer" type="GridContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material"]
+[node name="GridContainer" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material"]
 layout_mode = 2
 columns = 10
 
-[node name="BricksMaterialItem" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+[node name="BricksMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
 layout_mode = 2
-button_pressed = true
 item = ExtResource("8_swd8g")
 item_data = SubResource("Resource_xgfgq")
 object_properties = NodePath("../../../../../../../..")
 
-[node name="CheckerboardMaterialItem" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+[node name="CheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
 layout_mode = 2
 item = ExtResource("3_qrqeb")
 item_data = SubResource("Resource_2wruj")
 object_properties = NodePath("../../../../../../../..")
 
-[node name="Physics" type="VBoxContainer" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer"]
+[node name="Physics" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object"]
 layout_mode = 2
 
-[node name="PhysicsLabel" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+[node name="PhysicsLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
 layout_mode = 2
 text = "Physics"
 label_settings = ExtResource("5_8uss7")
 
-[node name="CollisionCheckBox" type="CheckBox" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+[node name="CollisionCheckBox" type="CheckBox" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
 layout_mode = 2
 button_pressed = true
 text = "Collision"
 
-[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
 layout_mode = 2
 script = SubResource("GDScript_wy2up")
 
-[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics"]
+[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
 layout_mode = 2
 min_value = -50.0
 max_value = 50.0
 step = 0.1
 value = 9.8
+
+[node name="Player" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Color" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Color"]
+layout_mode = 2
+text = "Color"
+label_settings = ExtResource("5_8uss7")
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Color"]
+layout_mode = 2
+text = "Color"
+color = Color(0.113725, 0.607843, 0.533333, 1)
+edit_alpha = false
+
+[node name="Attributes" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player"]
+layout_mode = 2
+
+[node name="AttributesLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Attributes"]
+layout_mode = 2
+text = "Attributes"
+label_settings = ExtResource("5_8uss7")
+
+[node name="SpeedLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Attributes"]
+layout_mode = 2
+text = "Speed"
 
 [node name="Logic" type="HBoxContainer" parent="Object Properties/TabContainer"]
 visible = false
@@ -479,8 +512,8 @@ theme_override_constants/separation = 10
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
-[connection signal="toggled" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
-[connection signal="value_changed" from="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravitySlider" to="Object Properties/TabContainer/Object Properties/Panel/MarginContainer/VBoxContainer/Physics/GravityLabel" method="_on_h_slider_value_changed"]
+[connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
+[connection signal="value_changed" from="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/GravitySlider" to="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/GravityLabel" method="_on_h_slider_value_changed"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]

@@ -54,12 +54,13 @@ surface_material_override/0 = ExtResource("2_htbds")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
 shape = SubResource("BoxShape3D_ckddd")
 
-[node name="Menu" type="VBoxContainer" parent="."]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player")]
 process_mode = 3
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("5_r4y2q")
 player_scene = ExtResource("1_8ftwq")
+audio_player = NodePath("../AudioStreamPlayer")
 
 [node name="JoinButton" type="Button" parent="Menu"]
 layout_mode = 2
@@ -88,5 +89,7 @@ use_collision = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.5, -1.5)
 material_override = ExtResource("3_bo5ty")
 use_collision = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]

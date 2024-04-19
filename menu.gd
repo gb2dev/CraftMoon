@@ -1,8 +1,12 @@
 extends Control
 
 
-var peer := ENetMultiplayerPeer.new()
+const SOUND_MENU = preload("res://sounds/menu.wav")
+
 @export var player_scene: PackedScene
+@export var audio_player: AudioStreamPlayer
+
+var peer := ENetMultiplayerPeer.new()
 
 
 # Called when the node enters the scene tree for the first time.
@@ -32,6 +36,8 @@ func _process(delta: float) -> void:
 		visible = get_tree().paused
 		if get_tree().paused:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+			audio_player.stream = SOUND_MENU
+			audio_player.play()
 		else:
 			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
