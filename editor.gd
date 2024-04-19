@@ -27,7 +27,7 @@ var highlighted_geometry: GeometryInstance3D:
 			if value:
 				value.material_overlay = HIGHLIGHT_MATERIAL
 			highlighted_geometry = value
-var cursor_distance := -3
+var cursor_distance := -3.0
 var vertices: Array[Vector3]
 var construction_mode: int:
 	set(value):
