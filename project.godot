@@ -203,7 +203,6 @@ pointing/emulate_touch_from_mouse=true
 [internationalization]
 
 locale/translations=PackedStringArray("res://translations.en.translation", "res://translations.de.translation")
-locale/test="de"
 
 [rendering]
 
