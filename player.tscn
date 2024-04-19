@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=50 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -37,6 +37,9 @@
 [ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
 [ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="32_v4hxm"]
 [ext_resource type="Script" path="res://input_display.gd" id="37_hedid"]
+[ext_resource type="PackedScene" uid="uid://nbcq2r8ym45k" path="res://shape_item.tscn" id="38_s2os7"]
+[ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="39_4q453"]
+[ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="40_m57ra"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -48,7 +51,6 @@ radius = 0.025
 height = 0.05
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ytf4n"]
-no_depth_test = true
 albedo_color = Color(0, 0.733333, 0.733333, 1)
 emission_enabled = true
 emission = Color(0, 0.733333, 0.733333, 1)
@@ -110,14 +112,16 @@ mesh = SubResource("CapsuleMesh_hjorb")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player", "player")]
-target_position = Vector3(0, 0, -5)
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player", "player", "shape_select", "shape_items")]
+target_position = Vector3(0, 0, -6)
 script = ExtResource("2_346j3")
 crosshair = NodePath("Crosshair")
 cursor = NodePath("Cursor")
 material = ExtResource("3_qrqeb")
 audio_player = NodePath("../../../AudioStreamPlayer")
 player = NodePath("../../..")
+shape_select = NodePath("../../../ShapeSelect")
+shape_items = NodePath("../../../ShapeSelect/ShapeItems")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 anchors_preset = 8
@@ -141,7 +145,7 @@ visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox") groups=["UI"]]
+[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "audio_player", "editor") groups=["UI"]]
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
@@ -160,6 +164,8 @@ gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
 tab_container = NodePath("TabContainer")
 object_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Object")
 player_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Player")
+audio_player = NodePath("../AudioStreamPlayer")
+editor = NodePath("../Pivot/Camera3D/Editor")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
 layout_mode = 1
@@ -495,7 +501,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
+offset_left = -10.0
 offset_top = -52.0
+offset_right = 10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -511,6 +519,31 @@ theme_override_constants/margin_right = 10
 layout_mode = 2
 theme_override_constants/separation = 10
 
+[node name="ShapeSelect" type="PanelContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -2.0
+offset_top = 10.0
+offset_right = 2.0
+offset_bottom = 10.0
+grow_horizontal = 2
+
+[node name="ShapeItems" type="HBoxContainer" parent="ShapeSelect"]
+layout_mode = 2
+
+[node name="Cuboid" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cuboid" index="0"]
+texture = ExtResource("39_4q453")
+
+[node name="Triangle" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Triangle" index="0"]
+texture = ExtResource("40_m57ra")
+
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
@@ -519,3 +552,6 @@ theme_override_constants/separation = 10
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]
 [connection signal="pressed" from="Object Properties/CloseButton" to="Object Properties" method="close"]
+
+[editable path="ShapeSelect/ShapeItems/Cuboid"]
+[editable path="ShapeSelect/ShapeItems/Triangle"]

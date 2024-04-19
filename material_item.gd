@@ -18,4 +18,9 @@ func _process(delta: float) -> void:
 
 
 func _on_pressed() -> void:
-	object_properties.object.material_override = item
+	object_properties.change_object_material(item)
+
+
+func _on_visibility_changed() -> void:
+	if visible:
+		button_pressed = object_properties.get_object_material() == item

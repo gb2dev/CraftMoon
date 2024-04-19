@@ -3,7 +3,7 @@ extends RayCast3D
 
 
 const SOUND_DESTROY = preload("res://sounds/destroy.wav")
-const SOUND_POPUP = preload("res://sounds/popup.wav")
+
 const SOUND_CLICK = preload("res://sounds/click.wav")
 const SOUND_PLACE = preload("res://sounds/place.wav")
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
@@ -16,6 +16,8 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 @export var material: BaseMaterial3D
 @export var audio_player: AudioStreamPlayer
 @export var player: Player
+@export var shape_select: Control
+@export var shape_items: Control
 
 var object_builder_active := false
 var highlighted_geometry: GeometryInstance3D:
@@ -26,23 +28,21 @@ var highlighted_geometry: GeometryInstance3D:
 			if value:
 				value.material_overlay = HIGHLIGHT_MATERIAL
 			highlighted_geometry = value
-var cursor_distance := -2.5
+var cursor_distance := -3
 var vertices: Array[Vector3]
-var st: SurfaceTool
-var mi: MeshInstance3D
-var construction_mode: int
-
-var current_edge_left: Vector3
-var current_edge_right: Vector3
-var edge_node: Node3D
-var height: int
-var mouse_y_delta: float
+var construction_mode: int:
+	set(value):
+		construction_mode = value
+		for shape_item: ShapeItem in shape_items.get_children():
+			shape_item.set_selected(construction_mode == shape_item.get_index())
+var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
+var construction_collision := true
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	new_object()
 	set_object_builder_active(false)
+	construction_mode = 0
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -50,7 +50,10 @@ func _process(_delta: float) -> void:
 	# Object Builder Toggle
 
 	if Input.is_action_just_pressed(&"object_builder"):
-		set_object_builder_active(not object_builder_active)
+		if object_properties.visible:
+			object_properties.close()
+		else:
+			set_object_builder_active(not object_builder_active)
 
 	if not object_builder_active:
 		for control: Control in get_tree().get_nodes_in_group(&"UI"):
@@ -59,12 +62,8 @@ func _process(_delta: float) -> void:
 
 		if Input.is_action_just_pressed(&"properties"):
 			if get_collider() is CSGShape3D:
-				audio_player.stream = SOUND_POPUP
-				audio_player.play()
 				object_properties.toggle(get_collider())
 		elif Input.is_action_just_pressed(&"customize_player"):
-			audio_player.stream = SOUND_POPUP
-			audio_player.play()
 			object_properties.toggle(player)
 
 		if get_collider():
@@ -78,6 +77,9 @@ func _process(_delta: float) -> void:
 		highlighted_geometry = null
 
 		return
+
+	if Input.is_action_just_pressed(&"properties"):
+		object_properties.toggle(null)
 
 
 	# Cursor
@@ -103,91 +105,18 @@ func _process(_delta: float) -> void:
 
 	# Object Construction
 
-	if Input.is_action_just_pressed(&"1"):
+	if Input.is_action_just_pressed(&"previous", true):
+		construction_mode = wrapi(construction_mode - 1, 0, 3)
+	elif Input.is_action_just_pressed(&"next", true):
+		construction_mode = wrapi(construction_mode + 1, 0, 3)
+	elif Input.is_action_just_pressed(&"1"):
 		construction_mode = 0
 	elif Input.is_action_just_pressed(&"2"):
 		construction_mode = 1
-	elif Input.is_action_just_pressed(&"3"):
-		construction_mode = 2
 
 	match construction_mode:
-		# Triangle Construction
+		# Cuboid Construction
 		0:
-			var construction_stage := vertices.size() % 3
-
-			if construction_stage > 0:
-				Draw3D.line(vertices[-construction_stage], cursor.global_position, Color.WHITE, 1)
-
-				if construction_stage == 2:
-					Draw3D.line(vertices[-1], vertices[-2], Color.WHITE, 1)
-					Draw3D.line(vertices[-1], cursor.global_position, Color.WHITE, 1)
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				st.add_vertex(cursor.global_position)
-
-				if not vertices.is_empty():
-					if construction_stage == 2:
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
-						st.generate_normals()
-						mi.mesh = st.commit()
-						mi.set_surface_override_material(0, material)
-
-		# Quad Construction
-		1:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-
-			if construction_stage == 1:
-				if is_equal_approx(cursor.global_position.y, vertices[-1].y):
-					pos_1 = cursor.global_position
-					pos_1.z = vertices[-1].z
-					pos_2 = cursor.global_position
-					pos_2.x = vertices[-1].x
-				else:
-					pos_1 = cursor.global_position
-					pos_1.y = vertices[-1].y
-					pos_2 = cursor.global_position
-					pos_2.z = vertices[-1].z
-					pos_2.x = vertices[-1].x
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(pos_1, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_2, cursor.global_position, Color.WHITE, 1)
-
-			if Input.is_action_just_pressed(&"action"):
-				if construction_stage == 1:
-					vertices.append(pos_1)
-					st.add_vertex(pos_1)
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					vertices.append(vertices[-3])
-					st.add_vertex(vertices[-4])
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					vertices.append(pos_2)
-					st.add_vertex(pos_2)
-
-					st.generate_normals()
-
-					audio_player.stream = SOUND_PLACE
-					audio_player.play()
-					mi.mesh = st.commit()
-					mi.set_surface_override_material(0, material)
-				else:
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-		# Box Construction
-		2:
 			var construction_stage := vertices.size() % 3
 
 			var pos_1: Vector3
@@ -227,154 +156,38 @@ func _process(_delta: float) -> void:
 				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
 				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
 
+			for control: Control in get_tree().get_nodes_in_group(&"UI"):
+				if control.visible:
+					return
+
 			if Input.is_action_just_pressed(&"action"):
+				vertices.append(cursor.global_position)
 				if construction_stage == 1:
-					# Back 1
-
-					vertices.append(pos_1)
-					st.add_vertex(pos_1)
-
-					vertices.append(pos_6)
-					st.add_vertex(pos_6)
-
-					# Back 2
-
-					vertices.append(pos_3)
-					st.add_vertex(pos_3)
-
-					vertices.append(vertices[-4])
-					st.add_vertex(vertices[-5])
-
-					vertices.append(pos_6)
-					st.add_vertex(pos_6)
-
-					# Left 1
-
-					vertices.append(pos_3)
-					st.add_vertex(pos_3)
-
-					vertices.append(pos_5)
-					st.add_vertex(pos_5)
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					# Left 2
-
-					vertices.append(pos_6)
-					st.add_vertex(pos_6)
-
-					vertices.append(pos_3)
-					st.add_vertex(pos_3)
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					# Right 1
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					vertices.append(vertices[-13])
-					st.add_vertex(vertices[-14])
-
-					vertices.append(pos_1)
-					st.add_vertex(pos_1)
-
-					# Right 2
-
-					vertices.append(pos_2)
-					st.add_vertex(pos_2)
-
-					vertices.append(vertices[-16])
-					st.add_vertex(vertices[-17])
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					# Bottom 1
-
-					vertices.append(pos_2)
-					st.add_vertex(pos_2)
-
-					vertices.append(vertices[-19])
-					st.add_vertex(vertices[-20])
-
-					vertices.append(pos_5)
-					st.add_vertex(pos_5)
-
-					# Bottom 2
-
-					vertices.append(pos_5)
-					st.add_vertex(pos_5)
-
-					vertices.append(vertices[-22])
-					st.add_vertex(vertices[-23])
-
-					vertices.append(pos_3)
-					st.add_vertex(pos_3)
-
-					# Top 1
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					vertices.append(pos_1)
-					st.add_vertex(pos_1)
-
-					vertices.append(pos_6)
-					st.add_vertex(pos_6)
-
-					# Top 2
-
-					vertices.append(pos_6)
-					st.add_vertex(pos_6)
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					# Front 1
-
-					vertices.append(pos_2)
-					st.add_vertex(pos_2)
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					vertices.append(pos_5)
-					st.add_vertex(pos_5)
-
-					# Front 2
-
-					vertices.append(pos_4)
-					st.add_vertex(pos_4)
-
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-					vertices.append(pos_5)
-					st.add_vertex(pos_5)
-
-					st.generate_normals()
-
-					audio_player.stream = SOUND_PLACE
-					audio_player.play()
-					mi.mesh = st.commit()
-					mi.set_surface_override_material(0, material)
+					var size := vertices[-2] - vertices[-1]
+					print(size)
+					if not (
+						is_zero_approx(size.x) and is_zero_approx(size.y)
+						or
+						is_zero_approx(size.y) and is_zero_approx(size.z)
+						or
+						is_zero_approx(size.x) and is_zero_approx(size.z)
+					):
+						audio_player.stream = SOUND_PLACE
+						audio_player.play()
+						var cuboid := CSGBox3D.new()
+						get_tree().current_scene.add_child(cuboid)
+						cuboid.size = vertices[-2] - vertices[-1]
+						cuboid.position = vertices[-2] - cuboid.size / 2
+						cuboid.size = cuboid.size.abs()
+						cuboid.material = construction_material
+						cuboid.use_collision = construction_collision
+					vertices.clear()
 				else:
-					vertices.append(cursor.global_position)
-					st.add_vertex(cursor.global_position)
-
-
-	# Collision Creation
-
-	if Input.is_action_just_pressed(&"ui_accept"):
-		mi.create_convex_collision()
-		vertices = []
-		new_object()
+					audio_player.stream = SOUND_CLICK
+					audio_player.play()
+		# TODO: Polygon Construction
+		1:
+			pass
 
 
 func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:
@@ -382,15 +195,11 @@ func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:
 	return nodes[0]
 
 
-func new_object() -> void:
-	st = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	mi = MeshInstance3D.new()
-	get_tree().current_scene.add_child.call_deferred(mi)
-
-
 func set_object_builder_active(value: bool) -> void:
+	vertices.clear()
+	object_properties.close()
 	object_builder_active = value
+	shape_select.visible = object_builder_active
 	cursor.visible = object_builder_active
 	crosshair.visible = not object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5
@@ -398,10 +207,12 @@ func set_object_builder_active(value: bool) -> void:
 
 	input_display.clear_input_prompts()
 	if object_builder_active:
+		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
+		input_display.add_input_prompt(&"object_builder", tr(&"Exit Object Builder"))
+		input_display.add_input_prompt(&"properties")
 		input_display.add_input_prompt(&"action", tr(&"Place Shape Point"))
-		input_display.add_input_prompt(&"1", tr(&"Triangle"))
-		input_display.add_input_prompt(&"2", tr(&"Rectangle"))
-		input_display.add_input_prompt(&"3", tr(&"Cuboid"))
+		input_display.add_input_prompt(&"previous", tr(&"Previous Shape"))
+		input_display.add_input_prompt(&"next", tr(&"Next Shape"))
 	else:
 		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
 		input_display.add_input_prompt(&"customize_player")
@@ -414,3 +225,6 @@ func set_object_builder_active(value: bool) -> void:
 func toggle_ui() -> void:
 	crosshair.visible = not crosshair.visible
 	input_display.visible = not input_display.visible
+	if object_builder_active:
+		shape_select.visible = not shape_select.visible
+		crosshair.visible = false
