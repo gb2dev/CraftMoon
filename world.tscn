@@ -135,6 +135,14 @@ layout_mode = 2
 [node name="Control2" type="Control" parent="Menu"]
 layout_mode = 2
 
+[node name="SaveButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Load"
+
 [node name="JoinButton" type="Button" parent="Menu"]
 layout_mode = 2
 text = "Join"
@@ -149,5 +157,9 @@ spawn_path = NodePath("..")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
+[node name="Geometry" type="Node3D" parent="."]
+
+[connection signal="pressed" from="Menu/SaveButton" to="Menu" method="_on_save_button_pressed"]
+[connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]

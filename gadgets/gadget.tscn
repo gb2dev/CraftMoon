@@ -18,7 +18,7 @@ func _notification(what: int) -> void:
 			parent.queue_free()
 "
 
-[node name="Gadget" type="TextureRect" groups=["Dragging"]]
+[node name="Gadget" type="TextureRect"]
 offset_right = 64.0
 offset_bottom = 64.0
 mouse_filter = 2

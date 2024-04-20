@@ -172,13 +172,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var cuboid := CSGBox3D.new()
-						get_tree().current_scene.add_child(cuboid)
-						cuboid.size = vertices[-2] - vertices[-1]
-						cuboid.position = vertices[-2] - cuboid.size / 2
-						cuboid.size = cuboid.size.abs()
-						cuboid.material = construction_material
-						cuboid.use_collision = construction_collision
+						construct_shape("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
@@ -186,6 +180,21 @@ func _process(_delta: float) -> void:
 		# TODO: Polygon Construction
 		1:
 			pass
+
+
+func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) -> CSGShape3D:
+	match type:
+		"Cuboid":
+			var cuboid := CSGBox3D.new()
+			get_tree().current_scene.get_node(^"Geometry").add_child(cuboid)
+			cuboid.add_to_group(&"Persist")
+			cuboid.position = pos
+			cuboid.rotation = rot
+			cuboid.size = size
+			cuboid.material = construction_material
+			cuboid.use_collision = construction_collision
+			return cuboid
+	return null
 
 
 func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:

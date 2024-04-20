@@ -64,9 +64,10 @@ func open(type: StringName, gadget: Gadget) -> void:
 			var sound_select_instance := SOUND_SELECT.instantiate() as SoundSelect
 			sound_select_instance.select_sound.connect(
 				func(sound: String, sound_name: String) -> void:
-					gadget.change_property(&"Sound", "res://sounds/" + sound + ".wav")
+					var path := "res://sounds/" + sound + ".wav"
+					gadget.change_property(&"Sound", path)
 					select_sound_label.text = selected_sound_prefix + sound_name
-					gadget.set_meta(&"Sound", sound)
+					gadget.set_meta(&"Sound", path)
 					gadget.set_meta(&"SoundName", sound_name)
 			)
 			vbox.add_child(sound_select_instance)
