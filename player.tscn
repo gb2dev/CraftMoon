@@ -145,7 +145,7 @@ visible = false
 mesh = SubResource("SphereMesh_i3lu0")
 surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
-[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "audio_player", "editor") groups=["UI"]]
+[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "audio_player", "editor", "logic_panel") groups=["UI"]]
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
@@ -166,6 +166,7 @@ object_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Object")
 player_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Player")
 audio_player = NodePath("../AudioStreamPlayer")
 editor = NodePath("../Pivot/Camera3D/Editor")
+logic_panel = NodePath("TabContainer/Logic/Logic")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
 layout_mode = 1

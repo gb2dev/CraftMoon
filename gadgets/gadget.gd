@@ -20,6 +20,7 @@ enum ConnectionChange {
 
 var just_dragged_output := false
 var random_output_controls: Array
+var type: String
 
 
 # Called when the node enters the scene tree for the first time.
@@ -200,13 +201,25 @@ func update_connection(
 		["CONNECT", "DISCONNECT", "DELETE", "CANCEL"][type],
 		"OUTPUT",
 		output_index,
-		"TO",
-		gadget,
-		"INPUT",
-		input_index
+		"OF",
+		self,
+		"TO INPUT",
+		input_index,
+		"OF",
+		gadget
 	)
 
 	if type == ConnectionChange.CONNECT:
+		output_visual.points[2] = output_visual.to_local(
+			gadget.input_controls[input_index].global_position
+			+ Vector2(0, gadget.input_controls[input_index].size.y / 2)
+		)
+		output_control.global_position = (
+			gadget.input_controls[input_index].global_position
+			+ Vector2(0, gadget.input_controls[input_index].size.y / 2)
+			- Vector2(output_control.size.x, output_control.size.y / 2)
+		)
+
 		gadget.input_controls[input_index].output_controls.append(output_control)
 		gadget.input_controls[input_index].output_visuals.append(output_visual)
 		output_control.target_gadget = gadget

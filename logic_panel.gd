@@ -1,3 +1,4 @@
+class_name LogicPanel
 extends Panel
 
 
@@ -14,23 +15,27 @@ func _process(delta: float) -> void:
 	pass
 
 
+func place_gadget(gadget: Gadget) -> void:
+	if gadget.get_parent() == self:
+		gadget.top_level = false
+	else:
+		gadget.get_parent().remove_child(gadget)
+		add_child(gadget)
+		gadget.add_to_group(&"Persist")
+
+	gadget.remove_from_group(&"Dragging")
+	gadget.position = get_local_mouse_position() - gadget.size / 2
+	gadget.position = gadget.position.clamp(Vector2.ZERO, size - gadget.size)
+	gadget.update_connection_positions()
+	#gadget.position = gadget.position.snapped(Vector2(128, 128))
+	gadget.mouse_filter = Control.MOUSE_FILTER_STOP
+
+
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
-			# Place Gadget
-			if gadget.get_parent() == self:
-				gadget.top_level = false
-			else:
-				gadget.get_parent().remove_child(gadget)
-				add_child(gadget)
-
-			gadget.remove_from_group(&"Dragging")
-			gadget.position = get_local_mouse_position() - gadget.size / 2
-			gadget.position = gadget.position.clamp(Vector2.ZERO, size - gadget.size)
-			gadget.update_connection_positions()
-			#gadget.position = gadget.position.snapped(Vector2(128, 128))
-			gadget.mouse_filter = Control.MOUSE_FILTER_STOP
+			place_gadget(gadget)
 
 
 func _on_visibility_changed() -> void:
