@@ -19,7 +19,7 @@ func _ready() -> void:
 	_on_device_changed(InputHelper.device, 0)
 
 
-func _on_device_changed(next_device: String, index: int):
+func _on_device_changed(next_device: String, _index: int) -> void:
 	var input_event := InputHelper.get_keyboard_or_joypad_input_for_action(action)
 	var input_string := InputHelper.get_label_for_input(input_event)
 	var texture_path := "res://icons/input/" + next_device + "/" + input_string + ".svg"

@@ -22,12 +22,12 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if visible and Input.is_action_just_pressed(&"ui_cancel"):
 		close()
 
 
-func toggle(o: Node3D):
+func toggle(o: Node3D) -> void:
 	object = o
 	if o and not o.tree_exiting.is_connected(close_on_free):
 		o.tree_exiting.connect(close_on_free)

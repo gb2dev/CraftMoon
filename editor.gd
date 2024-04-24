@@ -209,7 +209,7 @@ func set_object_builder_active(value: bool) -> void:
 	shape_select.visible = object_builder_active
 	cursor.visible = object_builder_active
 	crosshair.visible = not object_builder_active
-	target_position.z = -2.5 if object_builder_active else -5
+	target_position.z = -2.5 if object_builder_active else -5.0
 	highlighted_geometry = null
 
 	input_display.clear_input_prompts()
@@ -231,7 +231,7 @@ func set_object_builder_active(value: bool) -> void:
 
 func toggle_ui() -> void:
 	crosshair.visible = not crosshair.visible
-	input_display.visible = not input_display.visible
+	input_display.visible = not input_display.visible and process_mode == PROCESS_MODE_INHERIT
 	if object_builder_active:
 		shape_select.visible = not shape_select.visible
 		crosshair.visible = false
