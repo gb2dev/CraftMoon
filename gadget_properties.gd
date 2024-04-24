@@ -77,7 +77,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 			library_button.pressed.connect(sound_select_instance.show)
 			vbox.add_child(library_button)
 
-			add_slider("Range: ", &"Range", 2, 0.1, 50, 0.1, gadget)
+			add_slider("Range: ", &"Range", 2, 0, 50, 0.1, gadget)
 
 			add_slider("Volume: ", &"Volume", 1, 0, 1, 0.01, gadget)
 

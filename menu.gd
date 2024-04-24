@@ -2,6 +2,7 @@ extends Control
 
 
 const SOUND_MENU = preload("res://sounds/menu.wav")
+const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 
 @export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
@@ -60,6 +61,38 @@ func toggle() -> void:
 
 
 func _on_save_button_pressed() -> void:
+	toggle()
+	save_level()
+
+
+func _on_load_button_pressed() -> void:
+	toggle()
+	load_level()
+
+
+func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary]) -> void:
+	var index_offset := 0
+	var parent_index := 0
+	var logic_panel := player.editor.object_properties.logic_panel
+	for gadget: Gadget in gadgets:
+		var new_parent_index := gadget.node_3d.get_parent().get_index()
+		if parent_index != new_parent_index:
+			parent_index = new_parent_index
+			index_offset = gadget.get_index()
+
+		var gadget_data: Dictionary = gadget_data_array[gadget.get_index()]
+		var outputs_count: int = gadget_data.connections.size()
+		for output_index in outputs_count:
+			for output_data: Dictionary in gadget_data.connections[output_index]:
+				gadget.update_connection(
+					Gadget.ConnectionChange.CONNECT,
+					gadget.output_controls[output_index].back(),
+					logic_panel.get_children()[index_offset + output_data.target_gadget],
+					output_data.target_input
+				)
+
+
+func save_level() -> void:
 	var save_data := [{
 		"type": "Level",
 		"name": level_name.text,
@@ -91,7 +124,7 @@ func _on_save_button_pressed() -> void:
 			var path: String = "res://gadgets/" + node.type.to_snake_case()
 			var item_data := load(path + ".tres")
 			var parent_index: int = node.node_3d.get_parent().get_index()
-			var gadgets: Array = save_data[parent_index].gadgets
+			var gadgets: Array = save_data[parent_index + 1].gadgets
 			var connections: Array[Array]
 			var outputs_count: int = node.output_controls.size()
 			connections.resize(outputs_count)
@@ -124,7 +157,7 @@ func _on_save_button_pressed() -> void:
 		printerr("Error! Invalid level name.")
 
 
-func _on_load_button_pressed() -> void:
+func load_level() -> void:
 	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
 
 	if not FileAccess.file_exists(save_file_path):
@@ -155,6 +188,8 @@ func _on_load_button_pressed() -> void:
 						object_data.rotation,
 						object_data.size
 					)
+					if object.get_index() == 0:
+						object.add_to_group(&"Undeletable")
 			for gadget_data: Dictionary in object_data.gadgets:
 				player.editor.object_properties.object = object
 				var path: String = "res://gadgets/" + gadget_data.type.to_snake_case()
@@ -172,32 +207,11 @@ func _on_load_button_pressed() -> void:
 					gadget.set_meta(property, value)
 					gadget.change_property(property, value)
 		connect_gadgets(gadgets, gadget_data_array)
-
-
-func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary]) -> void:
-	var index_offset := 0
-	var parent_index := 0
-	var logic_panel := player.editor.object_properties.logic_panel
-	for gadget: Gadget in gadgets:
-		var new_parent_index := gadget.node_3d.get_parent().get_index()
-		if parent_index != new_parent_index:
-			parent_index = new_parent_index
-			index_offset = gadget.get_index()
-
-		var gadget_data: Dictionary = gadget_data_array[gadget.get_index()]
-		var outputs_count: int = gadget_data.connections.size()
-		for output_index in outputs_count:
-			for output_data: Dictionary in gadget_data.connections[output_index]:
-				gadget.update_connection(
-					Gadget.ConnectionChange.CONNECT,
-					gadget.output_controls[output_index].back(),
-					logic_panel.get_children()[index_offset + output_data.target_gadget],
-					output_data.target_input
-				)
+	# TODO: Use spawn point
+	player.position = Vector3.ZERO
 
 
 func new_level() -> void:
-	toggle()
 	get_tree().call_group(&"Persist", &"queue_free")
 	level_name.text = tr(&"New Level")
 	level_description.text = ""
@@ -215,7 +229,18 @@ func _on_quit_button_pressed() -> void:
 
 
 func _on_new_level_button_pressed() -> void:
+	toggle()
 	new_level()
+	var floor := player.editor.construct_shape(
+		"Cuboid",
+		Vector3(0, -0.5, 0),
+		Vector3.ZERO,
+		Vector3(100, 1, 100),
+	)
+	floor.add_to_group(&"Undeletable")
+	floor.material = DEFAULT_MATERIAL
+	# TODO: Use spawn point
+	player.position = Vector3.ZERO
 
 
 func _on_mode_button_pressed() -> void:
@@ -225,6 +250,7 @@ func _on_mode_button_pressed() -> void:
 		mode_button.text = tr(&"Play Mode")
 		player.editor.input_display.visible = true
 		player.editor.process_mode = PROCESS_MODE_INHERIT
+		load_level()
 	else:
 		# Enter Player Mode
 		mode_button.text = tr(&"Edit Mode")
@@ -232,3 +258,5 @@ func _on_mode_button_pressed() -> void:
 		player.editor.set_object_builder_active(false)
 		player.editor.input_display.visible = false
 		player.editor.process_mode = PROCESS_MODE_DISABLED
+		save_level()
+		load_level()
