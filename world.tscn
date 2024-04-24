@@ -1,11 +1,10 @@
-[gd_scene load_steps=13 format=4 uid="uid://vl04tjighggu"]
+[gd_scene load_steps=12 format=4 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
 [ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="2_htbds"]
 [ext_resource type="Script" path="res://menu.gd" id="5_r4y2q"]
 [ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="5_xpg20"]
-[ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="6_6viyk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_mi6cl"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -78,9 +77,8 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.392157)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim", "level_name", "level_description", "mode_button")]
 process_mode = 3
-visible = false
 z_index = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -99,6 +97,9 @@ script = ExtResource("5_r4y2q")
 player_scene = ExtResource("1_8ftwq")
 audio_player = NodePath("../AudioStreamPlayer")
 background_dim = NodePath("../BackgroundDim")
+level_name = NodePath("HBoxContainer/VBoxContainer/LevelName")
+level_description = NodePath("HBoxContainer/VBoxContainer/LevelDescription")
+mode_button = NodePath("ModeButton")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
 layout_mode = 2
@@ -117,16 +118,17 @@ expand_mode = 1
 [node name="VBoxContainer" type="VBoxContainer" parent="Menu/HBoxContainer"]
 layout_mode = 2
 
-[node name="LevelNameLabel" type="Label" parent="Menu/HBoxContainer/VBoxContainer"]
+[node name="LevelName" type="LineEdit" parent="Menu/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 28
 text = "Your Moon"
-label_settings = ExtResource("6_6viyk")
+placeholder_text = "Level Name"
 
-[node name="TextEdit" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer"]
+[node name="LevelDescription" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_vertical = 3
-placeholder_text = "Description"
+placeholder_text = "Level Description"
 context_menu_enabled = false
 
 [node name="Control" type="Control" parent="Menu"]
@@ -134,6 +136,14 @@ layout_mode = 2
 
 [node name="Control2" type="Control" parent="Menu"]
 layout_mode = 2
+
+[node name="ModeButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "Play Mode"
+
+[node name="NewLevelButton" type="Button" parent="Menu"]
+layout_mode = 2
+text = "New Level"
 
 [node name="SaveButton" type="Button" parent="Menu"]
 layout_mode = 2
@@ -159,6 +169,8 @@ spawn_path = NodePath("..")
 
 [node name="Geometry" type="Node3D" parent="."]
 
+[connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
+[connection signal="pressed" from="Menu/NewLevelButton" to="Menu" method="_on_new_level_button_pressed"]
 [connection signal="pressed" from="Menu/SaveButton" to="Menu" method="_on_save_button_pressed"]
 [connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]

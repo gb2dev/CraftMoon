@@ -6,6 +6,9 @@ const SOUND_MENU = preload("res://sounds/menu.wav")
 @export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
 @export var background_dim: ColorRect
+@export var level_name: LineEdit
+@export var level_description: TextEdit
+@export var mode_button: Button
 
 var peer := ENetMultiplayerPeer.new()
 var player: Player
@@ -22,7 +25,7 @@ func _ready() -> void:
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed(&"fullscreen"):
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
@@ -57,7 +60,11 @@ func toggle() -> void:
 
 
 func _on_save_button_pressed() -> void:
-	var save_data: Array[Dictionary]
+	var save_data := [{
+		"type": "Level",
+		"name": level_name.text,
+		"description": level_description.text,
+	}] as Array[Dictionary]
 	var gadget_indexes: Dictionary
 
 	for gadget: Gadget in player.editor.object_properties.logic_panel.get_children():
@@ -82,7 +89,6 @@ func _on_save_button_pressed() -> void:
 			})
 		elif node is Gadget:
 			var path: String = "res://gadgets/" + node.type.to_snake_case()
-			var item := load(path + ".tscn")
 			var item_data := load(path + ".tres")
 			var parent_index: int = node.node_3d.get_parent().get_index()
 			var gadgets: Array = save_data[parent_index].gadgets
@@ -109,21 +115,23 @@ func _on_save_button_pressed() -> void:
 			for property: StringName in node.get_meta_list():
 				gadget_data.properties[property] = node.get_meta(property)
 			gadgets.append(gadget_data)
-	var save_file := FileAccess.open("user://level.save", FileAccess.WRITE)
+	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
+	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	save_file.store_var(save_data)
 	prints("Save level: ", save_data)
 
 
 func _on_load_button_pressed() -> void:
-	if not FileAccess.file_exists("user://level.save"):
+	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
+
+	if not FileAccess.file_exists(save_file_path):
 		printerr("Error! Save file not found.")
 		return
 
-	var save_file := FileAccess.open("user://level.save", FileAccess.READ)
+	var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 	var save_data := save_file.get_var() as Array[Dictionary]
 	if save_data:
-		toggle()
-		get_tree().call_group(&"Persist", &"queue_free")
+		new_level()
 		await get_tree().process_frame
 
 		var gadgets: Array[Gadget]
@@ -131,6 +139,8 @@ func _on_load_button_pressed() -> void:
 		for object_data: Dictionary in save_data:
 			var object: CSGShape3D
 			match object_data.type:
+				"Level":
+					continue
 				"Cuboid":
 					player.editor.construction_material = load(object_data.material)
 					player.editor.construction_collision = object_data.collision
@@ -181,6 +191,13 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary
 				)
 
 
+func new_level() -> void:
+	toggle()
+	get_tree().call_group(&"Persist", &"queue_free")
+	level_name.text = tr(&"New Level")
+	level_description.text = ""
+
+
 func _on_join_button_pressed() -> void:
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 	hide()
@@ -190,3 +207,23 @@ func _on_join_button_pressed() -> void:
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_new_level_button_pressed() -> void:
+	new_level()
+
+
+func _on_mode_button_pressed() -> void:
+	toggle()
+	if player.editor.process_mode == PROCESS_MODE_DISABLED:
+		# Enter Edit Mode
+		mode_button.text = tr(&"Play Mode")
+		player.editor.input_display.visible = true
+		player.editor.process_mode = PROCESS_MODE_INHERIT
+	else:
+		# Enter Player Mode
+		mode_button.text = tr(&"Edit Mode")
+		player.fly = false
+		player.editor.set_object_builder_active(false)
+		player.editor.input_display.visible = false
+		player.editor.process_mode = PROCESS_MODE_DISABLED

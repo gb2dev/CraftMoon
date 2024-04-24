@@ -172,7 +172,7 @@ func change_property(_property: StringName, _value: Variant) -> void:
 
 
 func update_connection(
-		type: ConnectionChange,
+		connection_type: ConnectionChange,
 		output_control: OutputControl,
 		gadget: Gadget,
 		input_index: int
@@ -181,7 +181,7 @@ func update_connection(
 	var output_index := output_location[1]
 	var output_visual := output_visuals[output_index][output_location[0]] as Line2D
 
-	if type == ConnectionChange.DISCONNECT:
+	if connection_type == ConnectionChange.DISCONNECT:
 		if gadget:
 			gadget.input_data_changed.call_deferred(input_index)
 
@@ -198,7 +198,7 @@ func update_connection(
 		output_control.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	prints(
-		["CONNECT", "DISCONNECT", "DELETE", "CANCEL"][type],
+		["CONNECT", "DISCONNECT", "DELETE", "CANCEL"][connection_type],
 		"OUTPUT",
 		output_index,
 		"OF",
@@ -209,7 +209,7 @@ func update_connection(
 		gadget
 	)
 
-	if type == ConnectionChange.CONNECT:
+	if connection_type == ConnectionChange.CONNECT:
 		output_visual.points[2] = output_visual.to_local(
 			gadget.input_controls[input_index].global_position
 			+ Vector2(0, gadget.input_controls[input_index].size.y / 2)

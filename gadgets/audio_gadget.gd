@@ -12,7 +12,7 @@ var is_pulse: bool
 func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
-	input_pulse.connect(func(input_index: int) -> void:
+	input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0):
 			is_pulse = false
 			audio_player.play()

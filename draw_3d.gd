@@ -1,6 +1,6 @@
 extends Node
 
-func line(pos1: Vector3, pos2: Vector3, color = Color.WHITE_SMOKE, persist_ms = 0):
+func line(pos1: Vector3, pos2: Vector3, color := Color.WHITE_SMOKE, persist_ms := 0) -> MeshInstance3D:
 	var mesh_instance := MeshInstance3D.new()
 	var immediate_mesh := ImmediateMesh.new()
 	var material := ORMMaterial3D.new()
@@ -18,7 +18,7 @@ func line(pos1: Vector3, pos2: Vector3, color = Color.WHITE_SMOKE, persist_ms = 
 
 	return await final_cleanup(mesh_instance, persist_ms)
 
-func point(pos: Vector3, radius = 0.05, color = Color.WHITE_SMOKE, persist_ms = 0):
+func point(pos: Vector3, radius := 0.05, color := Color.WHITE_SMOKE, persist_ms := 0) -> MeshInstance3D:
 	var mesh_instance := MeshInstance3D.new()
 	var sphere_mesh := SphereMesh.new()
 	var material := ORMMaterial3D.new()
@@ -36,7 +36,7 @@ func point(pos: Vector3, radius = 0.05, color = Color.WHITE_SMOKE, persist_ms = 
 
 	return await final_cleanup(mesh_instance, persist_ms)
 
-func square(pos: Vector3, size: Vector2, color = Color.WHITE_SMOKE, persist_ms = 0):
+func square(pos: Vector3, size: Vector2, color := Color.WHITE_SMOKE, persist_ms := 0) -> MeshInstance3D:
 	var mesh_instance := MeshInstance3D.new()
 	var box_mesh := BoxMesh.new()
 	var material := ORMMaterial3D.new()
@@ -56,7 +56,7 @@ func square(pos: Vector3, size: Vector2, color = Color.WHITE_SMOKE, persist_ms =
 ## 1 -> Lasts ONLY for current physics frame
 ## >1 -> Lasts X time duration.
 ## <1 -> Stays indefinitely
-func final_cleanup(mesh_instance: MeshInstance3D, persist_ms: float):
+func final_cleanup(mesh_instance: MeshInstance3D, persist_ms: float) -> MeshInstance3D:
 	get_tree().get_root().add_child(mesh_instance)
 	if persist_ms == 1:
 		await get_tree().physics_frame
@@ -66,3 +66,4 @@ func final_cleanup(mesh_instance: MeshInstance3D, persist_ms: float):
 		mesh_instance.queue_free()
 	else:
 		return mesh_instance
+	return null

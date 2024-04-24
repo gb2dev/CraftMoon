@@ -69,9 +69,9 @@ func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
 		return
 
+	# Handle flying.
 	doubletap_time -= delta
-
-	if Input.is_action_just_pressed(&"jump"):
+	if Input.is_action_just_pressed(&"jump") and editor.process_mode == PROCESS_MODE_INHERIT:
 		if doubletap_time >= 0:
 			fly = not fly
 		else:
