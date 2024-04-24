@@ -7,11 +7,15 @@ extends Gadget
 var audio_player
 var inside_area := false
 var is_pulse: bool
+var range: float
 
 
 func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
+	if range == 0:
+		await get_tree().process_frame
+		audio_player.play()
 	input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0):
 			is_pulse = false
@@ -33,7 +37,9 @@ func change_property(property: StringName, value: Variant) -> void:
 			else:
 				audio_player.stream = AudioStreamOggVorbis.load_from_file(value)
 		&"Range":
-			area.scale = Vector3.ONE * value
+			range = value
+			if range > 0:
+				area.scale = Vector3.ONE * (range + 0.001)
 		&"Volume":
 			audio_player.volume_db = linear_to_db(value)
 		&"Loop":
@@ -81,7 +87,7 @@ func change_property(property: StringName, value: Variant) -> void:
 func _on_area_3d_body_entered(_body: Node3D) -> void:
 	# TODO: Add different modes
 	inside_area = true
-	if get_input_data(0) == null:
+	if get_input_data(0) == null and range > 0:
 		audio_player.play()
 
 
