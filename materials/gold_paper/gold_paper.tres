@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=4 uid="uid://dgvk5rclm6ymm"]
+
+[ext_resource type="Texture2D" uid="uid://ddxiu1nihhgk2" path="res://materials/gold_paper/gold_paper_albedo.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://h8yh8qc6x4sh" path="res://materials/gold_paper/gold_paper_normal.png" id="3"]
+
+[resource]
+albedo_texture = ExtResource("1")
+metallic = 1.0
+roughness = 0.23
+normal_enabled = true
+normal_texture = ExtResource("3")
+uv1_triplanar = true

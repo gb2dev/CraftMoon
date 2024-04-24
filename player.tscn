@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=4 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=92 format=4 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -20,25 +20,53 @@
 [ext_resource type="PackedScene" uid="uid://c2bf7nocvxdpt" path="res://gadgets/look_sensor_gadget.tscn" id="10_p8hru"]
 [ext_resource type="Script" path="res://item_data.gd" id="10_vwbuf"]
 [ext_resource type="Resource" uid="uid://coynjbvda5rxv" path="res://gadgets/look_sensor_gadget.tres" id="11_2hcwe"]
+[ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="11_amygl"]
 [ext_resource type="PackedScene" uid="uid://b58iek08ffik4" path="res://gadgets/timer_gadget.tscn" id="12_aol6q"]
+[ext_resource type="Texture2D" uid="uid://0x4lekoiwfoy" path="res://textures/checkerboard/dark/texture.png" id="12_ln8xu"]
 [ext_resource type="Resource" uid="uid://b0jic3u3x4twu" path="res://gadgets/timer_gadget.tres" id="12_q2k8v"]
 [ext_resource type="Resource" uid="uid://bwt7c3pq2r3ck" path="res://gadgets/counter_gadget.tres" id="13_0jkaf"]
+[ext_resource type="Material" uid="uid://bmfe3ung1r43h" path="res://materials/checkerboard_light.tres" id="13_fd330"]
 [ext_resource type="PackedScene" uid="uid://b0076wtaytvt8" path="res://gadgets/counter_gadget.tscn" id="14_dehu2"]
 [ext_resource type="Resource" uid="uid://cjibdh73f81ei" path="res://gadgets/mover_gadget.tres" id="14_hfbkh"]
 [ext_resource type="PackedScene" uid="uid://bveeg0yuju7de" path="res://gadgets/destroyer_gadget.tscn" id="14_urjv6"]
+[ext_resource type="Texture2D" uid="uid://8wcpwh30h8lm" path="res://textures/checkerboard/light/texture.png" id="14_yt3k6"]
+[ext_resource type="Material" uid="uid://qeb1mh3ehcuc" path="res://materials/checkerboard_red.tres" id="15_f5kyi"]
+[ext_resource type="Material" uid="uid://dfp7mi6xfcp5e" path="res://materials/checkerboard_purple.tres" id="15_m8q54"]
 [ext_resource type="Resource" uid="uid://bqmk6je8y6j4s" path="res://gadgets/destroyer_gadget.tres" id="15_x87ok"]
+[ext_resource type="Texture2D" uid="uid://dbmar74ed6awx" path="res://textures/checkerboard/purple/texture.png" id="16_8t8em"]
 [ext_resource type="PackedScene" uid="uid://52rwqsmbiy8c" path="res://gadgets/mover_gadget.tscn" id="16_f2ou7"]
 [ext_resource type="Resource" uid="uid://cq3b402dh2ku6" path="res://gadgets/randomizer_gadget.tres" id="16_qcibn"]
 [ext_resource type="PackedScene" uid="uid://clpfjgijn4b0k" path="res://gadgets/randomizer_gadget.tscn" id="16_ql82x"]
+[ext_resource type="Texture2D" uid="uid://bhj5wna6ucfap" path="res://textures/checkerboard/red/texture.png" id="16_qpwxh"]
 [ext_resource type="PackedScene" uid="uid://b8saypygfl3cx" path="res://gadgets/look_at_rotator_gadget.tscn" id="18_oedu1"]
 [ext_resource type="Resource" uid="uid://dtx7johfsvrx7" path="res://gadgets/look_at_rotator_gadget.tres" id="19_eaoe2"]
+[ext_resource type="Material" uid="uid://da7dr863kkdvu" path="res://materials/checkerboard_green.tres" id="20_ovs4r"]
+[ext_resource type="Texture2D" uid="uid://b167xncm2vwbb" path="res://textures/checkerboard/green/texture.png" id="21_4t1u5"]
 [ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="22_6glbq"]
 [ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="22_a247p"]
+[ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="22_b6ldi"]
+[ext_resource type="Texture2D" uid="uid://75sxf8hb2pub" path="res://materials/concrete/preview.png" id="23_7fols"]
 [ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="23_oywyv"]
+[ext_resource type="Material" uid="uid://bpbbnj2btwymp" path="res://materials/stone_tiles/stone_tiles.tres" id="23_x0oi6"]
+[ext_resource type="Material" uid="uid://cbwolwwwgyoxw" path="res://materials/wooden_planks/wooden_planks.tres" id="24_d1t05"]
+[ext_resource type="Material" uid="uid://g64wnw5cof7n" path="res://materials/metal_tiles/metal_tiles.tres" id="25_gfsug"]
+[ext_resource type="Material" uid="uid://b5cfubsumkga5" path="res://materials/fabric/fabric.tres" id="25_s8igr"]
+[ext_resource type="Texture2D" uid="uid://4lpnyn84jc0q" path="res://materials/stone_tiles/preview.png" id="25_uixov"]
+[ext_resource type="Material" uid="uid://dgvk5rclm6ymm" path="res://materials/gold_paper/gold_paper.tres" id="26_luav4"]
+[ext_resource type="Material" uid="uid://4r0xfcgt1mkf" path="res://materials/hazard_metal/hazard_metal.tres" id="27_mj2g8"]
+[ext_resource type="Texture2D" uid="uid://drqb7o6hnpq73" path="res://materials/wooden_planks/preview.png" id="27_ur4vx"]
+[ext_resource type="Texture2D" uid="uid://bcm5relfrv606" path="res://materials/metal_tiles/preview.png" id="29_3404h"]
+[ext_resource type="Material" uid="uid://b436ec1e2o5xg" path="res://materials/grass/grass.tres" id="29_vl4fd"]
+[ext_resource type="Material" uid="uid://bs31a34x1dslk" path="res://materials/dirt/dirt.tres" id="30_oercy"]
+[ext_resource type="Texture2D" uid="uid://b0ei1qu0qqewf" path="res://materials/gold_paper/preview.png" id="31_733w2"]
 [ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="32_v4hxm"]
+[ext_resource type="Texture2D" uid="uid://d0apuxuwhgicl" path="res://materials/hazard_metal/preview.png" id="33_k66v4"]
+[ext_resource type="Texture2D" uid="uid://bu2317mw4tvh5" path="res://materials/fabric/preview.png" id="35_jljdk"]
+[ext_resource type="Texture2D" uid="uid://dwj5tgkasql62" path="res://materials/grass/preview.png" id="37_6yr7o"]
 [ext_resource type="Script" path="res://input_display.gd" id="37_hedid"]
 [ext_resource type="PackedScene" uid="uid://nbcq2r8ym45k" path="res://shape_item.tscn" id="38_s2os7"]
 [ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="39_4q453"]
+[ext_resource type="Texture2D" uid="uid://cmi56iuuqmrf7" path="res://materials/dirt/preview.png" id="39_vcjpb"]
 [ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="40_m57ra"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
@@ -59,15 +87,85 @@ emission = Color(0, 0.733333, 0.733333, 1)
 content_margin_top = 10.0
 draw_center = false
 
+[sub_resource type="Resource" id="Resource_2wruj"]
+script = ExtResource("10_vwbuf")
+name = "Dark Checkerboard"
+icon = ExtResource("12_ln8xu")
+
+[sub_resource type="Resource" id="Resource_nq7gp"]
+script = ExtResource("10_vwbuf")
+name = "Light Checkerboard"
+icon = ExtResource("14_yt3k6")
+
+[sub_resource type="Resource" id="Resource_wvj06"]
+script = ExtResource("10_vwbuf")
+name = "Purple Checkerboard"
+icon = ExtResource("16_8t8em")
+
+[sub_resource type="Resource" id="Resource_m5hwq"]
+script = ExtResource("10_vwbuf")
+name = "Red Checkerboard"
+icon = ExtResource("16_qpwxh")
+
+[sub_resource type="Resource" id="Resource_1cna4"]
+script = ExtResource("10_vwbuf")
+name = "Orange Checkerboard"
+icon = ExtResource("8_pkph7")
+
+[sub_resource type="Resource" id="Resource_cim6i"]
+script = ExtResource("10_vwbuf")
+name = "Green Checkerboard"
+icon = ExtResource("21_4t1u5")
+
 [sub_resource type="Resource" id="Resource_xgfgq"]
 script = ExtResource("10_vwbuf")
 name = "Bricks"
 icon = ExtResource("32_v4hxm")
 
-[sub_resource type="Resource" id="Resource_2wruj"]
+[sub_resource type="Resource" id="Resource_qehr5"]
 script = ExtResource("10_vwbuf")
-name = "Checkerboard"
-icon = ExtResource("8_pkph7")
+name = "Concrete"
+icon = ExtResource("23_7fols")
+
+[sub_resource type="Resource" id="Resource_w865r"]
+script = ExtResource("10_vwbuf")
+name = "Stone Tiles"
+icon = ExtResource("25_uixov")
+
+[sub_resource type="Resource" id="Resource_u5mmr"]
+script = ExtResource("10_vwbuf")
+name = "Wooden Planks"
+icon = ExtResource("27_ur4vx")
+
+[sub_resource type="Resource" id="Resource_dycvs"]
+script = ExtResource("10_vwbuf")
+name = "Metal Tiles"
+icon = ExtResource("29_3404h")
+
+[sub_resource type="Resource" id="Resource_14il8"]
+script = ExtResource("10_vwbuf")
+name = "Gold Paper"
+icon = ExtResource("31_733w2")
+
+[sub_resource type="Resource" id="Resource_15gic"]
+script = ExtResource("10_vwbuf")
+name = "Hazard Metal"
+icon = ExtResource("33_k66v4")
+
+[sub_resource type="Resource" id="Resource_1ytjm"]
+script = ExtResource("10_vwbuf")
+name = "Fabric"
+icon = ExtResource("35_jljdk")
+
+[sub_resource type="Resource" id="Resource_otatv"]
+script = ExtResource("10_vwbuf")
+name = "Grass"
+icon = ExtResource("37_6yr7o")
+
+[sub_resource type="Resource" id="Resource_dxsxx"]
+script = ExtResource("10_vwbuf")
+name = "Dirt"
+icon = ExtResource("39_vcjpb")
 
 [sub_resource type="GDScript" id="GDScript_wy2up"]
 script/source = "extends Label
@@ -105,6 +203,7 @@ shape = SubResource("BoxShape3D_1njnr")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
 mesh = SubResource("CapsuleMesh_hjorb")
 
 [node name="Pivot" type="Node3D" parent="."]
@@ -162,8 +261,8 @@ script = ExtResource("3_tt4lx")
 gadgets_panel = NodePath("TabContainer/Logic/Gadgets")
 gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
 tab_container = NodePath("TabContainer")
-object_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Object")
-player_vbox = NodePath("TabContainer/Properties/Panel/MarginContainer/Player")
+object_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object")
+player_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player")
 audio_player = NodePath("../AudioStreamPlayer")
 editor = NodePath("../Pivot/Camera3D/Editor")
 logic_panel = NodePath("TabContainer/Logic/Logic")
@@ -191,98 +290,229 @@ anchor_bottom = 1.0
 offset_right = 326.0
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Properties/Panel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Object Properties/TabContainer/Properties/Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer"]
+layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Object" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer"]
+[node name="Object" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Material" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object"]
+[node name="Material" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material"]
+[node name="MaterialLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
 layout_mode = 2
 text = "Material"
 label_settings = ExtResource("5_8uss7")
 
-[node name="GridContainer" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material"]
+[node name="CheckerboardLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
 layout_mode = 2
-columns = 10
+text = "Checkerboard"
 
-[node name="BricksMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+[node name="CheckerboardMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="DarkCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("11_amygl")
+item_data = SubResource("Resource_2wruj")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="LightCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("13_fd330")
+item_data = SubResource("Resource_nq7gp")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="PurpleCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("15_m8q54")
+item_data = SubResource("Resource_wvj06")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="RedCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("15_f5kyi")
+item_data = SubResource("Resource_m5hwq")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="OrangeCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("3_qrqeb")
+item_data = SubResource("Resource_1cna4")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="GreenCheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("20_ovs4r")
+item_data = SubResource("Resource_cim6i")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="StoneLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Stone"
+
+[node name="StoneMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="BricksMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
 layout_mode = 2
 item = ExtResource("8_swd8g")
 item_data = SubResource("Resource_xgfgq")
-object_properties = NodePath("../../../../../../../..")
+object_properties = NodePath("../../../../../../../../..")
 
-[node name="CheckerboardMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Material/GridContainer" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+[node name="ConcreteMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
 layout_mode = 2
-item = ExtResource("3_qrqeb")
-item_data = SubResource("Resource_2wruj")
-object_properties = NodePath("../../../../../../../..")
+item = ExtResource("22_b6ldi")
+item_data = SubResource("Resource_qehr5")
+object_properties = NodePath("../../../../../../../../..")
 
-[node name="Physics" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object"]
+[node name="StoneTilesMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("23_x0oi6")
+item_data = SubResource("Resource_w865r")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="WoodLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Wood"
+
+[node name="WoodMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="WoodenPlanksMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/WoodMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("24_d1t05")
+item_data = SubResource("Resource_u5mmr")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="MetalLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Metal"
+
+[node name="MetalMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="MetalTilesMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("25_gfsug")
+item_data = SubResource("Resource_dycvs")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="GoldPaperMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("26_luav4")
+item_data = SubResource("Resource_14il8")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="HazardMetalPaperMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("27_mj2g8")
+item_data = SubResource("Resource_15gic")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="FabricLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Fabric"
+
+[node name="FabricMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="FabricMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/FabricMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("25_s8igr")
+item_data = SubResource("Resource_1ytjm")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="NatureLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Nature"
+
+[node name="NatureMaterialItems" type="GridContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="GrassMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("29_vl4fd")
+item_data = SubResource("Resource_otatv")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="DirtMaterialItem" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("7_8516d")]
+layout_mode = 2
+item = ExtResource("30_oercy")
+item_data = SubResource("Resource_dxsxx")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="Physics" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
 layout_mode = 2
 
-[node name="PhysicsLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
+[node name="PhysicsLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
 layout_mode = 2
 text = "Physics"
 label_settings = ExtResource("5_8uss7")
 
-[node name="CollisionCheckBox" type="CheckBox" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
+[node name="CollisionCheckBox" type="CheckBox" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
 layout_mode = 2
 button_pressed = true
 text = "Collision"
 
-[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
+[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
 layout_mode = 2
 script = SubResource("GDScript_wy2up")
 
-[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics"]
+[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
 layout_mode = 2
 min_value = -50.0
 max_value = 50.0
 step = 0.1
 value = 9.8
 
-[node name="Player" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer"]
+[node name="Player" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Color" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player"]
+[node name="Color" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Color"]
+[node name="Label" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
 layout_mode = 2
 text = "Color"
 label_settings = ExtResource("5_8uss7")
 
-[node name="ColorPickerButton" type="ColorPickerButton" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Color"]
+[node name="ColorPickerButton" type="ColorPickerButton" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
 layout_mode = 2
 text = "Color"
 color = Color(0.113725, 0.607843, 0.533333, 1)
 edit_alpha = false
 
-[node name="Attributes" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player"]
+[node name="Attributes" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
 layout_mode = 2
 
-[node name="AttributesLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Attributes"]
+[node name="AttributesLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
 layout_mode = 2
 text = "Attributes"
 label_settings = ExtResource("5_8uss7")
 
-[node name="SpeedLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/MarginContainer/Player/Attributes"]
+[node name="SpeedLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
 layout_mode = 2
 text = "Speed"
 
@@ -547,8 +777,8 @@ texture = ExtResource("40_m57ra")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
-[connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
-[connection signal="value_changed" from="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/GravitySlider" to="Object Properties/TabContainer/Properties/Panel/MarginContainer/Object/Physics/GravityLabel" method="_on_h_slider_value_changed"]
+[connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
+[connection signal="value_changed" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravitySlider" to="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravityLabel" method="_on_h_slider_value_changed"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]

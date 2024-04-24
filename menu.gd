@@ -117,8 +117,11 @@ func _on_save_button_pressed() -> void:
 			gadgets.append(gadget_data)
 	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
-	save_file.store_var(save_data)
-	prints("Save level: ", save_data)
+	if save_file:
+		save_file.store_var(save_data)
+		prints("Save level: ", save_data)
+	else:
+		printerr("Error! Invalid level name.")
 
 
 func _on_load_button_pressed() -> void:
@@ -133,6 +136,8 @@ func _on_load_button_pressed() -> void:
 	if save_data:
 		new_level()
 		await get_tree().process_frame
+		level_name.text = save_data[0].name
+		level_description.text = save_data[0].description
 
 		var gadgets: Array[Gadget]
 		var gadget_data_array: Array[Dictionary]

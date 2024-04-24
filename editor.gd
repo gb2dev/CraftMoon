@@ -69,9 +69,10 @@ func _process(_delta: float) -> void:
 			if get_collider() is CSGShape3D:
 				highlighted_geometry = get_collider()
 				if Input.is_action_just_pressed(&"destroy"):
-					audio_player.stream = SOUND_DESTROY
-					audio_player.play()
-					highlighted_geometry.queue_free()
+					if highlighted_geometry.is_in_group(&"Persist"):
+						audio_player.stream = SOUND_DESTROY
+						audio_player.play()
+						highlighted_geometry.queue_free()
 				return
 		highlighted_geometry = null
 
