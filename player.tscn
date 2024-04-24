@@ -246,7 +246,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ytf4n")
 
 [node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "audio_player", "editor", "logic_panel") groups=["UI"]]
 unique_name_in_owner = true
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -254,7 +253,7 @@ anchor_bottom = 1.0
 offset_left = 10.0
 offset_top = 10.0
 offset_right = -10.0
-offset_bottom = -10.0
+offset_bottom = -62.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("3_tt4lx")
@@ -272,7 +271,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -52.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bn4ce")

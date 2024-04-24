@@ -46,12 +46,12 @@ func toggle(o: Node3D) -> void:
 			if is_instance_valid(object):
 				tab_container.tabs_visible = true
 				tab_container.position.y = 0
-				tab_container.size.y = 576
+				tab_container.size.y = tab_container.get_parent().size.y
 			else:
 				tab_container.set_deferred(&"current_tab", 0)
 				tab_container.tabs_visible = false
 				tab_container.position.y = 28
-				tab_container.size.y = 576 - 28
+				tab_container.size.y = tab_container.get_parent().size.y - 28
 			object_vbox.show()
 			player_vbox.hide()
 		show()
