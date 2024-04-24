@@ -207,5 +207,4 @@ locale/translations=PackedStringArray("res://translations.en.translation", "res:
 
 [rendering]
 
-anti_aliasing/quality/use_taa=true
-anti_aliasing/quality/use_debanding=true
+anti_aliasing/quality/screen_space_aa=1
