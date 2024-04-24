@@ -26,19 +26,20 @@ texture = ExtResource("2_wx2yp")
 expand_mode = 1
 script = ExtResource("1_5ebnv")
 
-[node name="InputControls" type="VBoxContainer" parent="."]
+[node name="InputControls" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 4.0
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 6
-alignment = 1
 
 [node name="InputControl0" type="ColorRect" parent="InputControls" groups=["InputControl"]]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
+offset_top = 27.0
+offset_right = 4.0
+offset_bottom = 37.0
 tooltip_text = "Power"
 color = Color(1, 0.27451, 0.196078, 1)
 script = ExtResource("3_gd2ll")
