@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b0076wtaytvt8"]
+[gd_scene load_steps=5 format=4 uid="uid://b0076wtaytvt8"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_xna3w"]
 [ext_resource type="Script" path="res://gadgets/counter_gadget.gd" id="2_xgda2"]
@@ -23,18 +23,28 @@ step = 1.0
 fill_mode = 3
 show_percentage = false
 
+[node name="InputControl0" parent="InputControls" index="0"]
+offset_top = 9.0
+offset_bottom = 19.0
+
 [node name="InputControl1" type="ColorRect" parent="InputControls" index="1" groups=["InputControl"]]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
-tooltip_text = "Add to Counter"
-color = Color(1, 0.466667, 0.2, 1)
+offset_top = 27.0
+offset_right = 4.0
+offset_bottom = 37.0
+tooltip_text = "Power"
+color = Color(0.877272, 0.438371, 1.15514e-06, 1)
 script = ExtResource("3_vyuno")
 
 [node name="InputControl2" type="ColorRect" parent="InputControls" index="2" groups=["InputControl"]]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
-tooltip_text = "Reset Counter"
-color = Color(1, 0.466667, 0.2, 1)
+offset_top = 45.0
+offset_right = 4.0
+offset_bottom = 55.0
+tooltip_text = "Power"
+color = Color(0.877272, 0.438371, 1.15514e-06, 1)
 script = ExtResource("3_vyuno")
 
 [node name="OutputControl0" parent="OutputControls" index="0"]

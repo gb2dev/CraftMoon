@@ -58,6 +58,14 @@ func toggle() -> void:
 
 func _on_save_button_pressed() -> void:
 	var save_data: Array[Dictionary]
+	var gadget_indexes: Dictionary
+
+	for gadget: Gadget in player.editor.object_properties.logic_panel.get_children():
+		var parent_index: int = gadget.node_3d.get_parent().get_index()
+		if not gadget_indexes.has(parent_index):
+			gadget_indexes[parent_index] = []
+		gadget_indexes[parent_index].append(gadget.get_index())
+
 	for node in get_tree().get_nodes_in_group(&"Persist"):
 		if node is CSGShape3D:
 			var type: String
@@ -76,7 +84,7 @@ func _on_save_button_pressed() -> void:
 			var path: String = "res://gadgets/" + node.type.to_snake_case()
 			var item := load(path + ".tscn")
 			var item_data := load(path + ".tres")
-			var parent_index: int = node.node_3d.get_parent_node_3d().get_index()
+			var parent_index: int = node.node_3d.get_parent().get_index()
 			var gadgets: Array = save_data[parent_index].gadgets
 			var connections: Array[Array]
 			var outputs_count: int = node.output_controls.size()
@@ -87,7 +95,9 @@ func _on_save_button_pressed() -> void:
 						continue
 
 					connections[output_index].append({
-						"target_gadget": output_control.target_gadget.get_index(),
+						"target_gadget": gadget_indexes[parent_index].find(
+							output_control.target_gadget.get_index()
+						),
 						"target_input": output_control.target_input,
 					})
 			var gadget_data := {
@@ -116,7 +126,8 @@ func _on_load_button_pressed() -> void:
 		get_tree().call_group(&"Persist", &"queue_free")
 		await get_tree().process_frame
 
-		var gadgets: Array
+		var gadgets: Array[Gadget]
+		var gadget_data_array: Array[Dictionary]
 		for object_data: Dictionary in save_data:
 			var object: CSGShape3D
 			match object_data.type:
@@ -129,7 +140,6 @@ func _on_load_button_pressed() -> void:
 						object_data.rotation,
 						object_data.size
 					)
-			gadgets.append_array(object_data.gadgets)
 			for gadget_data: Dictionary in object_data.gadgets:
 				player.editor.object_properties.object = object
 				var path: String = "res://gadgets/" + gadget_data.type.to_snake_case()
@@ -140,25 +150,33 @@ func _on_load_button_pressed() -> void:
 					item_data,
 					gadget_data.position
 				)
+				gadgets.append(gadget)
+				gadget_data_array.append(gadget_data)
 				for property: StringName in gadget_data.properties:
 					var value: Variant = gadget_data.properties[property]
 					gadget.set_meta(property, value)
 					gadget.change_property(property, value)
-		connect_gadgets(gadgets)
+		connect_gadgets(gadgets, gadget_data_array)
 
 
-func connect_gadgets(gadgets: Array) -> void:
+func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary]) -> void:
+	var index_offset := 0
+	var parent_index := 0
 	var logic_panel := player.editor.object_properties.logic_panel
-	for i in gadgets.size():
-		var gadget_data: Dictionary = gadgets[i]
-		var gadget := logic_panel.get_children()[i]
+	for gadget: Gadget in gadgets:
+		var new_parent_index := gadget.node_3d.get_parent().get_index()
+		if parent_index != new_parent_index:
+			parent_index = new_parent_index
+			index_offset = gadget.get_index()
+
+		var gadget_data: Dictionary = gadget_data_array[gadget.get_index()]
 		var outputs_count: int = gadget_data.connections.size()
 		for output_index in outputs_count:
 			for output_data: Dictionary in gadget_data.connections[output_index]:
 				gadget.update_connection(
 					Gadget.ConnectionChange.CONNECT,
 					gadget.output_controls[output_index].back(),
-					logic_panel.get_children()[output_data.target_gadget],
+					logic_panel.get_children()[index_offset + output_data.target_gadget],
 					output_data.target_input
 				)
 
