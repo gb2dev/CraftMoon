@@ -234,7 +234,10 @@ func set_object_builder_active(value: bool) -> void:
 
 func toggle_ui() -> void:
 	crosshair.visible = not crosshair.visible
-	input_display.visible = not input_display.visible and process_mode == PROCESS_MODE_INHERIT
+	input_display.visible = not input_display.visible and (
+		process_mode == PROCESS_MODE_INHERIT
+		or get_tree().get_first_node_in_group(&"Moon")
+	)
 	if object_builder_active:
 		shape_select.visible = not shape_select.visible
 		crosshair.visible = false
