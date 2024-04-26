@@ -120,8 +120,9 @@ func save_level() -> void:
 		"type": "Level",
 		"name": level_name.text,
 		"description": level_description.text,
-		"slot": slot,
 	}] as Array[Dictionary]
+	if save_data[0].name.is_empty():
+		save_data[0].name = tr(&"New Level")
 	var gadget_indexes: Dictionary
 
 	for gadget: Gadget in player.editor.object_properties.logic_panel.get_children():
@@ -172,7 +173,7 @@ func save_level() -> void:
 			for property: StringName in node.get_meta_list():
 				gadget_data.properties[property] = node.get_meta(property)
 			gadgets.append(gadget_data)
-	var save_file_path := "user://levels/" + level_name.text.to_snake_case() + ".save"
+	var save_file_path := "user://levels/" + str(slot) + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
 		save_file.store_var(save_data)
@@ -193,7 +194,7 @@ func load_level(level := "") -> void:
 
 	if level.is_empty():
 		level = level_name.text
-	var save_file_path := "user://levels/" + level.to_snake_case() + ".save"
+	var save_file_path := "user://levels/" + level + ".save"
 
 	if not FileAccess.file_exists(save_file_path):
 		printerr("Error! Save file not found.")
@@ -339,7 +340,7 @@ func spawn_level_portals() -> void:
 				var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 				var save_data := save_file.get_var() as Array[Dictionary]
 				if save_data:
-					var level_portal := level_portals.get_child(save_data[0].slot) as LevelPortal
+					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
 					level_portal.label.text = save_data[0].name
 					level_portal.level = file_name.trim_suffix(".save")
 			file_name = dir.get_next()
