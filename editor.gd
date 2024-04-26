@@ -194,6 +194,8 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			cuboid.size = size
 			cuboid.material = construction_material
 			cuboid.use_collision = construction_collision
+			if cuboid.get_index() == 0:
+				cuboid.add_to_group(&"Undeletable")
 			return cuboid
 	return null
 

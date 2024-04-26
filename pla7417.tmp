@@ -94,8 +94,6 @@ func _process(delta: float) -> void:
 		if level_portal_collider:
 			var level_portal := level_portal_collider.get_parent() as LevelPortal
 			level_portal.menu.delete_save(level_portal.level)
-			level_portal.level = \"\"
-			level_portal.label.text = \"\"
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bn4ce"]

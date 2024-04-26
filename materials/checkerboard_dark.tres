@@ -1,4 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=4 uid="uid://cifbee8llneyb"]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://cifbee8llneyb"]
 
 [ext_resource type="Texture2D" uid="uid://0x4lekoiwfoy" path="res://textures/checkerboard/dark/texture.png" id="1_44imw"]
 

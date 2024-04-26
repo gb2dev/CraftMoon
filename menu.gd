@@ -1,3 +1,4 @@
+class_name Menu
 extends Control
 
 
@@ -5,17 +6,40 @@ const SOUND_MENU = preload("res://sounds/menu.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 
+const LEVEL_PORTAL = preload("res://level_portal.tscn")
+const LEVEL_PORTAL_POSITIONS = [
+	Vector3(-4, 0, -12),
+	Vector3(3, 0, -11),
+	Vector3(9, 0, -9),
+	Vector3(-11, 0, -8),
+	Vector3(0, 0, -7),
+	Vector3(-6, 0, -6),
+	Vector3(6, 0, -4),
+	Vector3(-10, 0, -2),
+	Vector3(11, 0, -1),
+	Vector3(-11, 0, 3),
+	Vector3(9, 0, 4),
+	Vector3(-6, 0, 6),
+	Vector3(3, 0, 7),
+	Vector3(-10, 0, 8),
+	Vector3(8, 0, 9),
+	Vector3(-3, 0, 10),
+]
+
 @export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
 @export var background_dim: ColorRect
+@export var level_transition_wipe: ColorRect
 @export var level_name: LineEdit
 @export var level_description: TextEdit
 @export var mode_button: Button
 @export var save_button: Button
 @export var moon_button: Button
+@export var level_portals: Node3D
 
 var peer := ENetMultiplayerPeer.new()
 var player: Player
+var slot := 0
 
 
 # Called when the node enters the scene tree for the first time.
@@ -28,6 +52,8 @@ func _ready() -> void:
 	add_player()
 	await get_tree().process_frame
 	enter_play_mode()
+	DirAccess.make_dir_absolute("user://levels")
+	spawn_level_portals()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -65,16 +91,6 @@ func toggle() -> void:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
-func _on_save_button_pressed() -> void:
-	toggle()
-	save_level()
-
-
-func _on_load_button_pressed() -> void:
-	toggle()
-	load_level()
-
-
 func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary]) -> void:
 	var index_offset := 0
 	var parent_index := 0
@@ -102,6 +118,7 @@ func save_level() -> void:
 		"type": "Level",
 		"name": level_name.text,
 		"description": level_description.text,
+		"slot": slot,
 	}] as Array[Dictionary]
 	var gadget_indexes: Dictionary
 
@@ -153,7 +170,7 @@ func save_level() -> void:
 			for property: StringName in node.get_meta_list():
 				gadget_data.properties[property] = node.get_meta(property)
 			gadgets.append(gadget_data)
-	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
+	var save_file_path := "user://levels/" + level_name.text.to_snake_case() + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
 		save_file.store_var(save_data)
@@ -162,8 +179,19 @@ func save_level() -> void:
 		printerr("Error! Invalid level name.")
 
 
-func load_level() -> void:
-	var save_file_path := "user://" + level_name.text.to_snake_case() + ".save"
+func load_level(level := "") -> void:
+	level_name.selecting_enabled = true
+	level_name.editable = true
+	level_name.flat = false
+	level_description.visible = true
+	level_name.size_flags_vertical = Control.SIZE_FILL
+	mode_button.visible = true
+	save_button.visible = true
+	moon_button.visible = true
+
+	if level.is_empty():
+		level = level_name.text
+	var save_file_path := "user://levels/" + level.to_snake_case() + ".save"
 
 	if not FileAccess.file_exists(save_file_path):
 		printerr("Error! Save file not found.")
@@ -193,8 +221,6 @@ func load_level() -> void:
 						object_data.rotation,
 						object_data.size
 					)
-					if object.get_index() == 0:
-						object.add_to_group(&"Undeletable")
 			for gadget_data: Dictionary in object_data.gadgets:
 				player.editor.object_properties.object = object
 				var path: String = "res://gadgets/" + gadget_data.type.to_snake_case()
@@ -216,17 +242,46 @@ func load_level() -> void:
 	player.position = Vector3.ZERO
 
 
-func new_level() -> void:
-	get_tree().call_group(&"Persist", &"queue_free")
-	level_name.text = tr(&"New Level")
-	level_description.text = ""
+func delete_save(level: String) -> void:
+	DirAccess.remove_absolute("user://levels/" + level + ".save")
+
+
+func new_level(blank := true) -> void:
+	if not blank:
+		level_name.selecting_enabled = true
+		level_name.editable = true
+		level_name.flat = false
+		level_description.visible = true
+		level_name.size_flags_vertical = Control.SIZE_FILL
+		mode_button.visible = true
+		save_button.visible = true
+		moon_button.visible = true
+
+		await wipe()
+
+		new_level()
+		await get_tree().process_frame
+		var floor_object := player.editor.construct_shape(
+			"Cuboid",
+			Vector3(0, -0.5, 0),
+			Vector3.ZERO,
+			Vector3(100, 1, 100),
+		)
+		floor_object.material = DEFAULT_MATERIAL
+		# TODO: Use spawn point
+		player.position = Vector3.ZERO
+		enter_edit_mode()
+	else:
+		get_tree().call_group(&"Persist", &"queue_free")
+		get_tree().call_group(&"Moon", &"queue_free")
+		level_name.text = tr(&"New Level")
+		level_description.text = ""
 
 
 func enter_edit_mode() -> void:
 	mode_button.text = tr(&"Play Mode")
 	player.editor.input_display.visible = true
 	player.editor.process_mode = PROCESS_MODE_INHERIT
-	load_level()
 
 
 func enter_play_mode() -> void:
@@ -235,7 +290,58 @@ func enter_play_mode() -> void:
 	player.editor.set_object_builder_active(false)
 	player.editor.input_display.visible = false
 	player.editor.process_mode = PROCESS_MODE_DISABLED
+
+
+func wipe() -> void:
+	var tween := get_tree().create_tween()
+	tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.5)
+	await tween.finished
+	tween = get_tree().create_tween()
+	tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.5).set_delay(0.5)
+
+
+func spawn_level_portals() -> void:
+	for i in LEVEL_PORTAL_POSITIONS.size():
+		var pos := LEVEL_PORTAL_POSITIONS[i] as Vector3
+		var level_portal := LEVEL_PORTAL.instantiate() as LevelPortal
+		level_portals.add_child(level_portal)
+		level_portal.position = pos
+		level_portal.menu = self
+		if i % 3 == 0:
+			level_portal.scale = Vector3.ONE * 2
+		else:
+			level_portal.label.scale = Vector3.ONE * 2
+
+	player.editor.input_display.clear_input_prompts()
+	player.editor.input_display.add_input_prompt(&"destroy", tr(&"Delete Level"))
+	player.editor.input_display.visible = true
+
+	var dir := DirAccess.open("user://levels")
+	if dir:
+		dir.list_dir_begin()
+		var file_name := dir.get_next()
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.ends_with(".save"):
+				var save_file_path := "user://levels/" + file_name
+				var save_file := FileAccess.open(save_file_path, FileAccess.READ)
+				var save_data := save_file.get_var() as Array[Dictionary]
+				if save_data:
+					var level_portal := level_portals.get_child(save_data[0].slot) as LevelPortal
+					level_portal.label.text = save_data[0].name
+					level_portal.level = file_name.trim_suffix(".save")
+			file_name = dir.get_next()
+	else:
+		print("An error occurred when trying to access the path.")
+
+
+func _on_save_button_pressed() -> void:
+	toggle()
 	save_level()
+
+
+func _on_load_button_pressed() -> void:
+	toggle()
+	await wipe()
 	load_level()
 
 
@@ -251,38 +357,23 @@ func _on_quit_button_pressed() -> void:
 
 
 func _on_new_level_button_pressed() -> void:
-	level_name.editable = true
-	level_name.flat = false
-	level_description.visible = true
-	level_name.size_flags_vertical = Control.SIZE_FILL
-	mode_button.visible = true
-	save_button.visible = true
-	moon_button.visible = true
-
 	toggle()
-	new_level()
-	var floor := player.editor.construct_shape(
-		"Cuboid",
-		Vector3(0, -0.5, 0),
-		Vector3.ZERO,
-		Vector3(100, 1, 100),
-	)
-	floor.add_to_group(&"Undeletable")
-	floor.material = DEFAULT_MATERIAL
-	# TODO: Use spawn point
-	player.position = Vector3.ZERO
-	enter_edit_mode()
+	new_level(false)
 
 
 func _on_mode_button_pressed() -> void:
 	toggle()
 	if player.editor.process_mode == PROCESS_MODE_DISABLED:
 		enter_edit_mode()
+		load_level()
 	else:
 		enter_play_mode()
+		save_level()
+		load_level()
 
 
 func _on_moon_button_pressed() -> void:
+	level_name.selecting_enabled = false
 	level_name.editable = false
 	level_name.flat = true
 	level_description.visible = false
@@ -292,16 +383,20 @@ func _on_moon_button_pressed() -> void:
 	moon_button.visible = false
 
 	toggle()
+
+	await wipe()
+
 	new_level()
+	await get_tree().process_frame
 	level_name.text = tr(&"Your Moon")
-	var floor := player.editor.construct_shape(
+	var floor_object := player.editor.construct_shape(
 		"Cuboid",
 		Vector3(0, -0.5, 0),
 		Vector3.ZERO,
 		Vector3(100, 1, 100),
 	)
-	floor.add_to_group(&"Undeletable")
-	floor.material = MOON_MATERIAL
+	floor_object.material = MOON_MATERIAL
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
 	enter_play_mode()
+	spawn_level_portals()

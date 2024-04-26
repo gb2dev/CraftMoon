@@ -1,4 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=4 uid="uid://cbwolwwwgyoxw"]
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://cbwolwwwgyoxw"]
 
 [ext_resource type="Texture2D" uid="uid://wboonk0u7fsu" path="res://materials/wooden_planks/wooden_planks_albedo.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://cvn4akhsab7iv" path="res://materials/wooden_planks/wooden_planks_orm.png" id="2"]

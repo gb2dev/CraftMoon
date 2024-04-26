@@ -1,4 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=5 format=4 uid="uid://dqfagp1m6bcop"]
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://dqfagp1m6bcop"]
 
 [ext_resource type="Texture2D" uid="uid://cteanqgwbc3g0" path="res://materials/bricks/bricks_albedo.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://bdk268168ac3o" path="res://materials/bricks/bricks_orm.png" id="2"]
