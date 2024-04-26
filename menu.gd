@@ -3,6 +3,8 @@ extends Control
 
 
 const SOUND_MENU = preload("res://sounds/menu.wav")
+const SOUND_WHOOSH = preload("res://sounds/whoosh.wav")
+const SOUND_DELETE = preload("res://sounds/destroy.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 
@@ -240,10 +242,16 @@ func load_level(level := "") -> void:
 		connect_gadgets(gadgets, gadget_data_array)
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
+	player.pivot.rotation = Vector3.ZERO
+	player.camera.rotation = Vector3.ZERO
 
 
 func delete_save(level: String) -> void:
-	DirAccess.remove_absolute("user://levels/" + level + ".save")
+	var path := "user://levels/" + level + ".save"
+	if FileAccess.file_exists(path):
+		audio_player.stream = SOUND_DELETE
+		audio_player.play()
+		DirAccess.remove_absolute(path)
 
 
 func new_level(blank := true) -> void:
@@ -270,6 +278,8 @@ func new_level(blank := true) -> void:
 		floor_object.material = DEFAULT_MATERIAL
 		# TODO: Use spawn point
 		player.position = Vector3.ZERO
+		player.pivot.rotation = Vector3.ZERO
+		player.camera.rotation = Vector3.ZERO
 		enter_edit_mode()
 	else:
 		get_tree().call_group(&"Persist", &"queue_free")
@@ -282,6 +292,7 @@ func enter_edit_mode() -> void:
 	mode_button.text = tr(&"Play Mode")
 	player.editor.input_display.visible = true
 	player.editor.process_mode = PROCESS_MODE_INHERIT
+	player.editor.set_object_builder_active(false)
 
 
 func enter_play_mode() -> void:
@@ -293,11 +304,13 @@ func enter_play_mode() -> void:
 
 
 func wipe() -> void:
+	audio_player.stream = SOUND_WHOOSH
+	audio_player.play()
 	var tween := get_tree().create_tween()
-	tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.5)
+	tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
 	await tween.finished
 	tween = get_tree().create_tween()
-	tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.5).set_delay(0.5)
+	tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
 
 
 func spawn_level_portals() -> void:
@@ -398,5 +411,7 @@ func _on_moon_button_pressed() -> void:
 	floor_object.material = MOON_MATERIAL
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
+	player.pivot.rotation = Vector3.ZERO
+	player.camera.rotation = Vector3.ZERO
 	enter_play_mode()
 	spawn_level_portals()
