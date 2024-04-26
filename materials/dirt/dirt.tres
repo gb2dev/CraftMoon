@@ -1,4 +1,4 @@
-[gd_resource type="StandardMaterial3D" load_steps=6 format=4 uid="uid://bs31a34x1dslk"]
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://bs31a34x1dslk"]
 
 [ext_resource type="Texture2D" uid="uid://8c1wcekocd6x" path="res://materials/dirt/dirt_albedo.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://cqgga61emhphx" path="res://materials/dirt/dirt_orm.png" id="2"]
