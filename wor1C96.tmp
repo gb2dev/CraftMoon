@@ -60,7 +60,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.392157)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim", "level_name", "level_description", "mode_button", "save_button", "moon_button")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim", "level_name", "level_description", "mode_button")]
 process_mode = 3
 z_index = 1
 anchors_preset = 8
@@ -83,8 +83,6 @@ background_dim = NodePath("../BackgroundDim")
 level_name = NodePath("HBoxContainer/VBoxContainer/LevelName")
 level_description = NodePath("HBoxContainer/VBoxContainer/LevelDescription")
 mode_button = NodePath("ModeButton")
-save_button = NodePath("SaveButton")
-moon_button = NodePath("MoonButton")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
 layout_mode = 2
@@ -151,7 +149,6 @@ layout_mode = 2
 text = "Join"
 
 [node name="MoonButton" type="Button" parent="Menu"]
-visible = false
 layout_mode = 2
 text = "Return to Moon"
 
