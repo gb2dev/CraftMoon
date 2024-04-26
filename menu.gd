@@ -3,6 +3,7 @@ extends Control
 
 const SOUND_MENU = preload("res://sounds/menu.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
+const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 
 @export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
@@ -10,6 +11,8 @@ const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 @export var level_name: LineEdit
 @export var level_description: TextEdit
 @export var mode_button: Button
+@export var save_button: Button
+@export var moon_button: Button
 
 var peer := ENetMultiplayerPeer.new()
 var player: Player
@@ -23,6 +26,8 @@ func _ready() -> void:
 	multiplayer.multiplayer_peer = peer
 	multiplayer.peer_connected.connect(add_player)
 	add_player()
+	await get_tree().process_frame
+	enter_play_mode()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -217,6 +222,23 @@ func new_level() -> void:
 	level_description.text = ""
 
 
+func enter_edit_mode() -> void:
+	mode_button.text = tr(&"Play Mode")
+	player.editor.input_display.visible = true
+	player.editor.process_mode = PROCESS_MODE_INHERIT
+	load_level()
+
+
+func enter_play_mode() -> void:
+	mode_button.text = tr(&"Edit Mode")
+	player.fly = false
+	player.editor.set_object_builder_active(false)
+	player.editor.input_display.visible = false
+	player.editor.process_mode = PROCESS_MODE_DISABLED
+	save_level()
+	load_level()
+
+
 func _on_join_button_pressed() -> void:
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 	hide()
@@ -229,6 +251,14 @@ func _on_quit_button_pressed() -> void:
 
 
 func _on_new_level_button_pressed() -> void:
+	level_name.editable = true
+	level_name.flat = false
+	level_description.visible = true
+	level_name.size_flags_vertical = Control.SIZE_FILL
+	mode_button.visible = true
+	save_button.visible = true
+	moon_button.visible = true
+
 	toggle()
 	new_level()
 	var floor := player.editor.construct_shape(
@@ -241,22 +271,37 @@ func _on_new_level_button_pressed() -> void:
 	floor.material = DEFAULT_MATERIAL
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
+	enter_edit_mode()
 
 
 func _on_mode_button_pressed() -> void:
 	toggle()
 	if player.editor.process_mode == PROCESS_MODE_DISABLED:
-		# Enter Edit Mode
-		mode_button.text = tr(&"Play Mode")
-		player.editor.input_display.visible = true
-		player.editor.process_mode = PROCESS_MODE_INHERIT
-		load_level()
+		enter_edit_mode()
 	else:
-		# Enter Player Mode
-		mode_button.text = tr(&"Edit Mode")
-		player.fly = false
-		player.editor.set_object_builder_active(false)
-		player.editor.input_display.visible = false
-		player.editor.process_mode = PROCESS_MODE_DISABLED
-		save_level()
-		load_level()
+		enter_play_mode()
+
+
+func _on_moon_button_pressed() -> void:
+	level_name.editable = false
+	level_name.flat = true
+	level_description.visible = false
+	level_name.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mode_button.visible = false
+	save_button.visible = false
+	moon_button.visible = false
+
+	toggle()
+	new_level()
+	level_name.text = tr(&"Your Moon")
+	var floor := player.editor.construct_shape(
+		"Cuboid",
+		Vector3(0, -0.5, 0),
+		Vector3.ZERO,
+		Vector3(100, 1, 100),
+	)
+	floor.add_to_group(&"Undeletable")
+	floor.material = MOON_MATERIAL
+	# TODO: Use spawn point
+	player.position = Vector3.ZERO
+	enter_play_mode()
