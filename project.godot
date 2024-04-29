@@ -39,8 +39,8 @@ import/blender/enabled=false
 
 [gui]
 
-theme/custom_font="res://fonts/dinish.otf"
 timers/tooltip_delay_sec=0.1
+theme/custom_font="res://fonts/dinish.otf"
 
 [input]
 

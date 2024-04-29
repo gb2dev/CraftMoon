@@ -7,6 +7,7 @@ const SOUND_WHOOSH = preload("res://sounds/whoosh.wav")
 const SOUND_DELETE = preload("res://sounds/destroy.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
+const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
 
 const LEVEL_PORTAL = preload("res://level_portal.tscn")
 const LEVEL_PORTAL_POSITIONS = [
@@ -37,6 +38,7 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var mode_button: Button
 @export var save_button: Button
 @export var moon_button: Button
+@export var export_button: Button
 @export var level_portals: Node3D
 
 var peer := ENetMultiplayerPeer.new()
@@ -191,6 +193,7 @@ func load_level(level := "") -> void:
 	mode_button.visible = true
 	save_button.visible = true
 	moon_button.visible = true
+	export_button.visible = true
 
 	if level.is_empty():
 		level = level_name.text
@@ -265,6 +268,7 @@ func new_level(blank := true) -> void:
 		mode_button.visible = true
 		save_button.visible = true
 		moon_button.visible = true
+		export_button.visible = true
 
 		await wipe()
 
@@ -325,6 +329,7 @@ func spawn_level_portals() -> void:
 			level_portal.scale = Vector3.ONE * 2
 		else:
 			level_portal.label.scale = Vector3.ONE * 2
+		level_portal.label.global_position.y = 0.25
 
 	player.editor.input_display.clear_input_prompts()
 	player.editor.input_display.add_input_prompt(&"destroy", tr(&"Delete Level"))
@@ -343,6 +348,8 @@ func spawn_level_portals() -> void:
 					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
 					level_portal.label.text = save_data[0].name
 					level_portal.level = file_name.trim_suffix(".save")
+					print(save_data[1].material)
+					level_portal.cylinder.material = load(save_data[1].material)
 			file_name = dir.get_next()
 	else:
 		print("An error occurred when trying to access the path.")
@@ -395,6 +402,7 @@ func _on_moon_button_pressed() -> void:
 	mode_button.visible = false
 	save_button.visible = false
 	moon_button.visible = false
+	export_button.visible = false
 
 	toggle()
 
@@ -416,3 +424,10 @@ func _on_moon_button_pressed() -> void:
 	player.camera.rotation = Vector3.ZERO
 	enter_play_mode()
 	spawn_level_portals()
+
+
+func _on_export_button_pressed() -> void:
+	var scene := PackedScene.new()
+	scene.pack(get_tree().current_scene.get_node(^"Geometry"))
+	DirAccess.make_dir_absolute("user://export/")
+	ResourceSaver.save(scene, "user://export/export.tscn")

@@ -87,6 +87,9 @@ emission = Color(0, 0.733333, 0.733333, 1)
 script/source = "extends RayCast3D
 
 
+const HIGHLIGHT_MATERIAL = preload(\"res://materials/highlight.tres\")
+
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed(&\"destroy\"):
@@ -96,6 +99,7 @@ func _process(delta: float) -> void:
 			level_portal.menu.delete_save(level_portal.level)
 			level_portal.level = \"\"
 			level_portal.label.text = \"\"
+			level_portal.cylinder.material = HIGHLIGHT_MATERIAL
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bn4ce"]

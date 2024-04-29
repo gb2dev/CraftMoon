@@ -3,6 +3,7 @@ extends ShapeCast3D
 
 
 @export var label: Label3D
+@export var cylinder: CSGCylinder3D
 
 var level: String
 var menu: Menu

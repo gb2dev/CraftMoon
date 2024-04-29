@@ -1,33 +1,25 @@
-[gd_scene load_steps=7 format=3 uid="uid://dhk73hlsho2h4"]
+[gd_scene load_steps=5 format=3 uid="uid://dhk73hlsho2h4"]
 
 [ext_resource type="Script" path="res://level_portal.gd" id="1_lhsdp"]
-[ext_resource type="Material" uid="uid://bmfe3ung1r43h" path="res://materials/checkerboard_light.tres" id="2_bfv0i"]
+[ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="2_f2emm"]
 [ext_resource type="Material" uid="uid://b1b3lugj0tbb0" path="res://materials/highlight.tres" id="3_7kyls"]
-[ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="4_ioyr6"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_m1r2i"]
 points = PackedVector3Array(0, -0.05, -1, -0.707126, -0.05, -0.707126, 0, 0.05, -1, 0.70693, -0.05, -0.707126, -1, -0.05, 0, -0.707126, 0.05, -0.707126, 0.70693, 0.05, -0.707126, 1, -0.05, 0, -1, 0.05, 0, -0.707126, -0.05, 0.70693, 1, 0.05, 0, 0.70693, -0.05, 0.70693, -0.707126, 0.05, 0.70693, 0, -0.05, 1, 0.70693, 0.05, 0.70693, 0, 0.05, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_urjuy"]
-shading_mode = 0
-albedo_texture = ExtResource("4_ioyr6")
-uv1_scale = Vector3(0.5, 0.5, 0.5)
-uv1_offset = Vector3(-0.5, 0, 0.5)
-uv1_triplanar = true
-
-[node name="LevelPortal" type="ShapeCast3D" node_paths=PackedStringArray("label") groups=["Moon"]]
+[node name="LevelPortal" type="ShapeCast3D" node_paths=PackedStringArray("label", "cylinder") groups=["Moon"]]
 shape = SubResource("ConvexPolygonShape3D_m1r2i")
 target_position = Vector3(0, 0, 0)
 collision_mask = 2
 script = ExtResource("1_lhsdp")
 label = NodePath("Label3D")
+cylinder = NodePath("CSGCylinder3D")
 
 [node name="CSGTorus3D" type="CSGTorus3D" parent="."]
 inner_radius = 1.0
 outer_radius = 1.1
 ring_sides = 4
-smooth_faces = false
-material = ExtResource("2_bfv0i")
+material = ExtResource("2_f2emm")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
 material_overlay = ExtResource("3_7kyls")
@@ -35,8 +27,7 @@ use_collision = true
 collision_layer = 4
 radius = 1.0
 height = 0.01
-material = SubResource("StandardMaterial3D_urjuy")
+material = ExtResource("2_f2emm")
 
 [node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 billboard = 1
