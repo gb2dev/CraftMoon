@@ -187,7 +187,9 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 	match type:
 		"Cuboid":
 			var cuboid := CSGBox3D.new()
-			get_tree().current_scene.get_node(^"Geometry").add_child(cuboid)
+			var geometry := get_tree().current_scene.get_node(^"Geometry")
+			geometry.add_child(cuboid)
+			cuboid.owner = geometry
 			cuboid.add_to_group(&"Persist")
 			cuboid.position = pos
 			cuboid.rotation = rot

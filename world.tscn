@@ -70,7 +70,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "level_portals")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("audio_player", "background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "level_portals")]
 process_mode = 3
 z_index = 1
 anchors_preset = 8
@@ -96,6 +96,7 @@ level_description = NodePath("HBoxContainer/VBoxContainer/LevelDescription")
 mode_button = NodePath("ModeButton")
 save_button = NodePath("SaveButton")
 moon_button = NodePath("MoonButton")
+export_button = NodePath("ExportButton")
 level_portals = NodePath("../LevelPortals")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
@@ -157,6 +158,11 @@ visible = false
 layout_mode = 2
 text = "Save"
 
+[node name="ExportButton" type="Button" parent="Menu"]
+visible = false
+layout_mode = 2
+text = "Export"
+
 [node name="LoadButton" type="Button" parent="Menu"]
 visible = false
 layout_mode = 2
@@ -194,6 +200,7 @@ material = ExtResource("5_yl342")
 [connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
 [connection signal="pressed" from="Menu/NewLevelButton" to="Menu" method="_on_new_level_button_pressed"]
 [connection signal="pressed" from="Menu/SaveButton" to="Menu" method="_on_save_button_pressed"]
+[connection signal="pressed" from="Menu/ExportButton" to="Menu" method="_on_export_button_pressed"]
 [connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/JoinButton" to="Menu" method="_on_join_button_pressed"]
 [connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
