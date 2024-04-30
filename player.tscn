@@ -1,4 +1,4 @@
-[gd_scene load_steps=93 format=3 uid="uid://dw6jfbejcfr0i"]
+[gd_scene load_steps=97 format=3 uid="uid://dw6jfbejcfr0i"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
 [ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
@@ -68,6 +68,10 @@
 [ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="39_4q453"]
 [ext_resource type="Texture2D" uid="uid://cmi56iuuqmrf7" path="res://materials/dirt/preview.png" id="39_vcjpb"]
 [ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="40_m57ra"]
+[ext_resource type="Texture2D" uid="uid://bo1uj0brx3u66" path="res://icons/ellipsoid.svg" id="68_d2xml"]
+[ext_resource type="Texture2D" uid="uid://buok2hkbo3446" path="res://icons/cylinder.svg" id="69_y72q6"]
+[ext_resource type="Texture2D" uid="uid://d0h0uapcmm6p2" path="res://icons/torus.svg" id="70_siamx"]
+[ext_resource type="Texture2D" uid="uid://bgtj3jvxd7312" path="res://icons/cone.svg" id="70_vtulh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1njnr"]
 size = Vector3(1, 2, 1)
@@ -791,10 +795,34 @@ layout_mode = 2
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Cuboid" index="0"]
 texture = ExtResource("39_4q453")
 
-[node name="Triangle" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+[node name="Ellipsoid" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
 layout_mode = 2
 
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Triangle" index="0"]
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Ellipsoid" index="0"]
+texture = ExtResource("68_d2xml")
+
+[node name="Cylinder" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cylinder" index="0"]
+texture = ExtResource("69_y72q6")
+
+[node name="Cone" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cone" index="0"]
+texture = ExtResource("70_vtulh")
+
+[node name="Torus" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Torus" index="0"]
+texture = ExtResource("70_siamx")
+
+[node name="Polygon" parent="ShapeSelect/ShapeItems" instance=ExtResource("38_s2os7")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Polygon" index="0"]
 texture = ExtResource("40_m57ra")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
@@ -807,4 +835,8 @@ texture = ExtResource("40_m57ra")
 [connection signal="pressed" from="Object Properties/CloseButton" to="Object Properties" method="close"]
 
 [editable path="ShapeSelect/ShapeItems/Cuboid"]
-[editable path="ShapeSelect/ShapeItems/Triangle"]
+[editable path="ShapeSelect/ShapeItems/Ellipsoid"]
+[editable path="ShapeSelect/ShapeItems/Cylinder"]
+[editable path="ShapeSelect/ShapeItems/Cone"]
+[editable path="ShapeSelect/ShapeItems/Torus"]
+[editable path="ShapeSelect/ShapeItems/Polygon"]

@@ -138,11 +138,19 @@ func save_level() -> void:
 			var type: String
 			match node.get_class():
 				"CSGBox3D": type = "Cuboid"
+				"CSGSphere3D": type = "Ellipsoid"
+				"CSGCylinder3D":
+					if node.cone:
+						type = "Cone"
+					else:
+						type = "Cylinder"
+				"CSGTorus3D": type = "Torus"
 			save_data.append({
 				"type": type,
 				"position": node.position,
 				"rotation": node.rotation,
-				"size": node.size,
+				# TODO: Fix size for some shapes like Cone
+				"size": node.size if type == "Cuboid" else node.scale,
 				"material": node.material.resource_path,
 				"collision": node.use_collision,
 				"gadgets": [],
@@ -218,7 +226,7 @@ func load_level(level := "") -> void:
 			match object_data.type:
 				"Level":
 					continue
-				"Cuboid":
+				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus":
 					player.editor.construction_material = load(object_data.material)
 					player.editor.construction_collision = object_data.collision
 					object = player.editor.construct_shape(
@@ -348,7 +356,6 @@ func spawn_level_portals() -> void:
 					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
 					level_portal.label.text = save_data[0].name
 					level_portal.level = file_name.trim_suffix(".save")
-					print(save_data[1].material)
 					level_portal.cylinder.material = load(save_data[1].material)
 			file_name = dir.get_next()
 	else:

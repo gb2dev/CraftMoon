@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m80-160 400-640 400 640H80Zm144-80h512L480-650 224-240Zm256-205Z" style="fill:#f9f9f9;fill-opacity:1"/></svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" version="1.1" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+ <path d="m80-800v640h800zm80 160 480 400h-480z" fill="#f9f9f9"/>
+</svg>
