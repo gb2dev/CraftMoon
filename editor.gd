@@ -381,9 +381,69 @@ func _process(_delta: float) -> void:
 				else:
 					audio_player.stream = SOUND_CLICK
 					audio_player.play()
-		# TODO: Polygon Construction
+		# Polygon Construction
 		5:
-			pass
+			var construction_stage := vertices.size() % 3
+
+			var pos_1: Vector3
+			var pos_2: Vector3
+			var pos_3: Vector3
+			var pos_4: Vector3
+			var pos_5: Vector3
+			var pos_6: Vector3
+
+			if construction_stage == 1:
+				pos_1 = cursor.global_position
+				pos_1.x = vertices[-1].x
+				pos_1.z = vertices[-1].z
+				pos_2 = cursor.global_position
+				pos_2.x = vertices[-1].x
+				pos_2.y = vertices[-1].y
+				pos_3 = cursor.global_position
+				pos_3.y = vertices[-1].y
+				pos_3.z = vertices[-1].z
+				pos_4 = cursor.global_position
+				pos_4.x = vertices[-1].x
+				pos_5 = cursor.global_position
+				pos_5.y = vertices[-1].y
+				pos_6 = cursor.global_position
+				pos_6.z = vertices[-1].z
+
+				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
+				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
+				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
+				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
+				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
+				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
+				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
+				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
+				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
+				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
+				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
+				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
+
+			for control: Control in get_tree().get_nodes_in_group(&"UI"):
+				if control.visible:
+					return
+
+			if Input.is_action_just_pressed(&"action"):
+				vertices.append(cursor.global_position)
+				if construction_stage == 1:
+					var size := vertices[-2] - vertices[-1]
+					if not (
+						is_zero_approx(size.x) and is_zero_approx(size.y)
+						or
+						is_zero_approx(size.y) and is_zero_approx(size.z)
+						or
+						is_zero_approx(size.x) and is_zero_approx(size.z)
+					):
+						audio_player.stream = SOUND_PLACE
+						audio_player.play()
+						construct_shape("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+					vertices.clear()
+				else:
+					audio_player.stream = SOUND_CLICK
+					audio_player.play()
 
 
 func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) -> CSGShape3D:
@@ -467,6 +527,22 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			if torus.get_index() == 0:
 				torus.add_to_group(&"Undeletable")
 			return torus
+		"Polygon":
+			var polygon := CSGPolygon3D.new()
+			polygon.polygon = PackedVector2Array([Vector2(-0.5, -0.5), Vector2(-0.5, 0.5), Vector2(0.5, -0.5)])
+			var geometry := get_tree().current_scene.get_node(^"Geometry")
+			geometry.add_child(polygon)
+			polygon.owner = geometry
+			polygon.add_to_group(&"Persist")
+			polygon.position = pos
+			polygon.position.z += size.z / 2
+			polygon.rotation = rot
+			polygon.scale = size
+			polygon.material = construction_material
+			polygon.use_collision = construction_collision
+			if polygon.get_index() == 0:
+				polygon.add_to_group(&"Undeletable")
+			return polygon
 	return null
 
 

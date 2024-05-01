@@ -155,6 +155,10 @@ func save_level() -> void:
 				"CSGTorus3D":
 					type = "Torus"
 					node_size = node.scale * 2
+				"CSGPolygon3D":
+					type = "Polygon"
+					node_size = node.scale
+					node.position.z -= node.scale.z / 2
 			save_data.append({
 				"type": type,
 				"position": node.position,
@@ -235,7 +239,7 @@ func load_level(level := "") -> void:
 			match object_data.type:
 				"Level":
 					continue
-				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus":
+				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
 					player.editor.construction_material = load(object_data.material)
 					player.editor.construction_collision = object_data.collision
 					object = player.editor.construct_shape(
