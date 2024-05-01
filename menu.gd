@@ -137,6 +137,7 @@ func save_level() -> void:
 		if node is CSGShape3D:
 			var type: String
 			var node_size: Vector3
+			var node_pos: Vector3 = node.position
 			match node.get_class():
 				"CSGBox3D":
 					type = "Cuboid"
@@ -158,10 +159,10 @@ func save_level() -> void:
 				"CSGPolygon3D":
 					type = "Polygon"
 					node_size = node.scale
-					node.position.z -= node.scale.z / 2
+					node_pos.z -= node.scale.z / 2
 			save_data.append({
 				"type": type,
-				"position": node.position,
+				"position": node_pos,
 				"rotation": node.rotation,
 				"size": node_size,
 				"material": node.material.resource_path,
