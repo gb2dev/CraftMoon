@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=4 uid="uid://b58iek08ffik4"]
+[gd_scene load_steps=5 format=3 uid="uid://b58iek08ffik4"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_0cjpd"]
 [ext_resource type="Script" path="res://gadgets/timer_gadget.gd" id="2_jixhu"]
@@ -43,7 +43,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 16.0
 offset_bottom = 16.0
-tooltip_text = "Sound Finished Playing (Signal)"
+tooltip_text = "Timer Finished (Signal)"
 script = ExtResource("3_1svt4")
 
 [node name="Timer" type="Timer" parent="." index="5"]
