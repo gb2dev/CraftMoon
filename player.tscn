@@ -91,7 +91,7 @@ emission = Color(0, 0.733333, 0.733333, 1)
 script/source = "extends RayCast3D
 
 
-const HIGHLIGHT_MATERIAL = preload(\"res://materials/highlight.tres\")
+const MOON_MATERIAL = preload(\"res://materials/concrete/concrete.tres\")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -103,7 +103,7 @@ func _process(delta: float) -> void:
 			level_portal.menu.delete_save(level_portal.level)
 			level_portal.level = \"\"
 			level_portal.label.text = \"\"
-			level_portal.cylinder.material = HIGHLIGHT_MATERIAL
+			level_portal.cylinder.material = MOON_MATERIAL
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bn4ce"]
@@ -235,7 +235,7 @@ mesh = SubResource("CapsuleMesh_hjorb")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player", "player", "shape_select", "shape_items")]
-target_position = Vector3(0, 0, -6)
+target_position = Vector3(0, 0, -10)
 script = ExtResource("2_346j3")
 crosshair = NodePath("Crosshair")
 cursor = NodePath("Cursor")

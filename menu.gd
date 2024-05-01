@@ -136,21 +136,30 @@ func save_level() -> void:
 	for node in get_tree().get_nodes_in_group(&"Persist"):
 		if node is CSGShape3D:
 			var type: String
+			var node_size: Vector3
 			match node.get_class():
-				"CSGBox3D": type = "Cuboid"
-				"CSGSphere3D": type = "Ellipsoid"
+				"CSGBox3D":
+					type = "Cuboid"
+					node_size = node.size
+				"CSGSphere3D":
+					type = "Ellipsoid"
+					node_size = node.scale
 				"CSGCylinder3D":
 					if node.cone:
 						type = "Cone"
 					else:
 						type = "Cylinder"
-				"CSGTorus3D": type = "Torus"
+					node_size.x = node.radius * 2
+					node_size.y = node.height
+					node_size.z = 1
+				"CSGTorus3D":
+					type = "Torus"
+					node_size = node.scale * 2
 			save_data.append({
 				"type": type,
 				"position": node.position,
 				"rotation": node.rotation,
-				# TODO: Fix size for some shapes like Cone
-				"size": node.size if type == "Cuboid" else node.scale,
+				"size": node_size,
 				"material": node.material.resource_path,
 				"collision": node.use_collision,
 				"gadgets": [],
