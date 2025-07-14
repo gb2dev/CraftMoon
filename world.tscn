@@ -1,8 +1,8 @@
 [gd_scene load_steps=10 format=3 uid="uid://vl04tjighggu"]
 
 [ext_resource type="PackedScene" uid="uid://dw6jfbejcfr0i" path="res://player.tscn" id="1_8ftwq"]
-[ext_resource type="Script" path="res://world.gd" id="1_tjq4l"]
-[ext_resource type="Script" path="res://menu.gd" id="5_r4y2q"]
+[ext_resource type="Script" uid="uid://d0qf12smyse3j" path="res://world.gd" id="1_tjq4l"]
+[ext_resource type="Script" uid="uid://dds2uohrmsp7l" path="res://menu.gd" id="5_r4y2q"]
 [ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="5_xpg20"]
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="5_yl342"]
 
@@ -182,7 +182,7 @@ layout_mode = 2
 text = "Quit"
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://player.tscn")
+_spawnable_scenes = PackedStringArray("uid://dw6jfbejcfr0i")
 spawn_path = NodePath("..")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
