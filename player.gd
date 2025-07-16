@@ -1,75 +1,47 @@
-class_name Player
+class_name Character
 extends CharacterBody3D
 
-
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
+const NORMAL_SPEED = 6.0
+const SPRINT_SPEED = 10.0
+const JUMP_VELOCITY = 10
 const DOUBLETAP_DELAY = 0.25
 
-@export var pivot: Node3D
-@export var camera: Camera3D
+@export_category("Objects")
+@export var _body: Body = null
+@export var _spring_arm_offset: Node3D = null
 @export var editor: Editor
 
-var joypad_look: Vector2
-var joypad_look_curve: float = 3.0
-var joypad_look_inverted_x: bool = false
-var joypad_look_inverted_y: bool = false
-var joypad_look_outer_threshold: float = 0.01
-var joypad_look_sensitivity_x: float = 1.0
-var joypad_look_sensitivity_y: float = 0.7
-
-var mouse_look_inverted_x: bool = false
-var mouse_look_inverted_y: bool = false
-var mouse_look_sensitivity: float = 1.0
-
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-
+var camera: Camera3D
+var first_person: bool:
+	set(value):
+		first_person = value
+		visible = not first_person
+		_set_current_camera()
 var fly := false
-
 var doubletap_time := DOUBLETAP_DELAY
 
+@onready var nickname: Label3D = $PlayerNick/Nickname
+@onready var body: MeshInstance3D = $"3DGodotRobot/RobotArmature/Skeleton3D/Llimbs and head"
+@onready var pivot: Node3D = $Pivot
+
+var _current_speed: float
+var _respawn_point := Vector3(0, 5, 0)
+var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 func _enter_tree() -> void:
-	set_multiplayer_authority(name.to_int())
+	set_multiplayer_authority(str(name).to_int())
 
-
-func _ready() -> void:
-	camera.current = is_multiplayer_authority()
-
-
-func _process(_delta: float) -> void:
-	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
-
-	if joypad_look_inverted_x:
-		look_input.x *= -1
-	if joypad_look_inverted_y:
-		look_input.y *= -1
-
-	if abs(look_input.x) > 1 - joypad_look_outer_threshold:
-		look_input.x = round(look_input.x)
-	joypad_look.x = abs(look_input.x) ** joypad_look_curve * joypad_look_sensitivity_x / 10
-	if look_input.x < 0:
-		joypad_look.x *= -1
-
-	if abs(look_input.y) > 1 - joypad_look_outer_threshold:
-		look_input.y = round(look_input.y)
-	joypad_look.y = abs(look_input.y) ** joypad_look_curve * joypad_look_sensitivity_y / 10
-	if look_input.y < 0:
-		joypad_look.y *= -1
-
-	pivot.rotate_y(-joypad_look.x)
-	camera.rotate_x(-joypad_look.y)
-
-	# Clamp vertical camera rotation for both mouse and joypad
-	camera.rotation.x = clamp(camera.rotation.x, -PI / 2, PI / 2)
-
+	_set_current_camera()
+	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 func _physics_process(delta: float) -> void:
-	if not is_multiplayer_authority():
+	if not is_multiplayer_authority(): return
+
+	var world := get_tree().get_current_scene() as World
+	if world and world.is_chat_visible() and is_on_floor():
+		freeze()
 		return
 
-	# Handle flying.
 	doubletap_time -= delta
 	if Input.is_action_just_pressed(&"jump") and editor.process_mode == PROCESS_MODE_INHERIT:
 		if doubletap_time >= 0:
@@ -77,13 +49,15 @@ func _physics_process(delta: float) -> void:
 		else:
 			doubletap_time = DOUBLETAP_DELAY
 
-	# Add the gravity.
 	if not is_on_floor() and not fly:
 		velocity.y -= gravity * delta
+		_body.animate(velocity)
 
-	# Handle jump.
-	if Input.is_action_just_pressed(&"jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+	if is_on_floor():
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = JUMP_VELOCITY
+	else:
+		velocity.y -= gravity * delta
 
 	if fly:
 		if Input.is_action_pressed(&"jump"):
@@ -93,36 +67,78 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity.y = 0
 
-	# Get the input direction and handle the movement/deceleration.
-	var input_dir := Input.get_vector(&"move_left", &"move_right", &"move_forward", &"move_back")
-	var pivot_basis := pivot.transform.basis as Basis
-	var direction := (pivot_basis * Vector3(input_dir.x, 0, input_dir.y)).clamp(
-		-Vector3.ONE,
-		Vector3.ONE
-	)
-	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+	_move()
+	var _collided := move_and_slide()
+	_body.animate(velocity)
+
+func _process(_delta: float) -> void:
+	if not is_multiplayer_authority(): return
+	_check_fall_and_respawn()
+
+func freeze() -> void:
+	velocity.x = 0
+	velocity.z = 0
+	_current_speed = 0
+	_body.animate(Vector3.ZERO)
+
+func _move() -> void:
+	var _input_direction: Vector2 = Vector2.ZERO
+	if is_multiplayer_authority():
+		_input_direction = Input.get_vector(
+			"move_left", "move_right",
+			"move_forward", "move_back"
+			)
+
+	var _direction: Vector3 = transform.basis * Vector3(_input_direction.x, 0, _input_direction.y).normalized()
+
+	var _is_running := is_running()
+	if first_person:
+		var pivot := camera.get_parent() as Node3D
+		_direction = _direction.rotated(Vector3.UP, pivot.rotation.y)
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		_direction = _direction.rotated(Vector3.UP, _spring_arm_offset.rotation.y)
 
-	move_and_slide()
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
+	if _direction:
+		velocity.x = _direction.x * _current_speed
+		velocity.z = _direction.z * _current_speed
+		_body.apply_rotation(velocity)
 		return
 
-	var mouse_motion := event as InputEventMouseMotion
-	if mouse_motion and DisplayServer.mouse_get_mode() == DisplayServer.MOUSE_MODE_CAPTURED:
-		var input := event.relative as Vector2
-		if mouse_look_inverted_x:
-			input.x *= -1
-		if mouse_look_inverted_y:
-			input.y *= -1
+	velocity.x = move_toward(velocity.x, 0, _current_speed)
+	velocity.z = move_toward(velocity.z, 0, _current_speed)
 
-		var look_delta := Vector3(-input.x, 0, -input.y) * mouse_look_sensitivity / 500
+func is_running() -> bool:
+	if Input.is_action_pressed("sprint"):
+		_current_speed = SPRINT_SPEED
+		return true
+	else:
+		_current_speed = NORMAL_SPEED
+		return false
 
-		pivot.rotate_y(look_delta.x)
-		camera.rotate_x(look_delta.z)
+func _check_fall_and_respawn() -> void:
+	if global_transform.origin.y < -15.0:
+		_respawn()
+
+func _respawn() -> void:
+	global_transform.origin = _respawn_point
+	velocity = Vector3.ZERO
+
+func _set_current_camera() -> void:
+	if camera:
+		camera.current = false
+	if first_person:
+		camera = $Pivot/Camera3D
+	else:
+		camera = $SpringArmOffset/SpringArm3D/Camera3D
+	camera.current = is_multiplayer_authority()
+
+@rpc("any_peer", "call_local", "reliable")
+func change_nick(new_nick: String) -> void:
+	if nickname:
+		nickname.text = new_nick
+
+@rpc("any_peer", "call_local", "reliable")
+func set_player_skin(color: Color) -> void:
+	var material := body.get_surface_override_material(0) as ShaderMaterial
+	if material:
+		material.set_shader_parameter("tint_color", color)

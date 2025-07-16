@@ -27,7 +27,7 @@ var type: String
 func _ready() -> void:
 	for output_index in output_controls.size():
 		var output_control := output_controls[output_index].front() as OutputControl
-		output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
+		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -113,19 +113,22 @@ func _notification(what: int) -> void:
 				var gadget := output_control.target_gadget
 				var input_index := output_control.target_input
 				if is_instance_valid(gadget):
-					gadget.input_controls[input_index].output_controls.erase(output_control)
-					gadget.input_controls[input_index].output_visuals.erase(output_visual)
+					var input_control := gadget.input_controls[input_index] as InputControl
+					input_control.output_controls.erase(output_control)
+					input_control.output_visuals.erase(output_visual)
 
 
 func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventScreenTouch and event.is_pressed():
+	var event_touch := event as InputEventScreenTouch
+	var event_mouse_button := event as InputEventMouseButton
+	if event_touch and event_touch.is_pressed():
 		if not get_tree().get_first_node_in_group(&"Dragging"):
 			# Start Dragging Gadget
 			top_level = true
 			add_to_group(&"Dragging")
 			mouse_filter = Control.MOUSE_FILTER_IGNORE
 			accept_event()
-	elif event is InputEventMouseButton and event.is_pressed() and event.button_index == 2:
+	elif event_mouse_button and event_mouse_button.is_pressed() and event_mouse_button.button_index == 2:
 		open_properties.emit()
 
 
@@ -160,7 +163,7 @@ func output(output_index: int, data: Variant, pulse := false, random := false) -
 	if random:
 		if random_output_controls.is_empty():
 			random_output_controls = output_controls[output_index].duplicate()
-			random_output_controls.resize(random_output_controls.size() - 1)
+			var _error := random_output_controls.resize(random_output_controls.size() - 1)
 			random_output_controls.shuffle()
 
 		if not random_output_controls.is_empty():
@@ -210,18 +213,19 @@ func update_connection(
 	)
 
 	if connection_type == ConnectionChange.CONNECT:
+		var input_control := gadget.input_controls[input_index] as InputControl
 		output_visual.points[2] = output_visual.to_local(
-			gadget.input_controls[input_index].global_position
-			+ Vector2(0, gadget.input_controls[input_index].size.y / 2)
+			input_control.global_position
+			+ Vector2(0, input_control.size.y / 2)
 		)
 		output_control.global_position = (
-			gadget.input_controls[input_index].global_position
-			+ Vector2(0, gadget.input_controls[input_index].size.y / 2)
+			input_control.global_position
+			+ Vector2(0, input_control.size.y / 2)
 			- Vector2(output_control.size.x, output_control.size.y / 2)
 		)
 
-		gadget.input_controls[input_index].output_controls.append(output_control)
-		gadget.input_controls[input_index].output_visuals.append(output_visual)
+		input_control.output_controls.append(output_control)
+		input_control.output_visuals.append(output_visual)
 		output_control.target_gadget = gadget
 		output_control.target_input = input_index
 		gadget.input_data_changed(input_index)
@@ -234,7 +238,7 @@ func update_connection(
 		output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
 		output_control.data = output_controls[output_index].back().data
 		output_control.add_to_group(&"OutputControl")
-		output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
+		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_controls[output_index].append(output_control)
 
 		output_visual = Line2D.new()
@@ -251,8 +255,9 @@ func update_connection(
 		output_control.target_gadget = null
 
 		if gadget:
-			gadget.input_controls[input_index].output_controls.erase(output_control)
-			gadget.input_controls[input_index].output_visuals.erase(output_visual)
+			var input_control := gadget.input_controls[input_index] as InputControl
+			input_control.output_controls.erase(output_control)
+			input_control.output_visuals.erase(output_visual)
 
 
 func update_connection_positions() -> void:
@@ -321,14 +326,15 @@ func is_input_data_powered(input_index: int, ignore_null := true) -> bool:
 		if data == null:
 			return false
 		else:
-			return not is_zero_approx(data)
+			return not is_zero_approx(data as float)
 	else:
-		return data == null or not is_zero_approx(data)
+		return data == null or not is_zero_approx(data as float)
 
 
 func get_input_data(input_index: int) -> Variant:
 	var values: Array[Variant]
-	for output_control: OutputControl in input_controls[input_index].output_controls:
+	var input_control := input_controls[input_index] as InputControl
+	for output_control: OutputControl in input_control.output_controls:
 		values.append(output_control.data)
 	return values.max()
 

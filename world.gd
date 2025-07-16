@@ -1,11 +1,126 @@
+class_name World
 extends Node3D
 
+@onready var skin_color_picker: ColorPickerButton = $MainMenu/MainContainer/MainMenu/Option2/SkinColorPicker
+@onready var nick_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option1/NickInput
+@onready var address_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option3/AddressInput
+@onready var players_container: Node3D = $PlayersContainer
+@onready var main_menu: Control = $MainMenu
+@onready var menu: Menu = $Menu
+@export var player_scene: PackedScene
 
-# Called when the node enters the scene tree for the first time.
+# multiplayer chat
+@onready var message: LineEdit = $MultiplayerChat/VBoxContainer/HBoxContainer/Message
+@onready var send: Button = $MultiplayerChat/VBoxContainer/HBoxContainer/Send
+@onready var chat: TextEdit = $MultiplayerChat/VBoxContainer/Chat
+@onready var multiplayer_chat: Control = $MultiplayerChat
+
+var chat_visible := false
+
 func _ready() -> void:
-	pass
+	multiplayer_chat.hide()
+	main_menu.show()
+	multiplayer_chat.set_process_input(true)
+	if not multiplayer.is_server():
+		return
 
+	var _error := Network.player_connected.connect(_on_player_connected)
+	_error = multiplayer.peer_disconnected.connect(_remove_player)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
+func _on_player_connected(peer_id: int, player_info: Dictionary) -> void:
+	for id: int in Network.players.keys():
+		var player_data: Dictionary = Network.players[id]
+		if id != peer_id:
+			var _error := rpc_id(peer_id, "sync_player_skin", id, player_data["skin"])
+
+	_add_player(peer_id, player_info)
+
+func _on_host_pressed() -> void:
+	main_menu.hide()
+	var _error := Network.start_host(nick_input.text.strip_edges(), skin_color_picker.color)
+
+func _on_join_pressed() -> void:
+	main_menu.hide()
+	var _error := Network.join_game(nick_input.text.strip_edges(), skin_color_picker.color, address_input.text.strip_edges())
+
+func _add_player(id: int, player_info : Dictionary) -> void:
+	if players_container.has_node(str(id)) or not multiplayer.is_server():
+		return
+
+	var player := player_scene.instantiate() as Character
+	player.name = str(id)
+	player.position = get_spawn_point()
+	players_container.add_child(player, true)
+	if player.is_multiplayer_authority():
+		menu.player = player
+
+	var nick: String = Network.players[id]["nick"]
+	var _error := player.rpc("change_nick", nick)
+
+	var skin_color: Color = player_info["skin"]
+	_error = rpc("sync_player_skin", id, skin_color)
+
+	_error = rpc("sync_player_position", id, player.position)
+
+func get_spawn_point() -> Vector3:
+	return Vector3.ZERO
+
+func _remove_player(id: int) -> void:
+	if not multiplayer.is_server() or not players_container.has_node(str(id)):
+		return
+	var player_node := players_container.get_node(str(id))
+	if player_node:
+		player_node.queue_free()
+
+@rpc("any_peer", "call_local")
+func sync_player_position(id: int, new_position: Vector3) -> void:
+	var player := players_container.get_node(str(id)) as Character
+	if player:
+		player.position = new_position
+
+@rpc("any_peer", "call_local")
+func sync_player_skin(id: int, skin_color: Color) -> void:
+	var player := players_container.get_node(str(id)) as Character
+	if player:
+		player.set_player_skin(skin_color)
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()
+
+# ---------- MULTIPLAYER CHAT ----------
+func toggle_chat() -> void:
+	if main_menu.visible:
+		return
+
+	chat_visible = !chat_visible
+	if chat_visible:
+		multiplayer_chat.show()
+		message.grab_focus()
+	else:
+		multiplayer_chat.hide()
+		get_viewport().set_input_as_handled()
+
+func is_chat_visible() -> bool:
+	return chat_visible
+
+func _input(event: InputEvent) -> void:
+	var key_event := event as InputEventKey
+	if event.is_action_pressed("toggle_chat"):
+		toggle_chat()
+	elif key_event and key_event.keycode == KEY_ENTER:
+		_on_send_pressed()
+
+func _on_send_pressed() -> void:
+	var trimmed_message := message.text.strip_edges()
+	if trimmed_message == "":
+		return # do not send empty messages
+
+	var nick: String = Network.players[multiplayer.get_unique_id()]["nick"]
+
+	var _error := rpc("msg_rpc", nick, trimmed_message)
+	message.text = ""
+	message.grab_focus()
+
+@rpc("any_peer", "call_local")
+func msg_rpc(nick: String, msg: String) -> void:
+	chat.text += str(nick, " : ", msg, "\n")

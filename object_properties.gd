@@ -38,7 +38,7 @@ func toggle(o: Node3D) -> void:
 		audio_player.stream = SOUND_POPUP
 		audio_player.play()
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-		if object is Player:
+		if object is Character:
 			tab_container.set_deferred(&"current_tab", 0)
 			object_vbox.hide()
 			player_vbox.show()
