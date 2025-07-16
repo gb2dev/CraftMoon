@@ -216,6 +216,10 @@ locale/translations=PackedStringArray("res://translations.en.translation", "res:
 3d_physics/layer_2="Player"
 3d_physics/layer_3="LevelPortal"
 
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
 [rendering]
 
-anti_aliasing/quality/screen_space_aa=1
+anti_aliasing/quality/screen_space_aa=2

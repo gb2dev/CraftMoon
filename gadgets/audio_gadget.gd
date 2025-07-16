@@ -4,7 +4,7 @@ extends Gadget
 @onready var area := $"3D/Area3D" as Area3D
 @onready var area_visual := $"3D/Area3D/AreaVisual" as MeshInstance3D
 
-var audio_player
+var audio_player: Node
 var inside_area := false
 var is_pulse: bool
 var detection_range: float

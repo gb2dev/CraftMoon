@@ -1,24 +1,24 @@
 [gd_scene load_steps=97 format=3 uid="uid://dw6jfbejcfr0i"]
 
-[ext_resource type="Script" path="res://player.gd" id="1_4qesr"]
-[ext_resource type="Script" path="res://editor.gd" id="2_346j3"]
+[ext_resource type="Script" uid="uid://dn2lr6o1ym383" path="res://player.gd" id="1_4qesr"]
+[ext_resource type="Script" uid="uid://bct8krghgsn0a" path="res://editor.gd" id="2_346j3"]
 [ext_resource type="Texture2D" uid="uid://cliaiig1uhis4" path="res://icons/crosshair.svg" id="3_ipjr0"]
 [ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="3_qrqeb"]
-[ext_resource type="Script" path="res://object_properties.gd" id="3_tt4lx"]
+[ext_resource type="Script" uid="uid://cbo6lw4nt2wwq" path="res://object_properties.gd" id="3_tt4lx"]
 [ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://gadget_item.tscn" id="4_4ckle"]
-[ext_resource type="Script" path="res://gadgets_panel.gd" id="4_ypwlc"]
+[ext_resource type="Script" uid="uid://bm1342cmwuh4u" path="res://gadgets_panel.gd" id="4_ypwlc"]
 [ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="5_8uss7"]
 [ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="6_alnoj"]
-[ext_resource type="Script" path="res://logic_panel.gd" id="6_gu4mb"]
+[ext_resource type="Script" uid="uid://bwmi4472ufa3v" path="res://logic_panel.gd" id="6_gu4mb"]
 [ext_resource type="PackedScene" uid="uid://r57cg16q4rki" path="res://material_item.tscn" id="7_8516d"]
 [ext_resource type="Resource" uid="uid://caec04as55inh" path="res://gadgets/audio_gadget.tres" id="7_hq56j"]
 [ext_resource type="PackedScene" uid="uid://dl21ovk7gcqja" path="res://gadgets/trigger_zone_gadget.tscn" id="8_i3oyc"]
 [ext_resource type="Texture2D" uid="uid://c7jhy6vtfh6dr" path="res://textures/checkerboard/orange/texture.png" id="8_pkph7"]
-[ext_resource type="Script" path="res://gadget_properties.gd" id="8_saenl"]
+[ext_resource type="Script" uid="uid://6fasiw3b0eyu" path="res://gadget_properties.gd" id="8_saenl"]
 [ext_resource type="Material" uid="uid://dqfagp1m6bcop" path="res://materials/bricks/bricks.tres" id="8_swd8g"]
 [ext_resource type="Resource" uid="uid://bxtyxckfkon5w" path="res://gadgets/trigger_zone_gadget.tres" id="9_odca5"]
 [ext_resource type="PackedScene" uid="uid://c2bf7nocvxdpt" path="res://gadgets/look_sensor_gadget.tscn" id="10_p8hru"]
-[ext_resource type="Script" path="res://item_data.gd" id="10_vwbuf"]
+[ext_resource type="Script" uid="uid://cbi1fmsqlgmqf" path="res://item_data.gd" id="10_vwbuf"]
 [ext_resource type="Resource" uid="uid://coynjbvda5rxv" path="res://gadgets/look_sensor_gadget.tres" id="11_2hcwe"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="11_amygl"]
 [ext_resource type="PackedScene" uid="uid://b58iek08ffik4" path="res://gadgets/timer_gadget.tscn" id="12_aol6q"]
@@ -63,7 +63,7 @@
 [ext_resource type="Texture2D" uid="uid://d0apuxuwhgicl" path="res://materials/hazard_metal/preview.png" id="33_k66v4"]
 [ext_resource type="Texture2D" uid="uid://bu2317mw4tvh5" path="res://materials/fabric/preview.png" id="35_jljdk"]
 [ext_resource type="Texture2D" uid="uid://dwj5tgkasql62" path="res://materials/grass/preview.png" id="37_6yr7o"]
-[ext_resource type="Script" path="res://input_display.gd" id="37_hedid"]
+[ext_resource type="Script" uid="uid://bggvxmq2odrhu" path="res://input_display.gd" id="37_hedid"]
 [ext_resource type="PackedScene" uid="uid://nbcq2r8ym45k" path="res://shape_item.tscn" id="38_s2os7"]
 [ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="39_4q453"]
 [ext_resource type="Texture2D" uid="uid://cmi56iuuqmrf7" path="res://materials/dirt/preview.png" id="39_vcjpb"]
@@ -95,7 +95,7 @@ const MOON_MATERIAL = preload(\"res://materials/concrete/concrete.tres\")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed(&\"destroy\"):
 		var level_portal_collider := get_collider()
 		if level_portal_collider:
@@ -226,7 +226,7 @@ shape = SubResource("BoxShape3D_1njnr")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-visible = false
+gi_mode = 2
 mesh = SubResource("CapsuleMesh_hjorb")
 
 [node name="Pivot" type="Node3D" parent="."]
@@ -509,7 +509,7 @@ layout_mode = 2
 min_value = -50.0
 max_value = 50.0
 step = 0.1
-value = 9.8
+value = 9.800000000000004
 
 [node name="Player" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
 visible = false
