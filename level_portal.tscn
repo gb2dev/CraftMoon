@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dhk73hlsho2h4"]
 
-[ext_resource type="Script" path="res://level_portal.gd" id="1_lhsdp"]
+[ext_resource type="Script" uid="uid://blpq4ald60kw3" path="res://level_portal.gd" id="1_lhsdp"]
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="2_f2emm"]
 [ext_resource type="Material" uid="uid://b1b3lugj0tbb0" path="res://materials/highlight.tres" id="3_7kyls"]
 

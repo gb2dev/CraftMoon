@@ -29,7 +29,6 @@ const LEVEL_PORTAL_POSITIONS = [
 	Vector3(-3, 0, 10),
 ]
 
-@export var player_scene: PackedScene
 @export var audio_player: AudioStreamPlayer
 @export var background_dim: ColorRect
 @export var level_transition_wipe: ColorRect
@@ -41,22 +40,13 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var export_button: Button
 @export var level_portals: Node3D
 
-var peer := ENetMultiplayerPeer.new()
-var player: Player
 var slot := 0
+var player: Character
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
-	hide()
-	peer.create_server(7000, 8)
-	multiplayer.multiplayer_peer = peer
-	multiplayer.peer_connected.connect(add_player)
-	add_player()
-	await get_tree().process_frame
-	enter_play_mode()
-	DirAccess.make_dir_absolute("user://levels")
+	var _error := DirAccess.make_dir_absolute("user://levels")
 	spawn_level_portals()
 
 
@@ -70,13 +60,6 @@ func _process(_delta: float) -> void:
 
 	if Input.is_action_just_pressed(&"ui_cancel"):
 		toggle()
-
-
-func add_player(id := 1) -> void:
-	player = player_scene.instantiate()
-	player.name = str(id)
-	get_tree().current_scene.add_child.call_deferred(player)
-	visibility_changed.connect(player.editor.toggle_ui)
 
 
 func toggle() -> void:
@@ -277,7 +260,7 @@ func delete_save(level: String) -> void:
 	if FileAccess.file_exists(path):
 		audio_player.stream = SOUND_DELETE
 		audio_player.play()
-		DirAccess.remove_absolute(path)
+		var _error := DirAccess.remove_absolute(path)
 
 
 func new_level(blank := true) -> void:
@@ -334,15 +317,15 @@ func wipe() -> void:
 	audio_player.stream = SOUND_WHOOSH
 	audio_player.play()
 	var tween := get_tree().create_tween()
-	tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
+	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
 	await tween.finished
 	tween = get_tree().create_tween()
-	tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
+	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
 
 
 func spawn_level_portals() -> void:
 	for i in LEVEL_PORTAL_POSITIONS.size():
-		var pos := LEVEL_PORTAL_POSITIONS[i] as Vector3
+		var pos: Vector3 = LEVEL_PORTAL_POSITIONS[i]
 		var level_portal := LEVEL_PORTAL.instantiate() as LevelPortal
 		level_portals.add_child(level_portal)
 		level_portal.position = pos
@@ -353,13 +336,14 @@ func spawn_level_portals() -> void:
 			level_portal.label.scale = Vector3.ONE * 2
 		level_portal.label.global_position.y = 0.25
 
-	player.editor.input_display.clear_input_prompts()
-	player.editor.input_display.add_input_prompt(&"destroy", tr(&"Delete Level"))
-	player.editor.input_display.visible = true
+	if player:
+		player.editor.input_display.clear_input_prompts()
+		player.editor.input_display.add_input_prompt(&"destroy", tr(&"Delete Level"))
+		player.editor.input_display.visible = true
 
 	var dir := DirAccess.open("user://levels")
 	if dir:
-		dir.list_dir_begin()
+		var _error := dir.list_dir_begin()
 		var file_name := dir.get_next()
 		while file_name != "":
 			if not dir.current_is_dir() and file_name.ends_with(".save"):
@@ -370,7 +354,7 @@ func spawn_level_portals() -> void:
 					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
 					level_portal.label.text = save_data[0].name
 					level_portal.level = file_name.trim_suffix(".save")
-					level_portal.cylinder.material = load(save_data[1].material)
+					level_portal.cylinder.material = load(save_data[1].material as String)
 			file_name = dir.get_next()
 	else:
 		print("An error occurred when trying to access the path.")
@@ -385,13 +369,6 @@ func _on_load_button_pressed() -> void:
 	toggle()
 	await wipe()
 	load_level()
-
-
-func _on_join_button_pressed() -> void:
-	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
-	hide()
-	peer.create_client("localhost", 7000)
-	multiplayer.multiplayer_peer = peer
 
 
 func _on_quit_button_pressed() -> void:
@@ -449,6 +426,7 @@ func _on_moon_button_pressed() -> void:
 
 func _on_export_button_pressed() -> void:
 	var scene := PackedScene.new()
-	scene.pack(get_tree().current_scene.get_node(^"Geometry"))
-	DirAccess.make_dir_absolute("user://export/")
-	ResourceSaver.save(scene, "user://export/export.tscn")
+	var geometry := get_tree().current_scene.get_node(^"Geometry")
+	var _error := scene.pack(geometry)
+	_error = DirAccess.make_dir_absolute("user://export/")
+	_error = ResourceSaver.save(scene, "user://export/export.tscn")

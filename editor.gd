@@ -12,9 +12,8 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
 @export var crosshair: TextureRect
 @export var cursor: Node3D
-@export var material: BaseMaterial3D
 @export var audio_player: AudioStreamPlayer
-@export var player: Player
+@export var player: Character
 @export var shape_select: Control
 @export var shape_items: Control
 
