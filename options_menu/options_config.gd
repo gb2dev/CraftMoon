@@ -1,11 +1,11 @@
 extends Node
 
 
-@onready var config = ConfigFile.new()
+@onready var config := ConfigFile.new()
 
 
-func _ready():
-	config.load("user://options.cfg")
+func _ready() -> void:
+	var _error := config.load("user://options.cfg")
 
 
 func get_config_value(tab: String, option: String, default_value: Variant) -> Variant:
@@ -23,7 +23,7 @@ func set_config_value(new_value: Variant, tab: String, option: String) -> void:
 
 
 func save_config_file() -> void:
-	config.save("user://options.cfg")
+	var _error := config.save("user://options.cfg")
 
 
 func restore_defaults(tab: String) -> void:

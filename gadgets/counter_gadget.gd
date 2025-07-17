@@ -13,7 +13,7 @@ var target_count := 1
 
 func _ready() -> void:
 	super._ready()
-	input_pulse.connect(func(input_index: int) -> void:
+	var _error := input_pulse.connect(func(input_index: int) -> void:
 		match input_index:
 			0:
 				output(0, is_input_data_powered(0) and current_count == target_count)

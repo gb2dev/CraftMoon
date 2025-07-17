@@ -51,8 +51,7 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 	player.name = str(id)
 	player.position = get_spawn_point()
 	players_container.add_child(player, true)
-	if player.is_multiplayer_authority():
-		menu.player = player
+	menu.player = player
 
 	var nick: String = Network.players[id]["nick"]
 	var _error := player.rpc("change_nick", nick)
@@ -127,3 +126,9 @@ func _on_send_pressed() -> void:
 @rpc("any_peer", "call_local")
 func msg_rpc(nick: String, msg: String) -> void:
 	chat.text += str(nick, " : ", msg, "\n")
+
+
+func _on_multiplayer_spawner_spawned(node: Node) -> void:
+	var player := node as Character
+	if player:
+		menu.player = player

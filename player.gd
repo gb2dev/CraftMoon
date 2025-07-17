@@ -99,7 +99,6 @@ func _move() -> void:
 
 	var _is_running := is_running()
 	if first_person:
-		var pivot := camera.get_parent() as Node3D
 		_direction = _direction.rotated(Vector3.UP, pivot.rotation.y)
 	else:
 		_direction = _direction.rotated(Vector3.UP, _spring_arm_offset.rotation.y)

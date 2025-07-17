@@ -22,5 +22,5 @@ func _process(_delta: float) -> void:
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		if not get_tree().get_first_node_in_group(&"Dragging"):
-			object_properties.create_gadget(item, item_data)
+			var _gadget := object_properties.create_gadget(item, item_data)
 			accept_event()
