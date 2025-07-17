@@ -201,7 +201,7 @@ func load_level(level := "") -> void:
 	export_button.visible = true
 
 	if level.is_empty():
-		level = level_name.text
+		level = str(slot)
 	var save_file_path := "user://levels/" + level + ".save"
 
 	if not FileAccess.file_exists(save_file_path):
@@ -255,6 +255,7 @@ func load_level(level := "") -> void:
 	player.camera.rotation = Vector3.ZERO
 
 
+# TODO: Add menu option
 func delete_save(level: String) -> void:
 	var path := "user://levels/" + level + ".save"
 	if FileAccess.file_exists(path):
@@ -302,6 +303,7 @@ func enter_edit_mode() -> void:
 	mode_button.text = tr(&"Play Mode")
 	player.editor.input_display.visible = true
 	player.editor.process_mode = PROCESS_MODE_INHERIT
+	player.first_person = true
 	player.editor.set_object_builder_active(false)
 
 
@@ -311,6 +313,7 @@ func enter_play_mode() -> void:
 	player.editor.set_object_builder_active(false)
 	player.editor.input_display.visible = false
 	player.editor.process_mode = PROCESS_MODE_DISABLED
+	player.first_person = false
 
 
 func wipe() -> void:
@@ -337,9 +340,7 @@ func spawn_level_portals() -> void:
 		level_portal.label.global_position.y = 0.25
 
 	if player:
-		player.editor.input_display.clear_input_prompts()
-		player.editor.input_display.add_input_prompt(&"destroy", tr(&"Delete Level"))
-		player.editor.input_display.visible = true
+		player.editor.input_display.moon_inputs()
 
 	var dir := DirAccess.open("user://levels")
 	if dir:

@@ -7,6 +7,14 @@ const INPUT_PROMPT = preload("res://input_prompt.tscn")
 @export var hbox: HBoxContainer
 
 
+func _ready() -> void:
+	moon_inputs()
+
+
+func moon_inputs() -> void:
+	visible = false
+
+
 func add_input_prompt(action: StringName, custom_text: String = "") -> void:
 	var input_prompt := INPUT_PROMPT.instantiate() as InputPrompt
 	input_prompt.action = action
