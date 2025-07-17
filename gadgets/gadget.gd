@@ -237,6 +237,7 @@ func update_connection(
 		output_control.size = Vector2.ONE * 16
 		output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
 		output_control.data = output_controls[output_index].back().data
+		output_control.tooltip_text = output_controls[output_index].back().tooltip_text
 		output_control.add_to_group(&"OutputControl")
 		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_controls[output_index].append(output_control)
