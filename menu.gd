@@ -236,7 +236,9 @@ func load_level(level := "") -> void:
 						object_data.type,
 						object_data.position,
 						object_data.rotation,
-						object_data.size
+						object_data.size,
+						player.editor.construction_material.resource_path,
+						player.editor.construction_collision
 					)
 			for gadget_data: Dictionary in object_data.gadgets:
 				player.editor.object_properties.object = object
@@ -287,13 +289,14 @@ func new_level(blank := true) -> void:
 
 		new_level.rpc()
 		await get_tree().process_frame
-		var floor_object := player.editor.construct_shape(
+		var _floor_object := player.editor.construct_shape(
 			"Cuboid",
 			Vector3(0, -0.5, 0),
 			Vector3.ZERO,
 			Vector3(100, 1, 100),
+			DEFAULT_MATERIAL.resource_path,
+			true
 		)
-		floor_object.material = DEFAULT_MATERIAL
 		# TODO: Use spawn point
 		player.position = Vector3.ZERO
 		player.pivot.rotation = Vector3.ZERO
@@ -419,13 +422,14 @@ func _on_moon_button_pressed() -> void:
 	new_level.rpc()
 	await get_tree().process_frame
 	level_name.text = tr(&"Your Moon")
-	var floor_object := player.editor.construct_shape(
+	var _floor_object := player.editor.construct_shape(
 		"Cuboid",
 		Vector3(0, -0.5, 0),
 		Vector3.ZERO,
 		Vector3(100, 1, 100),
+		MOON_MATERIAL.resource_path,
+		true
 	)
-	floor_object.material = MOON_MATERIAL
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
 	player.pivot.rotation = Vector3.ZERO
