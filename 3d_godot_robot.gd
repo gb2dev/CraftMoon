@@ -11,7 +11,7 @@ func apply_rotation(_velocity: Vector3) -> void:
 	var new_rotation_y := lerp_angle(rotation.y, atan2(-_velocity.x, -_velocity.z), LERP_VELOCITY)
 	rotation.y = new_rotation_y
 
-	var _error := rpc("sync_player_rotation", new_rotation_y)
+	sync_player_rotation.rpc(new_rotation_y)
 
 func animate(_velocity: Vector3) -> void:
 	if not _character.is_on_floor():

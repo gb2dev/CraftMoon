@@ -70,7 +70,7 @@ func _process(_delta: float) -> void:
 					if not highlighted_geometry.is_in_group(&"Undeletable"):
 						audio_player.stream = SOUND_DESTROY
 						audio_player.play()
-						highlighted_geometry.queue_free()
+						destroy.rpc(highlighted_geometry.get_path())
 				return
 		highlighted_geometry = null
 
@@ -183,7 +183,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var _shape := construct_shape("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						construct_shape.rpc("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
@@ -246,7 +246,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var _shape := construct_shape("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						construct_shape.rpc("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
@@ -309,7 +309,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var _shape := construct_shape("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						construct_shape.rpc("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 
 					vertices.clear()
 				else:
@@ -373,7 +373,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var _shape := construct_shape("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						construct_shape.rpc("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 
 					vertices.clear()
 				else:
@@ -437,14 +437,29 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						var _shape := construct_shape("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						construct_shape.rpc("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
 					audio_player.play()
 
 
-func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) -> CSGShape3D:
+@rpc("any_peer", "call_local")
+func destroy(node_path: NodePath) -> void:
+	var node := get_node_or_null(node_path)
+	if node:
+		node.queue_free()
+
+
+@rpc("any_peer", "call_local")
+func construct_shape(
+	type: String,
+	pos: Vector3,
+	rot: Vector3,
+	size: Vector3,
+	material: String,
+	use_collision: bool
+) -> CSGShape3D:
 	match type:
 		"Cuboid":
 			var cuboid := CSGBox3D.new()
@@ -455,10 +470,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			cuboid.position = pos
 			cuboid.rotation = rot
 			cuboid.size = size
-			cuboid.material = construction_material
-			cuboid.use_collision = construction_collision
+			cuboid.material = load(material)
+			cuboid.use_collision = use_collision
 			if cuboid.get_index() == 0:
 				cuboid.add_to_group(&"Undeletable")
+			cuboid.name = str(cuboid.get_index())
 			return cuboid
 		"Ellipsoid":
 			var ellipsoid := CSGSphere3D.new()
@@ -471,10 +487,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			ellipsoid.position = pos
 			ellipsoid.rotation = rot
 			ellipsoid.scale = size
-			ellipsoid.material = construction_material
-			ellipsoid.use_collision = construction_collision
+			ellipsoid.material = load(material)
+			ellipsoid.use_collision = use_collision
 			if ellipsoid.get_index() == 0:
 				ellipsoid.add_to_group(&"Undeletable")
+			ellipsoid.name = str(ellipsoid.get_index())
 			return ellipsoid
 		"Cylinder":
 			var cylinder := CSGCylinder3D.new()
@@ -487,10 +504,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			cylinder.rotation = rot
 			cylinder.radius = size.x / 2
 			cylinder.height = size.y
-			cylinder.material = construction_material
-			cylinder.use_collision = construction_collision
+			cylinder.material = load(material)
+			cylinder.use_collision = use_collision
 			if cylinder.get_index() == 0:
 				cylinder.add_to_group(&"Undeletable")
+			cylinder.name = str(cylinder.get_index())
 			return cylinder
 		"Cone":
 			var cone := CSGCylinder3D.new()
@@ -504,10 +522,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			cone.rotation = rot
 			cone.radius = size.x / 2
 			cone.height = size.y
-			cone.material = construction_material
-			cone.use_collision = construction_collision
+			cone.material = load(material)
+			cone.use_collision = use_collision
 			if cone.get_index() == 0:
 				cone.add_to_group(&"Undeletable")
+			cone.name = str(cone.get_index())
 			return cone
 		"Torus":
 			var torus := CSGTorus3D.new()
@@ -520,10 +539,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			torus.position = pos
 			torus.rotation = rot
 			torus.scale = size / 2
-			torus.material = construction_material
-			torus.use_collision = construction_collision
+			torus.material = load(material)
+			torus.use_collision = use_collision
 			if torus.get_index() == 0:
 				torus.add_to_group(&"Undeletable")
+			torus.name = str(torus.get_index())
 			return torus
 		"Polygon":
 			var polygon := CSGPolygon3D.new()
@@ -536,10 +556,11 @@ func construct_shape(type: String, pos: Vector3, rot: Vector3, size: Vector3) ->
 			polygon.position.z += size.z / 2
 			polygon.rotation = rot
 			polygon.scale = size
-			polygon.material = construction_material
-			polygon.use_collision = construction_collision
+			polygon.material = load(material)
+			polygon.use_collision = use_collision
 			if polygon.get_index() == 0:
 				polygon.add_to_group(&"Undeletable")
+			polygon.name = str(polygon.get_index())
 			return polygon
 	return null
 

@@ -56,15 +56,15 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 		menu.player = player
 
 	var nick: String = Network.players[id]["nick"]
-	var _error := player.rpc("change_nick", nick)
+	player.change_nick.rpc(nick)
 
 	var skin_color: Color = player_info["skin"]
-	_error = rpc("sync_player_skin", id, skin_color)
-	var _connect_error := player.skin_changed.connect(func(color: Color) -> void: 
-		var _error_rpc := rpc("sync_player_skin", id, color)
+	sync_player_skin.rpc(id, skin_color)
+	var _error := player.skin_changed.connect(func(color: Color) -> void: 
+		sync_player_skin.rpc(id, color)
 	)
 
-	_error = rpc("sync_player_position", id, player.position)
+	sync_player_position.rpc(id, player.position)
 
 func get_spawn_point() -> Vector3:
 	return Vector3.ZERO
@@ -121,7 +121,7 @@ func _on_send_pressed() -> void:
 
 	var nick: String = Network.players[multiplayer.get_unique_id()]["nick"]
 
-	var _error := rpc("msg_rpc", nick, trimmed_message)
+	msg_rpc.rpc(nick, trimmed_message)
 	message.text = ""
 	message.grab_focus()
 
