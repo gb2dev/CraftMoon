@@ -116,70 +116,76 @@ func save_level() -> void:
 			gadget_indexes[parent_index] = []
 		gadget_indexes[parent_index].append(gadget.get_index())
 
+	var geometry_nodes: Array[CSGShape3D]
+	var gadget_nodes: Array[Gadget]
 	for node in get_tree().get_nodes_in_group(&"Persist"):
-		if node is CSGShape3D:
-			var type: String
-			var node_size: Vector3
-			var node_pos: Vector3 = node.position
-			match node.get_class():
-				"CSGBox3D":
-					type = "Cuboid"
-					node_size = node.size
-				"CSGSphere3D":
-					type = "Ellipsoid"
-					node_size = node.scale
-				"CSGCylinder3D":
-					if node.cone:
-						type = "Cone"
-					else:
-						type = "Cylinder"
-					node_size.x = node.radius * 2
-					node_size.y = node.height
-					node_size.z = 1
-				"CSGTorus3D":
-					type = "Torus"
-					node_size = node.scale * 2
-				"CSGPolygon3D":
-					type = "Polygon"
-					node_size = node.scale
-					node_pos.z -= node.scale.z / 2
-			save_data.append({
-				"type": type,
-				"position": node_pos,
-				"rotation": node.rotation,
-				"size": node_size,
-				"material": node.material.resource_path,
-				"collision": node.use_collision,
-				"gadgets": [],
-			})
-		elif node is Gadget:
-			var path: String = "res://gadgets/" + node.type.to_snake_case()
-			var item_data := load(path + ".tres")
-			var parent_index: int = node.node_3d.get_parent().get_index()
-			var gadgets: Array = save_data[parent_index + 1].gadgets
-			var connections: Array[Array]
-			var outputs_count: int = node.output_controls.size()
-			connections.resize(outputs_count)
-			for output_index in outputs_count:
-				for output_control: OutputControl in node.output_controls[output_index]:
-					if not is_instance_valid(output_control.target_gadget):
-						continue
+		if node is Gadget:
+			gadget_nodes.append(node)
+		elif node is CSGShape3D:
+			geometry_nodes.append(node)
+	for geometry in geometry_nodes:
+		var type: String
+		var node_size: Vector3
+		var node_pos: Vector3 = geometry.position
+		match geometry.get_class():
+			"CSGBox3D":
+				type = "Cuboid"
+				node_size = geometry.size
+			"CSGSphere3D":
+				type = "Ellipsoid"
+				node_size = geometry.scale
+			"CSGCylinder3D":
+				if geometry.cone:
+					type = "Cone"
+				else:
+					type = "Cylinder"
+				node_size.x = geometry.radius * 2
+				node_size.y = geometry.height
+				node_size.z = 1
+			"CSGTorus3D":
+				type = "Torus"
+				node_size = geometry.scale * 2
+			"CSGPolygon3D":
+				type = "Polygon"
+				node_size = geometry.scale
+				node_pos.z -= geometry.scale.z / 2
+		save_data.append({
+			"type": type,
+			"position": node_pos,
+			"rotation": geometry.rotation,
+			"size": node_size,
+			"material": geometry.material.resource_path,
+			"collision": geometry.use_collision,
+			"gadgets": [],
+		})
+	for gadget in gadget_nodes:
+		var path: String = "res://gadgets/" + gadget.type.to_snake_case()
+		var item_data := load(path + ".tres")
+		var parent_index: int = gadget.node_3d.get_parent().get_index()
+		var gadgets: Array = save_data[parent_index + 1].gadgets
+		var connections: Array[Array]
+		var outputs_count: int = gadget.output_controls.size()
+		connections.resize(outputs_count)
+		for output_index in outputs_count:
+			for output_control: OutputControl in gadget.output_controls[output_index]:
+				if not is_instance_valid(output_control.target_gadget):
+					continue
 
-					connections[output_index].append({
-						"target_gadget": gadget_indexes[parent_index].find(
-							output_control.target_gadget.get_index()
-						),
-						"target_input": output_control.target_input,
-					})
-			var gadget_data := {
-				"type": item_data.name,
-				"connections": connections,
-				"position": node.position,
-				"properties": {}
-			}
-			for property: StringName in node.get_meta_list():
-				gadget_data.properties[property] = node.get_meta(property)
-			gadgets.append(gadget_data)
+				connections[output_index].append({
+					"target_gadget": gadget_indexes[parent_index].find(
+						output_control.target_gadget.get_index()
+					),
+					"target_input": output_control.target_input,
+				})
+		var gadget_data := {
+			"type": item_data.name,
+			"connections": connections,
+			"position": gadget.position,
+			"properties": {}
+		}
+		for property: StringName in gadget.get_meta_list():
+			gadget_data.properties[property] = gadget.get_meta(property)
+		gadgets.append(gadget_data)
 	var save_file_path := "user://levels/" + str(slot) + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
