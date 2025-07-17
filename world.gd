@@ -130,7 +130,11 @@ func msg_rpc(nick: String, msg: String) -> void:
 	chat.text += str(nick, " : ", msg, "\n")
 
 func _on_multiplayer_spawner_spawned(node: Node) -> void:
-	if int(node.name) == multiplayer.get_unique_id():
+	var id := multiplayer.get_unique_id()
+	if int(node.name) == id:
 		var player := node as Character
 		if player:
 			menu.player = player
+			var _error := player.skin_changed.connect(func(color: Color) -> void: 
+				sync_player_skin.rpc(id, color)
+			)
