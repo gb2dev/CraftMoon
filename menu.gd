@@ -217,7 +217,7 @@ func load_level(level := "") -> void:
 	var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 	var save_data := save_file.get_var() as Array[Dictionary]
 	if save_data:
-		new_level()
+		new_level.rpc()
 		await get_tree().process_frame
 		level_name.text = save_data[0].name
 		level_description.text = save_data[0].description
@@ -270,6 +270,7 @@ func delete_save(level: String) -> void:
 		var _error := DirAccess.remove_absolute(path)
 
 
+@rpc("any_peer", "call_local")
 func new_level(blank := true) -> void:
 	if not blank:
 		level_name.selecting_enabled = true
@@ -284,7 +285,7 @@ func new_level(blank := true) -> void:
 
 		await wipe()
 
-		new_level()
+		new_level.rpc()
 		await get_tree().process_frame
 		var floor_object := player.editor.construct_shape(
 			"Cuboid",
@@ -297,7 +298,7 @@ func new_level(blank := true) -> void:
 		player.position = Vector3.ZERO
 		player.pivot.rotation = Vector3.ZERO
 		player.camera.rotation = Vector3.ZERO
-		enter_edit_mode()
+		enter_edit_mode.rpc()
 	else:
 		get_tree().call_group(&"Persist", &"queue_free")
 		get_tree().call_group(&"Moon", &"queue_free")
@@ -305,6 +306,7 @@ func new_level(blank := true) -> void:
 		level_description.text = ""
 
 
+@rpc("any_peer", "call_local")
 func enter_edit_mode() -> void:
 	mode_button.text = tr(&"Play Mode")
 	player.editor.input_display.visible = true
@@ -313,6 +315,7 @@ func enter_edit_mode() -> void:
 	player.editor.set_object_builder_active(false)
 
 
+@rpc("any_peer", "call_local")
 func enter_play_mode() -> void:
 	mode_button.text = tr(&"Edit Mode")
 	player.fly = false
@@ -384,16 +387,16 @@ func _on_quit_button_pressed() -> void:
 
 func _on_new_level_button_pressed() -> void:
 	toggle()
-	new_level(false)
+	new_level.rpc(false)
 
 
 func _on_mode_button_pressed() -> void:
 	toggle()
 	if player.editor.process_mode == PROCESS_MODE_DISABLED:
-		enter_edit_mode()
+		enter_edit_mode.rpc()
 		load_level()
 	else:
-		enter_play_mode()
+		enter_play_mode.rpc()
 		save_level()
 		load_level()
 
@@ -413,7 +416,7 @@ func _on_moon_button_pressed() -> void:
 
 	await wipe()
 
-	new_level()
+	new_level.rpc()
 	await get_tree().process_frame
 	level_name.text = tr(&"Your Moon")
 	var floor_object := player.editor.construct_shape(
@@ -427,7 +430,7 @@ func _on_moon_button_pressed() -> void:
 	player.position = Vector3.ZERO
 	player.pivot.rotation = Vector3.ZERO
 	player.camera.rotation = Vector3.ZERO
-	enter_play_mode()
+	enter_play_mode.rpc()
 	spawn_level_portals()
 
 

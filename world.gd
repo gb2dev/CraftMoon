@@ -41,7 +41,8 @@ func _on_host_pressed() -> void:
 
 func _on_join_pressed() -> void:
 	main_menu.hide()
-	var _error := Network.join_game(nick_input.text.strip_edges(), skin_color_picker.color, address_input.text.strip_edges())
+	var address := address_input.text.strip_edges()
+	var _error := Network.join_game(nick_input.text.strip_edges(), skin_color_picker.color, address)
 
 func _add_player(id: int, player_info : Dictionary) -> void:
 	if players_container.has_node(str(id)) or not multiplayer.is_server():
@@ -51,7 +52,8 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 	player.name = str(id)
 	player.position = get_spawn_point()
 	players_container.add_child(player, true)
-	menu.player = player
+	if id == 1:
+		menu.player = player
 
 	var nick: String = Network.players[id]["nick"]
 	var _error := player.rpc("change_nick", nick)
@@ -127,8 +129,8 @@ func _on_send_pressed() -> void:
 func msg_rpc(nick: String, msg: String) -> void:
 	chat.text += str(nick, " : ", msg, "\n")
 
-
 func _on_multiplayer_spawner_spawned(node: Node) -> void:
-	var player := node as Character
-	if player:
-		menu.player = player
+	if int(node.name) == multiplayer.get_unique_id():
+		var player := node as Character
+		if player:
+			menu.player = player

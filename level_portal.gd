@@ -11,11 +11,15 @@ var menu: Menu
 
 func _process(_delta: float) -> void:
 	if is_colliding():
-		set_process(false)
-		menu.slot = get_index()
-		if level.is_empty():
-			menu.new_level(false)
-		else:
-			await menu.wipe()
-			menu.load_level(level)
-			menu.enter_edit_mode()
+		enter_portal.rpc()
+
+@rpc("any_peer", "call_local")
+func enter_portal() -> void:
+	set_process(false)
+	menu.slot = get_index()
+	if level.is_empty():
+		menu.new_level(false)
+	else:
+		await menu.wipe()
+		menu.load_level(level)
+		menu.enter_edit_mode.rpc()

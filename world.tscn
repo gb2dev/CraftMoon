@@ -285,7 +285,7 @@ text = "IP Address : "
 [node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/MainMenu/Option3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-placeholder_text = "127.0.0.1"
+placeholder_text = "localhost"
 alignment = 1
 expand_to_text_length = true
 
