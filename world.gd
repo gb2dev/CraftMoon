@@ -59,6 +59,9 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 
 	var skin_color: Color = player_info["skin"]
 	_error = rpc("sync_player_skin", id, skin_color)
+	var _connect_error := player.skin_changed.connect(func(color: Color) -> void: 
+		var _error_rpc := rpc("sync_player_skin", id, color)
+	)
 
 	_error = rpc("sync_player_position", id, player.position)
 

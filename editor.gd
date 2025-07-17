@@ -10,7 +10,6 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 @onready var object_properties := %"Object Properties" as ObjectProperties
 @onready var input_display := %InputDisplay as InputDisplay
 
-@export var crosshair: TextureRect
 @export var cursor: Node3D
 @export var audio_player: AudioStreamPlayer
 @export var player: Character
@@ -556,9 +555,11 @@ func set_object_builder_active(value: bool) -> void:
 	object_builder_active = value
 	shape_select.visible = object_builder_active
 	cursor.visible = object_builder_active
-	crosshair.visible = not object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
 	highlighted_geometry = null
+
+	if not player.first_person:
+		return
 
 	input_display.clear_input_prompts()
 	if object_builder_active:
@@ -578,11 +579,11 @@ func set_object_builder_active(value: bool) -> void:
 
 
 func toggle_ui() -> void:
-	crosshair.visible = not crosshair.visible
+	player.crosshair.visible = not player.crosshair.visible
 	input_display.visible = not input_display.visible and (
 		process_mode == PROCESS_MODE_INHERIT
 		or get_tree().get_first_node_in_group(&"Moon")
 	)
 	if object_builder_active:
 		shape_select.visible = not shape_select.visible
-		crosshair.visible = false
+		player.crosshair.visible = false

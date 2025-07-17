@@ -1,6 +1,8 @@
 class_name Character
 extends CharacterBody3D
 
+signal skin_changed(color: Color)
+
 const NORMAL_SPEED = 6.0
 const SPRINT_SPEED = 10.0
 const JUMP_VELOCITY = 10
@@ -10,12 +12,15 @@ const DOUBLETAP_DELAY = 0.25
 @export var _body: Body = null
 @export var _spring_arm_offset: Node3D = null
 @export var editor: Editor
+@export var crosshair: TextureRect
+@export var meshes: Node3D
 
 var camera: Camera3D
 var first_person: bool:
 	set(value):
 		first_person = value
-		visible = not first_person
+		crosshair.visible = value
+		meshes.visible = not value
 		_set_current_camera()
 var fly := false
 var doubletap_time := DOUBLETAP_DELAY
@@ -23,6 +28,7 @@ var doubletap_time := DOUBLETAP_DELAY
 @onready var nickname: Label3D = $PlayerNick/Nickname
 @onready var body: MeshInstance3D = $"3DGodotRobot/RobotArmature/Skeleton3D/Llimbs and head"
 @onready var pivot: Node3D = $Pivot
+@onready var color_picker: ColorPickerButton = %ColorPickerButton
 
 var _current_speed: float
 var _respawn_point := Vector3(0, 5, 0)
@@ -139,6 +145,11 @@ func change_nick(new_nick: String) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func set_player_skin(color: Color) -> void:
+	color_picker.color = color
 	var material := body.get_surface_override_material(0) as ShaderMaterial
 	if material:
 		material.set_shader_parameter("tint_color", color)
+
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	skin_changed.emit(color)

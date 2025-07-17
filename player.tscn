@@ -4931,7 +4931,7 @@ script = ExtResource("14_hoal8")
 name = "Dirt"
 icon = ExtResource("43_a5i73")
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_body", "_spring_arm_offset", "editor")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_body", "_spring_arm_offset", "editor", "crosshair", "meshes")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 collision_layer = 3
 collision_mask = 3
@@ -4939,6 +4939,8 @@ script = ExtResource("1_tdh26")
 _body = NodePath("3DGodotRobot")
 _spring_arm_offset = NodePath("SpringArmOffset")
 editor = NodePath("Pivot/Camera3D/Editor")
+crosshair = NodePath("Pivot/Camera3D/Editor/Crosshair")
+meshes = NodePath("3DGodotRobot")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.066, 0.828, 0.01)
@@ -5187,10 +5189,10 @@ script = ExtResource("5_sweqy")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("crosshair", "cursor", "audio_player", "player", "shape_select", "shape_items")]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("cursor", "audio_player", "player", "shape_select", "shape_items")]
+process_mode = 4
 target_position = Vector3(0, 0, -10)
 script = ExtResource("6_ee2o4")
-crosshair = NodePath("Crosshair")
 cursor = NodePath("Cursor")
 audio_player = NodePath("../../../AudioStreamPlayer")
 player = NodePath("../../..")
@@ -5198,6 +5200,7 @@ shape_select = NodePath("../../../ShapeSelect")
 shape_items = NodePath("../../../ShapeSelect/ShapeItems")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -5215,7 +5218,6 @@ mouse_filter = 2
 texture = ExtResource("8_0jj5r")
 
 [node name="Cursor" type="MeshInstance3D" parent="Pivot/Camera3D/Editor"]
-visible = false
 mesh = SubResource("SphereMesh_w3a0q")
 surface_material_override/0 = SubResource("StandardMaterial3D_yskhe")
 
@@ -5475,9 +5477,9 @@ text = "Color"
 label_settings = ExtResource("10_cy2ki")
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Color"
-color = Color(0.113725, 0.607843, 0.533333, 1)
 edit_alpha = false
 
 [node name="Attributes" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
@@ -5776,6 +5778,7 @@ texture = ExtResource("76_4itt3")
 
 [connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
 [connection signal="value_changed" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravitySlider" to="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravityLabel" method="_on_h_slider_value_changed"]
+[connection signal="color_changed" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
 [connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]
