@@ -16,7 +16,7 @@ func _ready() -> void:
 	if detection_range == 0:
 		await get_tree().process_frame
 		audio_player.play()
-	input_pulse.connect(func(_input_index: int) -> void:
+	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0):
 			is_pulse = false
 			audio_player.play()
@@ -33,15 +33,15 @@ func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"Sound":
 			if value.begins_with("res://"):
-				audio_player.stream = load(value)
+				audio_player.stream = load(value as String)
 			else:
-				audio_player.stream = AudioStreamOggVorbis.load_from_file(value)
+				audio_player.stream = AudioStreamOggVorbis.load_from_file(value as String)
 		&"Range":
 			detection_range = value
 			if detection_range > 0:
 				area.scale = Vector3.ONE * (detection_range + 0.001)
 		&"Volume":
-			audio_player.volume_db = linear_to_db(value)
+			audio_player.volume_db = linear_to_db(value as float)
 		&"Loop":
 			if value:
 				if not audio_player.finished.is_connected(audio_player.play):

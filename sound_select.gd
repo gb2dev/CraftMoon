@@ -9,12 +9,12 @@ signal select_sound(sound: String)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	close_requested.connect(hide)
+	var _error := close_requested.connect(hide)
 
 	for category: Control in categories.get_children():
 		var vbox := category.get_child(0)
 		for sound: Button in vbox.get_children():
-			sound.pressed.connect(func() -> void:
+			_error = sound.pressed.connect(func() -> void:
 				select_sound.emit(sound.name, category.name + " - " + sound.text)
 				hide()
 			)

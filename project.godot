@@ -25,8 +25,6 @@ Network="*res://network.gd"
 
 gdscript/warnings/unused_signal=0
 gdscript/warnings/untyped_declaration=1
-gdscript/warnings/unsafe_property_access=1
-gdscript/warnings/unsafe_call_argument=1
 gdscript/warnings/return_value_discarded=1
 
 [dotnet]

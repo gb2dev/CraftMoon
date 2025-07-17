@@ -416,3 +416,4 @@ material = ExtResource("5_yl342")
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option4/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

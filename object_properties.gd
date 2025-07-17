@@ -30,7 +30,7 @@ func _process(_delta: float) -> void:
 func toggle(o: Node3D) -> void:
 	object = o
 	if o and not o.tree_exiting.is_connected(close_on_free):
-		o.tree_exiting.connect(close_on_free)
+		var _error := o.tree_exiting.connect(close_on_free)
 	if visible:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 		hide()
@@ -105,11 +105,11 @@ func create_gadget(item: PackedScene, item_data: ItemData, pos := Vector2.INF) -
 		gadget.position = pos
 	gadget.attach_to_object(object)
 	gadget.set_icon(item_data.icon)
-	gadget.open_properties.connect(func() -> void:
+	var _error := gadget.open_properties.connect(func() -> void:
 		gadget_properties.gadget_changed.emit()
 	)
-	gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
-	gadget.open_properties.connect(gadgets_panel.hide)
+	_error = gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
+	_error = gadget.open_properties.connect(gadgets_panel.hide)
 	gadget.type = item_data.name
 	return gadget
 

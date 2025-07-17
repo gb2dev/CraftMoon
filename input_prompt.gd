@@ -15,7 +15,7 @@ var text: String
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	InputHelper.device_changed.connect(_on_device_changed)
+	var _error := InputHelper.device_changed.connect(_on_device_changed)
 	_on_device_changed(InputHelper.device, 0)
 
 

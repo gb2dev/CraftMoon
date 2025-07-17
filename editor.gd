@@ -98,7 +98,7 @@ func _process(_delta: float) -> void:
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
 
-	Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * 1000, Color(0, 0.85, 0.85), 1)
+	var _mesh_instance := await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * 1000, Color(0, 0.85, 0.85), 1)
 
 
 	# Object Construction
@@ -183,7 +183,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						construct_shape("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						var _shape := construct_shape("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
@@ -246,7 +246,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						construct_shape("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						var _shape := construct_shape("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK
@@ -309,7 +309,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						construct_shape("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						var _shape := construct_shape("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 
 					vertices.clear()
 				else:
@@ -373,7 +373,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						construct_shape("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						var _shape := construct_shape("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 
 					vertices.clear()
 				else:
@@ -437,7 +437,7 @@ func _process(_delta: float) -> void:
 					):
 						audio_player.stream = SOUND_PLACE
 						audio_player.play()
-						construct_shape("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
+						var _shape := construct_shape("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs())
 					vertices.clear()
 				else:
 					audio_player.stream = SOUND_CLICK

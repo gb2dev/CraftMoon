@@ -8,7 +8,7 @@ var is_visible_on_screen: bool
 
 func _ready() -> void:
 	super._ready()
-	input_pulse.connect(func(_input_index: int) -> void:
+	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		output(0, is_input_data_powered(0, false) and is_visible_on_screen)
 	)
 

@@ -165,7 +165,7 @@ func save_level() -> void:
 		var gadgets: Array = save_data[parent_index + 1].gadgets
 		var connections: Array[Array]
 		var outputs_count: int = gadget.output_controls.size()
-		connections.resize(outputs_count)
+		var _error := connections.resize(outputs_count)
 		for output_index in outputs_count:
 			for output_control: OutputControl in gadget.output_controls[output_index]:
 				if not is_instance_valid(output_control.target_gadget):
@@ -189,7 +189,7 @@ func save_level() -> void:
 	var save_file_path := "user://levels/" + str(slot) + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
-		save_file.store_var(save_data)
+		var _success := save_file.store_var(save_data)
 		prints("Save level: ", save_data)
 	else:
 		printerr("Error! Invalid level name.")
