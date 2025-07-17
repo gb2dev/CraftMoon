@@ -10,7 +10,6 @@ var is_player_detected: bool
 
 func _ready() -> void:
 	super._ready()
-	change_property(&"ThreeD", false)
 	input_pulse.connect(func(_input_index: int) -> void:
 		output(0, is_input_data_powered(0, false) and is_player_detected)
 	)

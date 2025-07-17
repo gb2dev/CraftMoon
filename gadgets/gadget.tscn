@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=4 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=5 format=3 uid="uid://gwjjy0frd8kj"]
 
-[ext_resource type="Script" path="res://gadgets/gadget.gd" id="1_5ebnv"]
+[ext_resource type="Script" uid="uid://yusyjulw6pij" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
-[ext_resource type="Script" path="res://input_control.gd" id="3_gd2ll"]
-[ext_resource type="Script" path="res://output_control.gd" id="3_mgsla"]
-
+[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://input_control.gd" id="3_gd2ll"]
+[ext_resource type="Script" uid="uid://ccoowo0jccjki" path="res://output_control.gd" id="3_mgsla"]
 
 [node name="Gadget" type="TextureRect"]
 offset_right = 64.0
@@ -24,7 +23,7 @@ mouse_filter = 2
 
 [node name="InputControl0" type="ColorRect" parent="InputControls" groups=["InputControl"]]
 custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
+layout_mode = 0
 offset_top = 27.0
 offset_right = 4.0
 offset_bottom = 37.0
@@ -57,5 +56,7 @@ offset_top = -8.0
 offset_right = 16.0
 offset_bottom = 8.0
 script = ExtResource("3_mgsla")
+
+[node name="3D" type="Node3D" parent="."]
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
