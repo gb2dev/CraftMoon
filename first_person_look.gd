@@ -1,5 +1,7 @@
 extends Node3D
 
+@export var _body: Body
+
 var joypad_look: Vector2
 var joypad_look_curve: float = 3.0
 var joypad_look_inverted_x: bool = false
@@ -13,8 +15,10 @@ var mouse_look_inverted_y: bool = false
 var mouse_look_sensitivity: float = 1.0
 
 @onready var camera := $Camera3D as Camera3D
+@onready var player := get_parent() as Character
 
 func _process(_delta: float) -> void:
+	if not player.first_person: return
 	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
 
 	if joypad_look_inverted_x:
@@ -35,12 +39,14 @@ func _process(_delta: float) -> void:
 		joypad_look.y *= -1
 
 	rotate_y(-joypad_look.x)
+	_body.apply_rotation_first_person(global_rotation.y)
 	camera.rotate_x(-joypad_look.y)
 
 	# Clamp vertical camera rotation for both mouse and joypad
 	camera.rotation.x = clamp(camera.rotation.x, -PI / 2, PI / 2)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not player.first_person: return
 	if not is_multiplayer_authority():
 		return
 
@@ -55,4 +61,5 @@ func _unhandled_input(event: InputEvent) -> void:
 		var look_delta := Vector3(-input.x, 0, -input.y) * mouse_look_sensitivity / 500
 
 		rotate_y(look_delta.x)
+		_body.apply_rotation_first_person(global_rotation.y)
 		camera.rotate_x(look_delta.z)

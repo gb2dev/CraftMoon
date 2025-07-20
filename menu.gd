@@ -260,6 +260,7 @@ func load_level(level := "") -> void:
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
 	player.pivot.rotation = Vector3.ZERO
+	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
 	player.camera.rotation = Vector3.ZERO
 
 
@@ -300,6 +301,7 @@ func new_level(blank := true) -> void:
 		# TODO: Use spawn point
 		player.position = Vector3.ZERO
 		player.pivot.rotation = Vector3.ZERO
+		player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
 		player.camera.rotation = Vector3.ZERO
 		enter_edit_mode.rpc()
 	else:
@@ -433,6 +435,7 @@ func _on_moon_button_pressed() -> void:
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
 	player.pivot.rotation = Vector3.ZERO
+	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
 	player.camera.rotation = Vector3.ZERO
 	enter_play_mode.rpc()
 	spawn_level_portals()

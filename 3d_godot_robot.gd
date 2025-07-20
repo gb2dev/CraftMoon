@@ -13,6 +13,10 @@ func apply_rotation(_velocity: Vector3) -> void:
 
 	sync_player_rotation.rpc(new_rotation_y)
 
+func apply_rotation_first_person(angle: float) -> void:
+	rotation.y = angle
+	sync_player_rotation.rpc(angle)
+
 func animate(_velocity: Vector3) -> void:
 	if not _character.is_on_floor():
 		if _velocity.y < 0:
