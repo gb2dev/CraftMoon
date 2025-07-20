@@ -1,21 +1,13 @@
 extends Gadget
 
 
-@onready var area := $"3D/Area3D" as Area3D
-@onready var area_visual := $"3D/Area3D/AreaVisual" as MeshInstance3D
-
 var audio_player: Node
-var inside_area := false
 var is_pulse: bool
-var detection_range: float
 
 
 func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
-	if detection_range == 0:
-		await get_tree().process_frame
-		audio_player.play()
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0):
 			is_pulse = false
@@ -29,6 +21,12 @@ func check_pulse() -> void:
 		is_pulse = true
 
 
+func play_sound_looped() -> void:
+	var data: Variant = get_input_data(0)
+	if data == true or is_pulse:
+		audio_player.play()
+
+
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"Sound":
@@ -36,23 +34,15 @@ func change_property(property: StringName, value: Variant) -> void:
 				audio_player.stream = load(value as String)
 			else:
 				audio_player.stream = AudioStreamOggVorbis.load_from_file(value as String)
-		&"Range":
-			detection_range = value
-			if detection_range > 0:
-				area.scale = Vector3.ONE * (detection_range + 0.001)
 		&"Volume":
 			audio_player.volume_db = linear_to_db(value as float)
 		&"Loop":
 			if value:
-				if not audio_player.finished.is_connected(audio_player.play):
-					audio_player.finished.connect(func() -> void:
-						var data: Variant = get_input_data(0)
-						if data == null and inside_area or data == true or is_pulse:
-							audio_player.play()
-					)
+				if not audio_player.finished.is_connected(play_sound_looped):
+					audio_player.finished.connect(play_sound_looped)
 			else:
-				if audio_player.finished.is_connected(audio_player.play):
-					audio_player.finished.disconnect(audio_player.play)
+				if audio_player.finished.is_connected(play_sound_looped):
+					audio_player.finished.disconnect(play_sound_looped)
 		&"ThreeD":
 			var stream: AudioStream
 			var loop := false
@@ -81,15 +71,4 @@ func change_property(property: StringName, value: Variant) -> void:
 				output(0, true, true)
 			)
 
-			area.add_child(audio_player)
-
-
-func _on_area_3d_body_entered(_body: Node3D) -> void:
-	# TODO: Add different modes
-	inside_area = true
-	if get_input_data(0) == null and detection_range > 0:
-		audio_player.play()
-
-
-func _on_area_3d_body_exited(_body: Node3D) -> void:
-	inside_area = false
+			node_3d.add_child(audio_player)

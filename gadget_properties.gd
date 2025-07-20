@@ -33,9 +33,6 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 	match type:
 		&"Audio Gadget":
-			gadget.area_visual.show()
-			var _error := gadget_changed.connect(gadget.area_visual.hide, Object.CONNECT_ONE_SHOT)
-
 			const selected_sound_prefix = "Selected sound: "
 
 			var select_sound_label := Label.new()
@@ -48,7 +45,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 			file_dialog.access = FileDialog.ACCESS_FILESYSTEM
 			file_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 			file_dialog.set_filters(["*.ogg ; OGG Vorbis Sounds"])
-			_error = file_dialog.file_selected.connect(func(path: String) -> void:
+			var _error := file_dialog.file_selected.connect(func(path: String) -> void:
 				gadget.change_property(&"Sound", path)
 				select_sound_label.text = selected_sound_prefix + path
 				gadget.set_meta(&"Sound", path)
@@ -77,9 +74,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 			_error = library_button.pressed.connect(sound_select_instance.show)
 			vbox.add_child(library_button)
 
-			var _slider := add_slider("Range: ", &"Range", 2, 0, 50, 0.1, gadget)
-
-			_slider = add_slider("Volume: ", &"Volume", 1, 0, 1, 0.01, gadget)
+			var _slider := add_slider("Volume: ", &"Volume", 1, 0, 1, 0.01, gadget)
 
 			var loop_checkbox := CheckBox.new()
 			loop_checkbox.text = "Loop"
