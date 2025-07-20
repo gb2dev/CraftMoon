@@ -105,9 +105,7 @@ func create_gadget(item: PackedScene, item_data: ItemData, pos := Vector2.INF) -
 		gadget.position = pos
 	gadget.attach_to_object(object)
 	gadget.set_icon(item_data.icon)
-	var _error := gadget.open_properties.connect(func() -> void:
-		gadget_properties.gadget_changed.emit()
-	)
+	var _error := gadget.open_properties.connect(gadget_properties.gadget_changed.emit)
 	_error = gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
 	_error = gadget.open_properties.connect(gadgets_panel.hide)
 	gadget.type = item_data.name

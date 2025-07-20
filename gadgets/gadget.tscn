@@ -1,14 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=6 format=3 uid="uid://gwjjy0frd8kj"]
 
 [ext_resource type="Script" uid="uid://yusyjulw6pij" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
-[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://input_control.gd" id="3_gd2ll"]
-[ext_resource type="Script" uid="uid://ccoowo0jccjki" path="res://output_control.gd" id="3_mgsla"]
+[ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_sx670"]
+[ext_resource type="PackedScene" uid="uid://4k43mtdgs0ya" path="res://gadgets/gadget_output_visual.tscn" id="4_7wnjn"]
+[ext_resource type="PackedScene" uid="uid://l45be1pl8lmn" path="res://gadgets/gadget_output_control.tscn" id="5_7wnjn"]
 
 [node name="Gadget" type="TextureRect"]
 offset_right = 64.0
 offset_bottom = 64.0
-mouse_filter = 2
 texture = ExtResource("2_wx2yp")
 expand_mode = 1
 script = ExtResource("1_5ebnv")
@@ -17,27 +17,27 @@ script = ExtResource("1_5ebnv")
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 4.0
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="InputControl0" type="ColorRect" parent="InputControls" groups=["InputControl"]]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 0
-offset_top = 27.0
-offset_right = 4.0
-offset_bottom = 37.0
-tooltip_text = "Power"
-color = Color(1, 0.27451, 0.196078, 1)
-script = ExtResource("3_gd2ll")
+[node name="InputControl0" parent="InputControls" instance=ExtResource("3_sx670")]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -8.0
+offset_right = 0.0
+offset_bottom = 8.0
+grow_horizontal = 0
+grow_vertical = 2
 
 [node name="OutputVisuals" type="Node2D" parent="."]
 
-[node name="OutputVisual0" type="Line2D" parent="OutputVisuals"]
-z_index = 1
-points = PackedVector2Array(64, 32, 72, 32, 72, 32)
-width = 8.0
-default_color = Color(0.2, 0.733333, 1, 1)
+[node name="OutputVisual0" parent="OutputVisuals" instance=ExtResource("4_7wnjn")]
+position = Vector2(70, 32)
 
 [node name="OutputControls" type="Control" parent="."]
 layout_mode = 1
@@ -50,12 +50,12 @@ grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="OutputControl0" type="Control" parent="OutputControls" groups=["OutputControl"]]
-anchors_preset = 0
-offset_top = -8.0
-offset_right = 16.0
-offset_bottom = 8.0
-script = ExtResource("3_mgsla")
+[node name="OutputControl0" parent="OutputControls" instance=ExtResource("5_7wnjn")]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+grow_vertical = 2
 
 [node name="3D" type="Node3D" parent="."]
 
