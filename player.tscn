@@ -5246,7 +5246,7 @@ object_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginCont
 player_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player")
 audio_player = NodePath("../AudioStreamPlayer")
 editor = NodePath("../Pivot/Camera3D/Editor")
-logic_panel = NodePath("TabContainer/Logic/Logic")
+logic_panel = NodePath("TabContainer/Logic/ScrollContainer/Logic")
 
 [node name="TabContainer" type="TabContainer" parent="Object Properties"]
 layout_mode = 1
@@ -5257,9 +5257,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_66i60")
 tab_alignment = 1
-current_tab = 0
+current_tab = 1
 
 [node name="Properties" type="Control" parent="Object Properties/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -5454,16 +5455,6 @@ layout_mode = 2
 button_pressed = true
 text = "Collision"
 
-[node name="GravityLabel" type="Label" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
-layout_mode = 2
-
-[node name="GravitySlider" type="HSlider" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
-layout_mode = 2
-min_value = -50.0
-max_value = 50.0
-step = 0.1
-value = 9.800000000000004
-
 [node name="Player" type="VBoxContainer" parent="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
 visible = false
 layout_mode = 2
@@ -5496,7 +5487,6 @@ layout_mode = 2
 text = "Speed"
 
 [node name="Logic" type="HBoxContainer" parent="Object Properties/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -5689,9 +5679,13 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="Object Properties/TabContainer/Logic/Gadget Properties/MarginContainer"]
 layout_mode = 2
 
-[node name="Logic" type="Panel" parent="Object Properties/TabContainer/Logic"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Object Properties/TabContainer/Logic"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Logic" type="Panel" parent="Object Properties/TabContainer/Logic/ScrollContainer"]
+custom_minimum_size = Vector2(5000, 5000)
+layout_mode = 2
 script = ExtResource("67_djlqh")
 
 [node name="CloseButton" type="Button" parent="Object Properties"]
@@ -5778,11 +5772,12 @@ texture = ExtResource("76_4itt3")
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
 [connection signal="toggled" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="Object Properties" method="_on_collision_check_box_toggled"]
-[connection signal="value_changed" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravitySlider" to="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/GravityLabel" method="_on_h_slider_value_changed"]
 [connection signal="color_changed" from="Object Properties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
 [connection signal="gui_input" from="Object Properties/TabContainer/Logic/Gadgets" to="Object Properties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
-[connection signal="gui_input" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_gui_input"]
-[connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/Logic" to="Object Properties/TabContainer/Logic/Logic" method="_on_visibility_changed"]
+[connection signal="gui_input" from="Object Properties/TabContainer/Logic/ScrollContainer/Logic" to="Object Properties/TabContainer/Logic/ScrollContainer/Logic" method="_on_gui_input"]
+[connection signal="mouse_entered" from="Object Properties/TabContainer/Logic/ScrollContainer/Logic" to="Object Properties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Object Properties/TabContainer/Logic/ScrollContainer/Logic" to="Object Properties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_exited"]
+[connection signal="visibility_changed" from="Object Properties/TabContainer/Logic/ScrollContainer/Logic" to="Object Properties/TabContainer/Logic/ScrollContainer/Logic" method="_on_visibility_changed"]
 [connection signal="pressed" from="Object Properties/CloseButton" to="Object Properties" method="close"]
 
 [editable path="ShapeSelect/ShapeItems/Cuboid"]

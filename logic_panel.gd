@@ -2,6 +2,9 @@ class_name LogicPanel
 extends Panel
 
 
+const PADDING_GRID_UNITS = 1
+const GRID_SIZE = 32
+
 @onready var object_properties := %"Object Properties" as ObjectProperties
 
 
@@ -24,11 +27,16 @@ func place_gadget(gadget: Gadget) -> void:
 		gadget.add_to_group(&"Persist")
 
 	gadget.remove_from_group(&"Dragging")
-	gadget.position = get_local_mouse_position() - gadget.size / 2
-	gadget.position = gadget.position.clamp(Vector2.ZERO, size - gadget.size)
+	gadget.position = get_snapped_gadget_position(gadget.size)
 	gadget.update_connection_positions()
-	#gadget.position = gadget.position.snapped(Vector2(128, 128))
-	gadget.mouse_filter = Control.MOUSE_FILTER_STOP
+	gadget.set_mouse_filters(MOUSE_FILTER_STOP)
+
+
+func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:
+	return get_local_mouse_position().clamp(
+		gadget_size,
+		size - gadget_size
+	).snapped(Vector2.ONE * GRID_SIZE) - gadget_size / 2
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -36,9 +44,26 @@ func _on_gui_input(event: InputEvent) -> void:
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
 			place_gadget(gadget)
+	elif event is InputEventMouseMotion:
+		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
+		if gadget:
+			gadget.position = get_snapped_gadget_position(gadget.size) + global_position
 
 
 func _on_visibility_changed() -> void:
 	if get_parent().visible:
 		for gadget: Gadget in get_children():
 			gadget.visible = object_properties.object == gadget.node_3d.get_parent()
+
+
+func _on_mouse_entered() -> void:
+	var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
+	if gadget:
+		gadget.add_to_group(&"GridSnap")
+		gadget.position = get_snapped_gadget_position(gadget.size) + global_position
+
+
+func _on_mouse_exited() -> void:
+	var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
+	if gadget:
+		gadget.remove_from_group(&"GridSnap")

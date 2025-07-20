@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://l45be1pl8lmn"]
+
+[ext_resource type="Script" uid="uid://ccoowo0jccjki" path="res://output_control.gd" id="1_1yits"]
+
+[node name="OutputControl0" type="Control" groups=["OutputControl"]]
+layout_mode = 3
+anchors_preset = 0
+offset_top = -8.0
+offset_right = 16.0
+offset_bottom = 8.0
+script = ExtResource("1_1yits")

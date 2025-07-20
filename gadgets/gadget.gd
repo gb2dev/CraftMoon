@@ -28,14 +28,15 @@ func _ready() -> void:
 	for output_index in output_controls.size():
 		var output_control := output_controls[output_index].front() as OutputControl
 		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
+	set_mouse_filters(MOUSE_FILTER_IGNORE)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	input(delta)
 
-	if is_in_group(&"Dragging"):
-		# Dragging Gadget
+	if is_in_group(&"Dragging") and not is_in_group(&"GridSnap"):
+		# Dragging Gadget without Grid Snap
 		position = get_global_mouse_position() - size / 2
 
 		update_connection_positions()
@@ -118,6 +119,15 @@ func _notification(what: int) -> void:
 					input_control.output_visuals.erase(output_visual)
 
 
+func set_mouse_filters(value: MouseFilter) -> void:
+	mouse_filter = value
+	for input_control: InputControl in input_controls:
+		input_control.mouse_filter = value
+	for output_index: int in output_controls.size():
+		for output_control: OutputControl in output_controls[output_index]:
+			output_control.mouse_filter = value
+
+
 func _on_gui_input(event: InputEvent) -> void:
 	var event_touch := event as InputEventScreenTouch
 	var event_mouse_button := event as InputEventMouseButton
@@ -126,7 +136,7 @@ func _on_gui_input(event: InputEvent) -> void:
 			# Start Dragging Gadget
 			top_level = true
 			add_to_group(&"Dragging")
-			mouse_filter = Control.MOUSE_FILTER_IGNORE
+			set_mouse_filters(MOUSE_FILTER_IGNORE)
 			accept_event()
 	elif event_mouse_button and event_mouse_button.is_pressed() and event_mouse_button.button_index == 2:
 		open_properties.emit()

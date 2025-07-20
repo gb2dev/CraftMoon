@@ -1,8 +1,8 @@
-[gd_scene load_steps=5 format=4 uid="uid://b0076wtaytvt8"]
+[gd_scene load_steps=5 format=3 uid="uid://b0076wtaytvt8"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_xna3w"]
-[ext_resource type="Script" path="res://gadgets/counter_gadget.gd" id="2_xgda2"]
-[ext_resource type="Script" path="res://input_control.gd" id="3_vyuno"]
+[ext_resource type="Script" uid="uid://x7q10a8ucbvg" path="res://gadgets/counter_gadget.gd" id="2_xgda2"]
+[ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_4k2l8"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ttg4v"]
 
@@ -24,28 +24,23 @@ fill_mode = 3
 show_percentage = false
 
 [node name="InputControl0" parent="InputControls" index="0"]
-offset_top = 9.0
-offset_bottom = 19.0
+offset_top = 8.0
+offset_right = 12.0
+offset_bottom = 20.0
 
-[node name="InputControl1" type="ColorRect" parent="InputControls" index="1" groups=["InputControl"]]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-offset_top = 27.0
-offset_right = 4.0
-offset_bottom = 37.0
-tooltip_text = "Power"
+[node name="InputControl1" parent="InputControls" index="1" instance=ExtResource("3_4k2l8")]
+layout_mode = 0
+offset_top = 26.0
+offset_right = 12.0
+offset_bottom = 38.0
 color = Color(0.877272, 0.438371, 1.15514e-06, 1)
-script = ExtResource("3_vyuno")
 
-[node name="InputControl2" type="ColorRect" parent="InputControls" index="2" groups=["InputControl"]]
-custom_minimum_size = Vector2(0, 10)
-layout_mode = 2
-offset_top = 45.0
-offset_right = 4.0
-offset_bottom = 55.0
-tooltip_text = "Power"
+[node name="InputControl2" parent="InputControls" index="2" instance=ExtResource("3_4k2l8")]
+layout_mode = 0
+offset_top = 44.0
+offset_right = 12.0
+offset_bottom = 56.0
 color = Color(0.877272, 0.438371, 1.15514e-06, 1)
-script = ExtResource("3_vyuno")
 
 [node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Counter Full (Signal)"
