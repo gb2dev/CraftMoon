@@ -13,6 +13,9 @@ enum ConnectionChange {
 	CANCEL,
 }
 
+const OUTPUT_VISUAL_SCENE = preload("res://gadgets/gadget_output_visual.tscn")
+const OUTPUT_CONTROL_SCENE = preload("res://gadgets/gadget_output_control.tscn")
+
 @onready var input_controls := $InputControls.get_children()
 @onready var output_controls := $OutputControls.get_children().map(put_in_array)
 @onready var output_visuals := $OutputVisuals.get_children().map(put_in_array)
@@ -55,10 +58,24 @@ func _process(delta: float) -> void:
 					var target_gadget: Gadget
 					var target_input: int
 
-					for input_control: Control in get_tree().get_nodes_in_group(&"InputControl"):
+					for input_control: InputControl in get_tree().get_nodes_in_group(&"InputControl"):
 						if mouse_pos.distance_squared_to(
 							input_control.global_position
 						) < 250:
+							print(output_index)
+							var new_target_gadget := input_control.get_parent().get_parent()
+							var new_target_input := int(input_control.name.trim_prefix("InputControl"))
+							# Prevent connecting to an input more than once
+							if output_controls[output_index].any(func(other: OutputControl) -> bool:
+								if other == output_control:
+									return false
+								if other.target_gadget != new_target_gadget:
+									return false
+								if other.target_input != new_target_input:
+									return false
+								return true
+							):
+								continue
 							output_visual.points[2] = output_visual.to_local(
 								input_control.global_position
 								+ Vector2(0, input_control.size.y / 2)
@@ -68,8 +85,8 @@ func _process(delta: float) -> void:
 								+ Vector2(0, input_control.size.y / 2)
 								- Vector2(output_control.size.x, output_control.size.y / 2)
 							)
-							target_gadget = input_control.get_parent().get_parent()
-							target_input = int(input_control.name.trim_prefix("InputControl"))
+							target_gadget = new_target_gadget
+							target_input = new_target_input
 							break
 
 					if Input.is_action_just_pressed(&"action") and not just_dragged_output:
@@ -240,26 +257,23 @@ func update_connection(
 		output_control.target_input = input_index
 		gadget.input_data_changed(input_index)
 
-		# Create New Output
+		# FIXME Create New Output
 
-		output_control = OutputControl.new()
+		output_control = OUTPUT_CONTROL_SCENE.instantiate()
 		$OutputControls.add_child(output_control)
-		output_control.size = Vector2.ONE * 16
-		output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
+		#output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
 		output_control.data = output_controls[output_index].back().data
 		output_control.tooltip_text = output_controls[output_index].back().tooltip_text
 		output_control.add_to_group(&"OutputControl")
 		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_controls[output_index].append(output_control)
 
-		output_visual = Line2D.new()
+		output_visual = OUTPUT_VISUAL_SCENE.instantiate()
 		$OutputVisuals.add_child(output_visual)
-		output_visual.position = Vector2(0, -8 * (output_controls.size() - 1) + output_index * 16)
-		output_visual.points = [Vector2(64, 32), Vector2(72, 32), Vector2(72, 32)]
-		output_visual.width = 8
-		output_visual.default_color = Color("#33bbff")
-		output_visual.z_index = 1
+		#output_visual.position = Vector2(0, -8 * (output_controls.size() - 1) + output_index * 16)
 		output_visuals[output_index].append(output_visual)
+
+		prints(output_control.global_position, output_visual.global_position)
 	else:
 		output_visual.points[2] = output_visual.points[1]
 		output_control.position = output_visual.position - Vector2(0, output_control.size.y / 2)

@@ -2,14 +2,9 @@ class_name GadgetsPanel
 extends Panel
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
+@export var audio_player: AudioStreamPlayer
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -19,3 +14,5 @@ func _on_gui_input(event: InputEvent) -> void:
 			# Delete Gadget
 			gadget.queue_free()
 			gadget.update_connection_positions()
+			audio_player.stream = SOUND_DESTROY
+			audio_player.play()

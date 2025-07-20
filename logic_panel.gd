@@ -4,18 +4,11 @@ extends Panel
 
 const PADDING_GRID_UNITS = 1
 const GRID_SIZE = 32
+const SOUND_PLACE = preload("res://sounds/place.wav")
+
+@export var audio_player: AudioStreamPlayer
 
 @onready var object_properties := %"Object Properties" as ObjectProperties
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
 
 
 func place_gadget(gadget: Gadget) -> void:
@@ -30,6 +23,8 @@ func place_gadget(gadget: Gadget) -> void:
 	gadget.position = get_snapped_gadget_position(gadget.size)
 	gadget.update_connection_positions()
 	gadget.set_mouse_filters(MOUSE_FILTER_STOP)
+	audio_player.stream = SOUND_PLACE
+	audio_player.play()
 
 
 func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:
@@ -48,6 +43,7 @@ func _on_gui_input(event: InputEvent) -> void:
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
 			gadget.position = get_snapped_gadget_position(gadget.size) + global_position
+			gadget.update_connection_positions()
 
 
 func _on_visibility_changed() -> void:
@@ -61,6 +57,7 @@ func _on_mouse_entered() -> void:
 	if gadget:
 		gadget.add_to_group(&"GridSnap")
 		gadget.position = get_snapped_gadget_position(gadget.size) + global_position
+		gadget.update_connection_positions()
 
 
 func _on_mouse_exited() -> void:
