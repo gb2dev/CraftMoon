@@ -18,6 +18,8 @@ extends Node3D
 var chat_visible := false
 
 func _ready() -> void:
+	if OS.is_debug_build():
+		get_tree().root.title += str(OS.get_process_id())
 	multiplayer_chat.hide()
 	main_menu.show()
 	multiplayer_chat.set_process_input(true)

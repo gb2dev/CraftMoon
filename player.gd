@@ -106,7 +106,8 @@ func _move() -> void:
 	if _direction:
 		velocity.x = _direction.x * _current_speed
 		velocity.z = _direction.z * _current_speed
-		_body.apply_rotation(velocity)
+		if not first_person:
+			_body.apply_rotation(velocity)
 		return
 
 	velocity.x = move_toward(velocity.x, 0, _current_speed)
