@@ -11,6 +11,13 @@ const SOUND_PLACE = preload("res://sounds/place.wav")
 @onready var object_properties := %"Object Properties" as ObjectProperties
 
 
+func _process(_delta: float) -> void:
+	var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
+	if gadget and gadget.is_in_group(&"GridSnap"):
+		gadget.position = get_snapped_gadget_position(gadget.size) + global_position
+		gadget.update_connection_positions()
+
+
 func place_gadget(gadget: Gadget) -> void:
 	if gadget.get_parent() == self:
 		gadget.top_level = false
@@ -39,11 +46,6 @@ func _on_gui_input(event: InputEvent) -> void:
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
 			place_gadget(gadget)
-	elif event is InputEventMouseMotion:
-		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
-		if gadget:
-			gadget.position = get_snapped_gadget_position(gadget.size) + global_position
-			gadget.update_connection_positions()
 
 
 func _on_visibility_changed() -> void:
@@ -56,8 +58,6 @@ func _on_mouse_entered() -> void:
 	var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 	if gadget:
 		gadget.add_to_group(&"GridSnap")
-		gadget.position = get_snapped_gadget_position(gadget.size) + global_position
-		gadget.update_connection_positions()
 
 
 func _on_mouse_exited() -> void:

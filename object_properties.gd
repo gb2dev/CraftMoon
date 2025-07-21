@@ -96,6 +96,7 @@ func get_object_material() -> BaseMaterial3D:
 
 func create_gadget(item: PackedScene, item_data: ItemData, pos := Vector2.INF) -> Gadget:
 	var gadget := item.instantiate() as Gadget
+	gadget._audio_player = audio_player
 	get_tree().current_scene.add_child(gadget)
 	gadget.add_to_group(&"Persist")
 	if pos == Vector2.INF:

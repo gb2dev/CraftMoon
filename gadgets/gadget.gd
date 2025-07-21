@@ -15,6 +15,10 @@ enum ConnectionChange {
 
 const OUTPUT_VISUAL_SCENE = preload("res://gadgets/gadget_output_visual.tscn")
 const OUTPUT_CONTROL_SCENE = preload("res://gadgets/gadget_output_control.tscn")
+const OUTPUT_PORT_WIDTH = 16
+const CABLE_HIGHLIGHT = preload("res://textures/cable_highlight.tres")
+const SOUND_PLACE = preload("res://sounds/place.wav")
+const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 
 @onready var input_controls := $InputControls.get_children()
 @onready var output_controls := $OutputControls.get_children().map(put_in_array)
@@ -24,13 +28,19 @@ const OUTPUT_CONTROL_SCENE = preload("res://gadgets/gadget_output_control.tscn")
 var just_dragged_output := false
 var random_output_controls: Array
 var type: String
+var highlight_line: Line2D
+var _audio_player: AudioStreamPlayer
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	for output_index in output_controls.size():
 		var output_control := output_controls[output_index].front() as OutputControl
-		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
+		var output_visual := output_visuals[output_index].front() as OutputVisual
+		output_control.visual = output_visual
+		var _error := output_control.mouse_entered.connect(_on_output_control_mouse_entered.bind(output_control))
+		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
+		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 	set_mouse_filters(MOUSE_FILTER_IGNORE)
 
 
@@ -50,44 +60,49 @@ func _process(delta: float) -> void:
 					# Dragging Output
 					var output_visual := output_visuals[output_index][
 						find_nested_array_item(output_controls, output_control)[0]
-					] as Line2D
+					] as OutputVisual
 					var mouse_pos := get_global_mouse_position()
-					output_visual.points[2] = output_visual.to_local(mouse_pos)
+					output_visual.point_b = output_visual.to_local(mouse_pos)
 					output_control.global_position = mouse_pos - output_control.size / 2
 
 					var target_gadget: Gadget
 					var target_input: int
 
+					var nearest_input_control: InputControl
+					var nearest_input_control_distance := INF
 					for input_control: InputControl in get_tree().get_nodes_in_group(&"InputControl"):
-						if mouse_pos.distance_squared_to(
-							input_control.global_position
-						) < 250:
-							print(output_index)
-							var new_target_gadget := input_control.get_parent().get_parent()
-							var new_target_input := int(input_control.name.trim_prefix("InputControl"))
-							# Prevent connecting to an input more than once
-							if output_controls[output_index].any(func(other: OutputControl) -> bool:
-								if other == output_control:
-									return false
-								if other.target_gadget != new_target_gadget:
-									return false
-								if other.target_input != new_target_input:
-									return false
-								return true
-							):
-								continue
-							output_visual.points[2] = output_visual.to_local(
-								input_control.global_position
-								+ Vector2(0, input_control.size.y / 2)
-							)
-							output_control.global_position = (
-								input_control.global_position
-								+ Vector2(0, input_control.size.y / 2)
-								- Vector2(output_control.size.x, output_control.size.y / 2)
-							)
-							target_gadget = new_target_gadget
-							target_input = new_target_input
+						var distance := mouse_pos.distance_squared_to(
+							input_control.global_position + input_control.size / 2
+						)
+						if distance < 250 and distance < nearest_input_control_distance:
+							nearest_input_control = input_control
+							nearest_input_control_distance = distance
+
+					if nearest_input_control:
+						var new_target_gadget := nearest_input_control.get_parent().get_parent()
+						var new_target_input := int(nearest_input_control.name.trim_prefix("InputControl"))
+						# Prevent connecting to an input more than once
+						if output_controls[output_index].any(func(other: OutputControl) -> bool:
+							if other == output_control:
+								return false
+							if other.target_gadget != new_target_gadget:
+								return false
+							if other.target_input != new_target_input:
+								return false
+							return true
+						):
 							break
+						output_visual.point_b = output_visual.to_local(
+							nearest_input_control.global_position
+							+ Vector2(0, nearest_input_control.size.y / 2)
+						)
+						output_control.global_position = (
+							nearest_input_control.global_position
+							+ Vector2(0, nearest_input_control.size.y / 2)
+							- Vector2(output_control.size.x, output_control.size.y / 2)
+						)
+						target_gadget = new_target_gadget
+						target_input = new_target_input
 
 					if Input.is_action_just_pressed(&"action") and not just_dragged_output:
 						if target_gadget:
@@ -127,7 +142,7 @@ func _notification(what: int) -> void:
 			for output_control: OutputControl in output_controls[output_index]:
 				var output_visual := output_visuals[output_index][
 					find_nested_array_item(output_controls, output_control)[0]
-				] as Line2D
+				] as OutputVisual
 				var gadget := output_control.target_gadget
 				var input_index := output_control.target_input
 				if is_instance_valid(gadget):
@@ -136,13 +151,13 @@ func _notification(what: int) -> void:
 					input_control.output_visuals.erase(output_visual)
 
 
-func set_mouse_filters(value: MouseFilter) -> void:
-	mouse_filter = value
-	for input_control: InputControl in input_controls:
-		input_control.mouse_filter = value
-	for output_index: int in output_controls.size():
-		for output_control: OutputControl in output_controls[output_index]:
-			output_control.mouse_filter = value
+func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
+	if not outputs_only:
+		mouse_filter = value
+		for input_control: InputControl in get_tree().get_nodes_in_group(&"InputControl"):
+			input_control.mouse_filter = value
+	for output_control: OutputControl in get_tree().get_nodes_in_group(&"OutputControl"):
+		output_control.mouse_filter = value
 
 
 func _on_gui_input(event: InputEvent) -> void:
@@ -157,23 +172,6 @@ func _on_gui_input(event: InputEvent) -> void:
 			accept_event()
 	elif event_mouse_button and event_mouse_button.is_pressed() and event_mouse_button.button_index == 2:
 		open_properties.emit()
-
-
-func _on_output_control_gui_input(event: InputEvent, output_control: OutputControl) -> void:
-	if event is InputEventScreenTouch and event.is_pressed():
-		if not get_tree().get_first_node_in_group(&"Dragging"):
-			# Start Dragging Output
-			output_control.add_to_group(&"Dragging")
-			output_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			if not is_instance_valid(output_control.target_gadget):
-				output_control.target_gadget = null
-			update_connection(
-				ConnectionChange.DISCONNECT,
-				output_control,
-				output_control.target_gadget,
-				output_control.target_input
-			)
-			just_dragged_output = true
 
 
 # Run every frame.
@@ -209,7 +207,7 @@ func update_connection(
 ) -> void:
 	var output_location := find_nested_array_item(output_controls, output_control)
 	var output_index := output_location[1]
-	var output_visual := output_visuals[output_index][output_location[0]] as Line2D
+	var output_visual := output_visuals[output_index][output_location[0]] as OutputVisual
 
 	if connection_type == ConnectionChange.DISCONNECT:
 		if gadget:
@@ -225,7 +223,7 @@ func update_connection(
 		output_visuals[output_index].erase(output_visual)
 	else:
 		output_control.remove_from_group(&"Dragging")
-		output_control.mouse_filter = Control.MOUSE_FILTER_STOP
+		set_mouse_filters(MOUSE_FILTER_STOP, true)
 
 	prints(
 		["CONNECT", "DISCONNECT", "DELETE", "CANCEL"][connection_type],
@@ -241,7 +239,7 @@ func update_connection(
 
 	if connection_type == ConnectionChange.CONNECT:
 		var input_control := gadget.input_controls[input_index] as InputControl
-		output_visual.points[2] = output_visual.to_local(
+		output_visual.point_b = output_visual.to_local(
 			input_control.global_position
 			+ Vector2(0, input_control.size.y / 2)
 		)
@@ -257,26 +255,33 @@ func update_connection(
 		output_control.target_input = input_index
 		gadget.input_data_changed(input_index)
 
-		# FIXME Create New Output
+		# Create New Output
+		# TODO Fix for multiple outputs
 
 		output_control = OUTPUT_CONTROL_SCENE.instantiate()
 		$OutputControls.add_child(output_control)
-		#output_control.position = Vector2(0, -8 * output_controls.size() + output_index * 16)
+		var _error := output_control.mouse_entered.connect(_on_output_control_mouse_entered.bind(output_control))
+		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
+		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_control.data = output_controls[output_index].back().data
 		output_control.tooltip_text = output_controls[output_index].back().tooltip_text
 		output_control.add_to_group(&"OutputControl")
-		var _error := output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 		output_controls[output_index].append(output_control)
 
 		output_visual = OUTPUT_VISUAL_SCENE.instantiate()
 		$OutputVisuals.add_child(output_visual)
-		#output_visual.position = Vector2(0, -8 * (output_controls.size() - 1) + output_index * 16)
+		output_visual.position = Vector2(size.x + OUTPUT_PORT_WIDTH, OUTPUT_PORT_WIDTH * 2)
 		output_visuals[output_index].append(output_visual)
+		output_control.visual = output_visual
 
-		prints(output_control.global_position, output_visual.global_position)
+		_audio_player.stream = SOUND_PLACE
+		_audio_player.play()
 	else:
-		output_visual.points[2] = output_visual.points[1]
-		output_control.position = output_visual.position - Vector2(0, output_control.size.y / 2)
+		if connection_type == ConnectionChange.DELETE:
+			output_visual.clear_points()
+			output_control.global_position = output_visual.global_position - Vector2(OUTPUT_PORT_WIDTH, output_control.size.y / 2)
+			_audio_player.stream = SOUND_DESTROY
+			_audio_player.play()
 		output_control.target_gadget = null
 
 		if gadget:
@@ -291,11 +296,11 @@ func update_connection_positions() -> void:
 			if is_instance_valid(output_control.target_gadget):
 				var output_visual := output_visuals[output_index][
 					find_nested_array_item(output_controls, output_control)[0]
-				] as Line2D
+				] as OutputVisual
 				var input_control := output_control.target_gadget.input_controls[
 					output_control.target_input
 				] as InputControl
-				output_visual.points[2] = output_visual.to_local(
+				output_visual.point_b = output_visual.to_local(
 					input_control.global_position
 					+ Vector2(0, input_control.size.y / 2)
 				)
@@ -311,13 +316,13 @@ func update_connection_positions() -> void:
 			var output_visual := input_control.output_visuals[output_index]
 			if is_instance_valid(output_control):
 				if is_queued_for_deletion():
-					output_visual.points[2] = output_visual.points[1]
+					output_visual.clear_points()
 					output_control.position = (
 						output_visual.position
 						- Vector2(0, output_control.size.y / 2)
 					)
 				else:
-					output_visual.points[2] = output_visual.to_local(
+					output_visual.point_b = output_visual.to_local(
 						input_control.global_position
 						+ Vector2(0, input_control.size.y / 2)
 					)
@@ -376,3 +381,35 @@ func find_nested_array_item(array: Array, item: Variant) -> Array[int]:
 			value[1] = i
 			break
 	return value
+
+
+func _on_output_control_gui_input(event: InputEvent, output_control: OutputControl) -> void:
+	if event is InputEventScreenTouch and event.is_pressed():
+		if not get_tree().get_first_node_in_group(&"Dragging"):
+			# Start Dragging Output
+			output_control.add_to_group(&"Dragging")
+			set_mouse_filters(MOUSE_FILTER_IGNORE, true)
+			if not is_instance_valid(output_control.target_gadget):
+				output_control.target_gadget = null
+			update_connection(
+				ConnectionChange.DISCONNECT,
+				output_control,
+				output_control.target_gadget,
+				output_control.target_input
+			)
+			just_dragged_output = true
+
+
+func _on_output_control_mouse_entered(output_control: OutputControl) -> void:
+	var output_visual := output_control.visual
+	if output_visual:
+		highlight_line = output_visual.line.duplicate() as Line2D
+		highlight_line.position = output_visual.line.position
+		highlight_line.texture = CABLE_HIGHLIGHT
+		highlight_line.texture_mode = Line2D.LINE_TEXTURE_STRETCH
+		output_visual.line.get_parent().add_child(highlight_line)
+
+
+func _on_output_control_mouse_exited() -> void:
+	if is_instance_valid(highlight_line):
+		highlight_line.queue_free()
