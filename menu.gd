@@ -4,7 +4,7 @@ extends Control
 
 const SOUND_MENU = preload("res://sounds/menu.wav")
 const SOUND_WHOOSH = preload("res://sounds/whoosh.wav")
-const SOUND_DELETE = preload("res://sounds/destroy.wav")
+const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
@@ -190,7 +190,6 @@ func save_level() -> void:
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
 		var _success := save_file.store_var(save_data)
-		prints("Save level: ", save_data)
 	else:
 		printerr("Error! Invalid level name.")
 
@@ -268,7 +267,7 @@ func load_level(level := "") -> void:
 func delete_save(level: String) -> void:
 	var path := "user://levels/" + level + ".save"
 	if FileAccess.file_exists(path):
-		audio_player.stream = SOUND_DELETE
+		audio_player.stream = SOUND_DESTROY
 		audio_player.play()
 		var _error := DirAccess.remove_absolute(path)
 
@@ -372,7 +371,7 @@ func spawn_level_portals() -> void:
 					level_portal.cylinder.material = load(save_data[1].material as String)
 			file_name = dir.get_next()
 	else:
-		print("An error occurred when trying to access the path.")
+		printerr("An error occurred when trying to access the path.")
 
 
 func _on_save_button_pressed() -> void:

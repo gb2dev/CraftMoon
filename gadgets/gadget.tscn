@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=7 format=3 uid="uid://gwjjy0frd8kj"]
 
 [ext_resource type="Script" uid="uid://yusyjulw6pij" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
 [ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_sx670"]
 [ext_resource type="PackedScene" uid="uid://4k43mtdgs0ya" path="res://gadgets/gadget_output_visual.tscn" id="4_7wnjn"]
 [ext_resource type="PackedScene" uid="uid://l45be1pl8lmn" path="res://gadgets/gadget_output_control.tscn" id="5_7wnjn"]
+[ext_resource type="Texture2D" uid="uid://dc23o0h1e0dnh" path="res://icons/power.svg" id="7_n038n"]
 
 [node name="Gadget" type="TextureRect"]
 offset_right = 64.0
@@ -34,10 +35,44 @@ offset_bottom = 8.0
 grow_horizontal = 0
 grow_vertical = 2
 
+[node name="OutputPorts" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="OutputPort0" type="ColorRect" parent="OutputPorts"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -8.0
+offset_right = 16.0
+offset_bottom = 8.0
+grow_vertical = 2
+color = Color(0.019607844, 0.38431373, 0.6117647, 1)
+
+[node name="TextureRect" type="TextureRect" parent="OutputPorts/OutputPort0"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_n038n")
+expand_mode = 3
+
 [node name="OutputVisuals" type="Node2D" parent="."]
 
 [node name="OutputVisual0" parent="OutputVisuals" instance=ExtResource("4_7wnjn")]
-position = Vector2(70, 32)
+position = Vector2(80, 32)
 
 [node name="OutputControls" type="Control" parent="."]
 layout_mode = 1
