@@ -222,7 +222,8 @@ func update_connection(
 		connection_type: ConnectionChange,
 		output_control: OutputControl,
 		gadget: Gadget,
-		input_index: int
+		input_index: int,
+		silent := false
 ) -> void:
 	var output_location := _find_nested_array_item(output_controls, output_control)
 	var output_index := output_location[1]
@@ -293,8 +294,9 @@ func update_connection(
 		_output_visuals[output_index].append(output_visual)
 		output_control.visual = output_visual
 
-		_audio_player.stream = _SOUND_PLACE
-		_audio_player.play()
+		if not silent:
+			_audio_player.stream = _SOUND_PLACE
+			_audio_player.play()
 	else:
 		if connection_type == ConnectionChange.DELETE:
 			output_visual.clear_points()
