@@ -21,13 +21,13 @@ const _CABLE_HIGHLIGHT = preload("res://textures/cable_highlight.tres")
 const _SOUND_PLACE = preload("res://sounds/place.wav")
 const _SOUND_DESTROY = preload("res://sounds/destroy.wav")
 
-@onready var _output_controls := $OutputControls.get_children().map(_put_in_array)
 @onready var _output_visuals := $OutputVisuals.get_children().map(_put_in_array)
 @onready var node_3d := $"3D" as Node3D
 @onready var input_controls := $InputControls.get_children()
+@onready var output_controls := $OutputControls.get_children().map(_put_in_array)
 
 var _just_dragged_output := false
-var _random_output_controls: Array
+var _randomoutput_controls: Array
 var _highlight_line: Line2D
 var _audio_player: AudioStreamPlayer
 var type: String
@@ -39,8 +39,8 @@ var type: String
 
 
 func _ready() -> void:
-	for output_index in _output_controls.size():
-		var output_control := _output_controls[output_index].front() as OutputControl
+	for output_index in output_controls.size():
+		var output_control := output_controls[output_index].front() as OutputControl
 		var output_visual := _output_visuals[output_index].front() as OutputVisual
 		output_control.visual = output_visual
 		var _error := output_control.mouse_entered.connect(_on_output_control_mouse_entered.bind(output_control))
@@ -59,12 +59,12 @@ func _process(delta: float) -> void:
 
 		update_connection_positions()
 	else:
-		for output_index in _output_controls.size():
-			for output_control: OutputControl in _output_controls[output_index]:
+		for output_index in output_controls.size():
+			for output_control: OutputControl in output_controls[output_index]:
 				if output_control.is_in_group(&"Dragging"):
 					# Dragging Output
 					var output_visual := _output_visuals[output_index][
-						_find_nested_array_item(_output_controls, output_control)[0]
+						_find_nested_array_item(output_controls, output_control)[0]
 					] as OutputVisual
 					var mouse_pos := get_global_mouse_position()
 					output_visual.point_b = output_visual.to_local(mouse_pos)
@@ -87,7 +87,7 @@ func _process(delta: float) -> void:
 						var new_target_gadget := nearest_input_control.get_parent().get_parent()
 						var new_target_input := int(nearest_input_control.name.trim_prefix("InputControl"))
 						# Prevent connecting to an input more than once
-						if _output_controls[output_index].any(func(other: OutputControl) -> bool:
+						if output_controls[output_index].any(func(other: OutputControl) -> bool:
 							if other == output_control:
 								return false
 							if other.target_gadget != new_target_gadget:
@@ -112,7 +112,7 @@ func _process(delta: float) -> void:
 					if Input.is_action_just_pressed(&"action") and not _just_dragged_output:
 						if target_gadget:
 							# Connect Output
-							_update_connection(
+							update_connection(
 								ConnectionChange.CONNECT,
 								output_control,
 								target_gadget,
@@ -120,7 +120,7 @@ func _process(delta: float) -> void:
 							)
 						else:
 							# Delete Output
-							_update_connection(
+							update_connection(
 								ConnectionChange.DELETE,
 								output_control,
 								output_control.target_gadget,
@@ -128,7 +128,7 @@ func _process(delta: float) -> void:
 							)
 					elif Input.is_action_just_pressed(&"ui_cancel"):
 						# Cancel
-						_update_connection(
+						update_connection(
 							ConnectionChange.CANCEL,
 							output_control,
 							output_control.target_gadget,
@@ -142,11 +142,11 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
 		if is_instance_valid(node_3d):
 			node_3d.queue_free()
-		for output_index in _output_controls.size():
+		for output_index in output_controls.size():
 			output(output_index, null)
-			for output_control: OutputControl in _output_controls[output_index]:
+			for output_control: OutputControl in output_controls[output_index]:
 				var output_visual := _output_visuals[output_index][
-					_find_nested_array_item(_output_controls, output_control)[0]
+					_find_nested_array_item(output_controls, output_control)[0]
 				] as OutputVisual
 				var gadget := output_control.target_gadget
 				var input_index := output_control.target_input
@@ -156,13 +156,75 @@ func _notification(what: int) -> void:
 					input_control.output_visuals.erase(output_visual)
 
 
-func _update_connection(
+func _put_in_array(value: Variant) -> Variant:
+	return [value]
+
+
+func _find_nested_array_item(array: Array, item: Variant) -> Array[int]:
+	var value: Array[int] = [-1, -1]
+	for i in array.size():
+		value[0] = array[i].find(item)
+		if value[0] != -1:
+			value[1] = i
+			break
+	return value
+
+
+func is_input_data_powered(input_index: int, unconnected_means_powered: bool) -> bool:
+	var data: Variant = get_input_data(input_index)
+	if data == null:
+		return unconnected_means_powered
+	else:
+		return not is_zero_approx(data as float)
+
+
+func get_input_data(input_index: int) -> Variant:
+	var values: Array[Variant]
+	var input_control := input_controls[input_index] as InputControl
+	for output_control: OutputControl in input_control.output_controls:
+		values.append(output_control.data)
+	return values.max()
+
+
+func output(output_index: int, data: Variant, pulse := false, random := false) -> void:
+	#prints(type, output_index, data, pulse)
+	for output_control: OutputControl in output_controls[output_index]:
+		if not random:
+			output_control.data = data
+		if pulse and data != null:
+			output_control.set_deferred(&"data", false)
+
+	# TODO: move inside Randomizer Gadget script
+	if random:
+		if _randomoutput_controls.is_empty():
+			_randomoutput_controls = output_controls[output_index].duplicate()
+			var _error := _randomoutput_controls.resize(_randomoutput_controls.size() - 1)
+			_randomoutput_controls.shuffle()
+
+		if not _randomoutput_controls.is_empty():
+			_randomoutput_controls.pop_back().data = data
+
+
+func input_data_changed(input_index: int) -> void:
+	input_pulse.emit(input_index)
+
+
+func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
+	if not outputs_only:
+		mouse_filter = value
+		for input_control: InputControl in get_tree().get_nodes_in_group(&"InputControl"):
+			input_control.mouse_filter = value
+	for output_control: OutputControl in get_tree().get_nodes_in_group(&"OutputControl"):
+		output_control.mouse_filter = value
+
+
+func update_connection(
 		connection_type: ConnectionChange,
 		output_control: OutputControl,
 		gadget: Gadget,
 		input_index: int
 ) -> void:
-	var output_location := _find_nested_array_item(_output_controls, output_control)
+	var output_location := _find_nested_array_item(output_controls, output_control)
 	var output_index := output_location[1]
 	var output_visual := _output_visuals[output_index][output_location[0]] as OutputVisual
 
@@ -170,12 +232,12 @@ func _update_connection(
 		if gadget:
 			gadget.input_data_changed.call_deferred(input_index)
 
-		if _output_controls[output_index].back() != output_control:
-			_output_controls[output_index].pop_back().queue_free()
+		if output_controls[output_index].back() != output_control:
+			output_controls[output_index].pop_back().queue_free()
 			_output_visuals[output_index].pop_back().queue_free()
 
-		_output_controls[output_index].erase(output_control)
-		_output_controls[output_index].append(output_control)
+		output_controls[output_index].erase(output_control)
+		output_controls[output_index].append(output_control)
 		_output_visuals[output_index].append(output_visual)
 		_output_visuals[output_index].erase(output_visual)
 	else:
@@ -220,10 +282,10 @@ func _update_connection(
 		var _error := output_control.mouse_entered.connect(_on_output_control_mouse_entered.bind(output_control))
 		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
 		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
-		output_control.data = _output_controls[output_index].back().data
-		output_control.tooltip_text = _output_controls[output_index].back().tooltip_text
+		output_control.data = output_controls[output_index].back().data
+		output_control.tooltip_text = output_controls[output_index].back().tooltip_text
 		output_control.add_to_group(&"OutputControl")
-		_output_controls[output_index].append(output_control)
+		output_controls[output_index].append(output_control)
 
 		output_visual = _OUTPUT_VISUAL_SCENE.instantiate()
 		$OutputVisuals.add_child(output_visual)
@@ -247,72 +309,12 @@ func _update_connection(
 			input_control.output_visuals.erase(output_visual)
 
 
-func _put_in_array(value: Variant) -> Variant:
-	return [value]
-
-
-func _find_nested_array_item(array: Array, item: Variant) -> Array[int]:
-	var value: Array[int] = [-1, -1]
-	for i in array.size():
-		value[0] = array[i].find(item)
-		if value[0] != -1:
-			value[1] = i
-			break
-	return value
-
-
-func is_input_data_powered(input_index: int, unconnected_means_powered: bool) -> bool:
-	var data: Variant = get_input_data(input_index)
-	if data == null:
-		return unconnected_means_powered
-	else:
-		return not is_zero_approx(data as float)
-
-
-func get_input_data(input_index: int) -> Variant:
-	var values: Array[Variant]
-	var input_control := input_controls[input_index] as InputControl
-	for output_control: OutputControl in input_control.output_controls:
-		values.append(output_control.data)
-	return values.max()
-
-
-func output(output_index: int, data: Variant, pulse := false, random := false) -> void:
-	for output_control: OutputControl in _output_controls[output_index]:
-		output_control.data = data and not random
-		if pulse and data != null:
-			output_control.set_deferred(&"data", false)
-
-	# TODO: move inside Randomizer Gadget script
-	if random:
-		if _random_output_controls.is_empty():
-			_random_output_controls = _output_controls[output_index].duplicate()
-			var _error := _random_output_controls.resize(_random_output_controls.size() - 1)
-			_random_output_controls.shuffle()
-
-		if not _random_output_controls.is_empty():
-			_random_output_controls.pop_back().data = data
-
-
-func input_data_changed(input_index: int) -> void:
-	input_pulse.emit(input_index)
-
-
-func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
-	if not outputs_only:
-		mouse_filter = value
-		for input_control: InputControl in get_tree().get_nodes_in_group(&"InputControl"):
-			input_control.mouse_filter = value
-	for output_control: OutputControl in get_tree().get_nodes_in_group(&"OutputControl"):
-		output_control.mouse_filter = value
-
-
 func update_connection_positions() -> void:
-	for output_index in _output_controls.size():
-		for output_control: OutputControl in _output_controls[output_index]:
+	for output_index in output_controls.size():
+		for output_control: OutputControl in output_controls[output_index]:
 			if is_instance_valid(output_control.target_gadget):
 				var output_visual := _output_visuals[output_index][
-					_find_nested_array_item(_output_controls, output_control)[0]
+					_find_nested_array_item(output_controls, output_control)[0]
 				] as OutputVisual
 				var input_control := output_control.target_gadget.input_controls[
 					output_control.target_input
@@ -371,7 +373,7 @@ func _on_output_control_gui_input(event: InputEvent, output_control: OutputContr
 			set_mouse_filters(MOUSE_FILTER_IGNORE, true)
 			if not is_instance_valid(output_control.target_gadget):
 				output_control.target_gadget = null
-			_update_connection(
+			update_connection(
 				ConnectionChange.DISCONNECT,
 				output_control,
 				output_control.target_gadget,

@@ -50,3 +50,7 @@ func change_property(property: StringName, value: Variant) -> void:
 			target_count = value
 			output(0, current_count == target_count)
 			bar.max_value = value
+
+
+func sort_property_list(a: StringName, _b: StringName) -> bool:
+	return a == &"TargetCount"
