@@ -27,7 +27,6 @@ const _SOUND_DESTROY = preload("res://sounds/destroy.wav")
 @onready var output_controls := $OutputControls.get_children().map(_put_in_array)
 
 var _just_dragged_output := false
-var _randomoutput_controls: Array
 var _highlight_line: Line2D
 var _audio_player: AudioStreamPlayer
 var type: String
@@ -188,22 +187,11 @@ func get_input_data(input_index: int) -> Variant:
 	return values.max()
 
 
-func output(output_index: int, data: Variant, pulse := false, random := false) -> void:
+func output(output_index: int, data: Variant, pulse := false) -> void:
 	for output_control: OutputControl in output_controls[output_index]:
-		if not random:
-			output_control.data = data
+		output_control.data = data
 		if pulse and data != null:
 			output_control.set_deferred(&"data", false)
-
-	# TODO: move inside Randomizer Gadget script
-	if random:
-		if _randomoutput_controls.is_empty():
-			_randomoutput_controls = output_controls[output_index].duplicate()
-			var _error := _randomoutput_controls.resize(_randomoutput_controls.size() - 1)
-			_randomoutput_controls.shuffle()
-
-		if not _randomoutput_controls.is_empty():
-			_randomoutput_controls.pop_back().data = data
 
 
 func input_data_changed(input_index: int) -> void:
