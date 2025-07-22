@@ -12,6 +12,7 @@ func _on_gui_input(event: InputEvent) -> void:
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
 			# Delete Gadget
+			gadget.set_mouse_filters(MOUSE_FILTER_STOP)
 			gadget.queue_free()
 			gadget.update_connection_positions()
 			audio_player.stream = SOUND_DESTROY
