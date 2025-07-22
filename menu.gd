@@ -44,13 +44,11 @@ var slot := 0
 var player: Character
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	var _error := DirAccess.make_dir_absolute("user://levels")
 	spawn_level_portals()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed(&"fullscreen"):
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
@@ -158,7 +156,7 @@ func save_level() -> void:
 			"collision": geometry.use_collision,
 			"gadgets": [],
 		})
-	for gadget in gadget_nodes:
+	for gadget: Gadget in gadget_nodes:
 		var path: String = "res://gadgets/" + gadget.type.to_snake_case()
 		var item_data := load(path + ".tres")
 		var parent_index: int = gadget.node_3d.get_parent().get_index()

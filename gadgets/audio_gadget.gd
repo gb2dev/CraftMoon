@@ -5,8 +5,7 @@ var audio_player: Node
 var is_pulse: bool
 
 
-func _ready() -> void:
-	super._ready()
+func start() -> void:
 	change_property(&"ThreeD", false)
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0, false):
@@ -16,15 +15,8 @@ func _ready() -> void:
 	)
 
 
-func check_pulse() -> void:
-	if get_input_data(0) == false:
-		is_pulse = true
-
-
-func play_sound_looped() -> void:
-	var data: Variant = get_input_data(0)
-	if data == true or is_pulse:
-		audio_player.play()
+func tick(_delta: float) -> void:
+	pass
 
 
 func change_property(property: StringName, value: Variant) -> void:
@@ -72,3 +64,14 @@ func change_property(property: StringName, value: Variant) -> void:
 			)
 
 			node_3d.add_child(audio_player)
+
+
+func check_pulse() -> void:
+	if get_input_data(0) == false:
+		is_pulse = true
+
+
+func play_sound_looped() -> void:
+	var data: Variant = get_input_data(0)
+	if data == true or is_pulse:
+		audio_player.play()

@@ -6,11 +6,18 @@ extends Gadget
 var is_visible_on_screen: bool
 
 
-func _ready() -> void:
-	super._ready()
+func start() -> void:
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		output(0, is_input_data_powered(0, false) and is_visible_on_screen)
 	)
+
+
+func tick(_delta: float) -> void:
+	pass
+
+
+func change_property(_property: StringName, _value: Variant) -> void:
+	pass
 
 
 func _on_visible_on_screen_notifier_3d_screen_entered() -> void:

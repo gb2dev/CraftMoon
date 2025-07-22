@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=6 format=3 uid="uid://gwjjy0frd8kj"]
 
-[ext_resource type="Script" uid="uid://yusyjulw6pij" path="res://gadgets/gadget.gd" id="1_5ebnv"]
 [ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
 [ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_sx670"]
 [ext_resource type="PackedScene" uid="uid://4k43mtdgs0ya" path="res://gadgets/gadget_output_visual.tscn" id="4_7wnjn"]
@@ -12,7 +11,6 @@ offset_right = 64.0
 offset_bottom = 64.0
 texture = ExtResource("2_wx2yp")
 expand_mode = 1
-script = ExtResource("1_5ebnv")
 
 [node name="InputControls" type="Control" parent="."]
 layout_mode = 1

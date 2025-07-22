@@ -10,16 +10,6 @@ const TITLE_LABEL_SETTINGS = preload("res://title_label_settings.tres")
 @export var vbox: VBoxContainer
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
-
-
 func open(type: StringName, gadget: Gadget) -> void:
 	for n: Node in vbox.get_children():
 		n.queue_free()
@@ -31,6 +21,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 	label.text = tr(type)
 	vbox.add_child(label)
 
+	# TODO: move inside the gadget scripts
 	match type:
 		&"Audio Gadget":
 			const selected_sound_prefix = "Selected sound: "

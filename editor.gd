@@ -36,13 +36,11 @@ var construction_material := preload("res://materials/bricks/bricks.tres") as Ba
 var construction_collision := true
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	set_object_builder_active(false)
 	construction_mode = 0
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	# Object Builder Toggle
 

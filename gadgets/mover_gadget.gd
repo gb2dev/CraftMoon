@@ -4,7 +4,11 @@ extends Gadget
 var movement_direction := Vector3.ZERO
 
 
-func input(delta: float) -> void:
+func start() -> void:
+	pass
+
+
+func tick(delta: float) -> void:
 	if is_input_data_powered(0, false):
 		node_3d.get_parent().position += movement_direction * delta
 
