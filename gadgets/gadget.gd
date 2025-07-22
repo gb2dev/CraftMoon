@@ -1,3 +1,4 @@
+@abstract
 class_name Gadget
 extends TextureRect
 
@@ -350,15 +351,12 @@ func set_icon(t: Texture2D) -> void:
 	texture = t
 
 
-func is_input_data_powered(input_index: int, ignore_null := true) -> bool:
+func is_input_data_powered(input_index: int, unconnected_means_powered: bool) -> bool:
 	var data: Variant = get_input_data(input_index)
-	if ignore_null:
-		if data == null:
-			return false
-		else:
-			return not is_zero_approx(data as float)
+	if data == null:
+		return unconnected_means_powered
 	else:
-		return data == null or not is_zero_approx(data as float)
+		return not is_zero_approx(data as float)
 
 
 func get_input_data(input_index: int) -> Variant:

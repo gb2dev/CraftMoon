@@ -9,7 +9,7 @@ func _ready() -> void:
 	super._ready()
 	change_property(&"ThreeD", false)
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
-		if is_input_data_powered(0):
+		if is_input_data_powered(0, false):
 			is_pulse = false
 			audio_player.play()
 			check_pulse.call_deferred()
