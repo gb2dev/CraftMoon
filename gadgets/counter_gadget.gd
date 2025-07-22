@@ -11,8 +11,7 @@ var current_count := 0:
 var target_count := 1
 
 
-func _ready() -> void:
-	super._ready()
+func start() -> void:
 	var _error := input_pulse.connect(func(input_index: int) -> void:
 		match input_index:
 			0:
@@ -33,6 +32,10 @@ func _ready() -> void:
 					bar.value = current_count
 					output(0, false)
 	)
+
+
+func tick(_delta: float) -> void:
+	pass
 
 
 func change_property(property: StringName, value: Variant) -> void:

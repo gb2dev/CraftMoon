@@ -8,8 +8,7 @@ var first_shot := true
 var is_pulse: bool
 
 
-func _ready() -> void:
-	super._ready()
+func start() -> void:
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0, false):
 			timer.start()
@@ -19,12 +18,7 @@ func _ready() -> void:
 	)
 
 
-func check_pulse() -> void:
-	if get_input_data(0) == false:
-		is_pulse = true
-
-
-func input(_delta: float) -> void:
+func tick(_delta: float) -> void:
 	if not first_shot:
 		bar.value = 1 - timer.time_left / timer.wait_time
 
@@ -39,6 +33,11 @@ func change_property(property: StringName, value: Variant) -> void:
 			timer.one_shot = value
 
 
+func check_pulse() -> void:
+	if get_input_data(0) == false:
+		is_pulse = true
+
+
 func _on_timer_timeout() -> void:
-	output(0, true, true)
-	output(1, true)
+	output(0, true, true) # Pulse
+	output(1, true, false) # Signal

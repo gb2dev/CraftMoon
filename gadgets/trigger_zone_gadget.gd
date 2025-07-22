@@ -8,11 +8,14 @@ extends Gadget
 var is_player_detected: bool
 
 
-func _ready() -> void:
-	super._ready()
+func start() -> void:
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		output(0, is_input_data_powered(0, false) and is_player_detected)
 	)
+
+
+func tick(_delta: float) -> void:
+	pass
 
 
 func change_property(property: StringName, value: Variant) -> void:

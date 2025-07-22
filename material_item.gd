@@ -6,15 +6,9 @@ extends Button
 @export var object_properties: ObjectProperties
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	icon = item_data.icon
 	tooltip_text = item_data.name
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
 
 
 func _on_pressed() -> void:
