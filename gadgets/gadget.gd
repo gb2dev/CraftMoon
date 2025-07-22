@@ -47,7 +47,7 @@ func _ready() -> void:
 		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 	set_mouse_filters(MOUSE_FILTER_IGNORE)
 	for i in input_controls.size():
-		input_data_changed.call_deferred(i)
+		input_pulse.emit(i)
 	start()
 
 
@@ -194,10 +194,6 @@ func output(output_index: int, data: Variant, pulse := false) -> void:
 			output_control.set_deferred(&"data", false)
 
 
-func input_data_changed(input_index: int) -> void:
-	input_pulse.emit(input_index)
-
-
 func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
 	if not outputs_only:
 		mouse_filter = value
@@ -219,9 +215,6 @@ func update_connection(
 	var output_visual := _output_visuals[output_index][output_location[0]] as OutputVisual
 
 	if connection_type == ConnectionChange.DISCONNECT:
-		if gadget:
-			gadget.input_data_changed.call_deferred(input_index)
-
 		if output_controls[output_index].back() != output_control:
 			output_controls[output_index].pop_back().queue_free()
 			_output_visuals[output_index].pop_back().queue_free()
@@ -258,11 +251,14 @@ func update_connection(
 			- Vector2(output_control.size.x, output_control.size.y / 2)
 		)
 
+		var input_data: Variant = gadget.get_input_data(input_index)
 		input_control.output_controls.append(output_control)
 		input_control.output_visuals.append(output_visual)
 		output_control.target_gadget = gadget
 		output_control.target_input = input_index
-		gadget.input_data_changed(input_index)
+		var input_data_with: Variant = gadget.get_input_data(input_index)
+		if input_data != input_data_with:
+			gadget.input_pulse.emit.bind(input_index).call_deferred()
 
 		# Create New Output
 		# TODO Fix for multiple outputs
@@ -296,8 +292,12 @@ func update_connection(
 
 		if gadget:
 			var input_control := gadget.input_controls[input_index] as InputControl
+			var input_data: Variant = gadget.get_input_data(input_index)
 			input_control.output_controls.erase(output_control)
 			input_control.output_visuals.erase(output_visual)
+			var input_data_without: Variant = gadget.get_input_data(input_index)
+			if input_data != input_data_without and input_data_without != null:
+				gadget.input_pulse.emit.bind(input_index).call_deferred()
 
 
 func update_connection_positions() -> void:
