@@ -18,7 +18,7 @@ func _process(_delta: float) -> void:
 		gadget.update_connection_positions()
 
 
-func place_gadget(gadget: Gadget) -> void:
+func place_gadget(gadget: Gadget, silent: bool) -> void:
 	if gadget.get_parent() == self:
 		gadget.top_level = false
 	else:
@@ -30,8 +30,9 @@ func place_gadget(gadget: Gadget) -> void:
 	gadget.position = get_snapped_gadget_position(gadget.size)
 	gadget.update_connection_positions()
 	gadget.set_mouse_filters(MOUSE_FILTER_STOP)
-	audio_player.stream = SOUND_PLACE
-	audio_player.play()
+	if not silent:
+		audio_player.stream = SOUND_PLACE
+		audio_player.play()
 
 
 func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:
@@ -45,7 +46,7 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
-			place_gadget(gadget)
+			place_gadget(gadget, false)
 
 
 func _on_visibility_changed() -> void:

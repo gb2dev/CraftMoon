@@ -88,7 +88,12 @@ func get_object_material() -> BaseMaterial3D:
 		return editor.construction_material
 
 
-func create_gadget(item: PackedScene, item_data: ItemData, pos := Vector2.INF) -> Gadget:
+func create_gadget(
+	item: PackedScene,
+	item_data: ItemData,
+	pos := Vector2.INF,
+	silent := false
+) -> Gadget:
 	var gadget := item.instantiate() as Gadget
 	gadget._audio_player = audio_player
 	get_tree().current_scene.add_child(gadget)
@@ -96,7 +101,7 @@ func create_gadget(item: PackedScene, item_data: ItemData, pos := Vector2.INF) -
 	if pos == Vector2.INF:
 		gadget.add_to_group(&"Dragging")
 	else:
-		logic_panel.place_gadget(gadget)
+		logic_panel.place_gadget(gadget, silent)
 		gadget.position = pos
 	gadget.attach_to_object(object)
 	gadget.set_icon(item_data.icon)

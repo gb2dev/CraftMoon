@@ -94,7 +94,8 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary
 					Gadget.ConnectionChange.CONNECT,
 					gadget.output_controls[output_index].back(),
 					logic_panel.get_children()[index_offset + output_data.target_gadget],
-					output_data.target_input
+					output_data.target_input,
+					true
 				)
 
 
@@ -248,7 +249,8 @@ func load_level(level := "") -> void:
 				var gadget := player.editor.object_properties.create_gadget(
 					item,
 					item_data,
-					gadget_data.position
+					gadget_data.position,
+					true
 				)
 				gadgets.append(gadget)
 				gadget_data_array.append(gadget_data)
