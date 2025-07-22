@@ -181,7 +181,10 @@ func save_level() -> void:
 			"position": gadget.position,
 			"properties": {}
 		}
-		for property: StringName in gadget.get_meta_list():
+		var property_list := gadget.get_meta_list()
+		if gadget.has_method(&"sort_property_list"):
+			property_list.sort_custom(gadget.sort_property_list)
+		for property: StringName in property_list:
 			gadget_data.properties[property] = gadget.get_meta(property)
 		gadgets.append(gadget_data)
 	var save_file_path := "user://levels/" + str(slot) + ".save"

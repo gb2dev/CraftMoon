@@ -10,7 +10,7 @@ var is_player_detected: bool
 
 func start() -> void:
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
-		output(0, is_input_data_powered(0, false) and is_player_detected)
+		output(0, is_input_data_powered(0, true) and is_player_detected)
 	)
 
 
@@ -39,12 +39,12 @@ func change_property(property: StringName, value: Variant) -> void:
 func _on_area_3d_body_entered(_body: Node3D) -> void:
 	is_player_detected = true
 
-	if is_input_data_powered(0, false):
+	if is_input_data_powered(0, true):
 		output(0, is_player_detected)
 
 
 func _on_area_3d_body_exited(_body: Node3D) -> void:
 	is_player_detected = false
 
-	if is_input_data_powered(0, false):
+	if is_input_data_powered(0, true):
 		output(0, is_player_detected)
