@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://b0076wtaytvt8"]
+[gd_scene load_steps=7 format=3 uid="uid://b0076wtaytvt8"]
 
 [ext_resource type="PackedScene" uid="uid://gwjjy0frd8kj" path="res://gadgets/gadget.tscn" id="1_xna3w"]
 [ext_resource type="Script" uid="uid://x7q10a8ucbvg" path="res://gadgets/counter_gadget.gd" id="2_xgda2"]
 [ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_4k2l8"]
+[ext_resource type="Texture2D" uid="uid://mhfkijddlovn" path="res://icons/add.svg" id="4_ytwno"]
+[ext_resource type="Texture2D" uid="uid://ch0ujf42ggcf3" path="res://icons/reset.svg" id="5_idonp"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ttg4v"]
 
@@ -38,6 +40,7 @@ grow_horizontal = 0
 grow_vertical = 2
 tooltip_text = "Add to Counter"
 color = Color(0.60784316, 0.38431373, 0.015686275, 1)
+icon = ExtResource("4_ytwno")
 
 [node name="InputControl2" parent="InputControls" index="2" instance=ExtResource("3_4k2l8")]
 layout_mode = 1
@@ -54,6 +57,7 @@ grow_horizontal = 0
 grow_vertical = 2
 tooltip_text = "Reset Counter"
 color = Color(0.60784316, 0.38431373, 0.015686275, 1)
+icon = ExtResource("5_idonp")
 
 [node name="OutputControl0" parent="OutputControls" index="0"]
 tooltip_text = "Counter Full (Signal)"
