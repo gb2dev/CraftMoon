@@ -10,7 +10,7 @@ var is_pulse: bool
 
 func start() -> void:
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
-		if is_input_data_powered(0, false):
+		if is_input_data_powered(0, true):
 			timer.start()
 			first_shot = false
 			check_pulse.call_deferred()
@@ -22,7 +22,7 @@ func tick(_delta: float) -> void:
 	if not first_shot:
 		bar.value = 1 - timer.time_left / timer.wait_time
 
-	timer.paused = not is_input_data_powered(0, false) and not is_pulse
+	timer.paused = not is_input_data_powered(0, true) and not is_pulse
 
 
 func change_property(property: StringName, value: Variant) -> void:

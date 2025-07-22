@@ -9,6 +9,7 @@ func start() -> void:
 
 
 func tick(delta: float) -> void:
+	# TODO: change to true when there is a pause/play system
 	if is_input_data_powered(0, false):
 		node_3d.get_parent().position += movement_direction * delta
 

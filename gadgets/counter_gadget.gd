@@ -15,18 +15,18 @@ func start() -> void:
 	var _error := input_pulse.connect(func(input_index: int) -> void:
 		match input_index:
 			0:
-				output(0, is_input_data_powered(0, false) and current_count == target_count)
+				output(0, is_input_data_powered(0, true) and current_count == target_count)
 			1:
-				if is_input_data_powered(input_index, false):
+				if is_input_data_powered(input_index, true):
 					# Add to Counter
 					if current_count < target_count:
 						current_count += 1
 						bar.value = current_count
 
 						if current_count == target_count:
-							output(0, is_input_data_powered(0, false))
+							output(0, is_input_data_powered(0, true))
 			2:
-				if is_input_data_powered(input_index, false):
+				if is_input_data_powered(input_index, true):
 					# Reset Counter
 					current_count = 0
 					bar.value = current_count
@@ -44,7 +44,7 @@ func change_property(property: StringName, value: Variant) -> void:
 			current_count = value
 			bar.value = current_count
 
-			output(0, is_input_data_powered(0, false) and current_count == target_count)
+			output(0, is_input_data_powered(0, true) and current_count == target_count)
 		&"TargetCount":
 			current_count = min(current_count, value)
 			target_count = value

@@ -47,6 +47,8 @@ func _ready() -> void:
 		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
 		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 	set_mouse_filters(MOUSE_FILTER_IGNORE)
+	for i in input_controls.size():
+		input_data_changed.call_deferred(i)
 	start()
 
 
@@ -187,7 +189,6 @@ func get_input_data(input_index: int) -> Variant:
 
 
 func output(output_index: int, data: Variant, pulse := false, random := false) -> void:
-	#prints(type, output_index, data, pulse)
 	for output_control: OutputControl in output_controls[output_index]:
 		if not random:
 			output_control.data = data
