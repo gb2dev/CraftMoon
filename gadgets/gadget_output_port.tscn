@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdvtfsvyn717c"]
+
+[ext_resource type="Script" uid="uid://bdd7a8t07rgt5" path="res://gadgets/gadget_output_port.gd" id="1_101ok"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cho3n"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_detail = 5
+
+[node name="OutputPort" type="Panel"]
+custom_minimum_size = Vector2(16, 16)
+offset_right = 16.0
+offset_bottom = 16.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cho3n")
+script = ExtResource("1_101ok")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 3

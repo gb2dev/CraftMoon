@@ -1,9 +1,26 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://b0jic3u3x4twu"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=7 format=3 uid="uid://b0jic3u3x4twu"]
 
-[ext_resource type="Script" path="res://item_data.gd" id="1_2cf1m"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_2cf1m"]
 [ext_resource type="Texture2D" uid="uid://brjx36ctns0lq" path="res://icons/gadgets/timer_gadget.svg" id="1_njirs"]
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="2_01xub"]
+[ext_resource type="Texture2D" uid="uid://i0c81fhqigy6" path="res://icons/check.svg" id="3_3vhfu"]
+
+[sub_resource type="Resource" id="Resource_kescg"]
+script = ExtResource("2_01xub")
+name = "Timer Finished (Pulse)"
+icon = ExtResource("3_3vhfu")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
+
+[sub_resource type="Resource" id="Resource_irgpv"]
+script = ExtResource("2_01xub")
+name = "Timer Finished (Signal)"
+icon = ExtResource("3_3vhfu")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
 
 [resource]
 script = ExtResource("1_2cf1m")
+background = Color(0.7411765, 0.4862745, 0.019607844, 1)
+category = "Logic"
+outputs = Array[ExtResource("2_01xub")]([SubResource("Resource_kescg"), SubResource("Resource_irgpv")])
 name = "Timer Gadget"
 icon = ExtResource("1_njirs")

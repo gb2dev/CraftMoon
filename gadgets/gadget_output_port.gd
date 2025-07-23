@@ -1,14 +1,10 @@
-@tool
-class_name InputControl
-extends ColorRect
+class_name GadgetOutputPort
+extends Panel
 
-@export var icon: Texture2D = preload("res://icons/power.svg"):
+var icon: Texture2D:
 	set(value):
 		icon = value
 		update_icon()
-
-var output_controls: Array[OutputControl]
-var output_visuals: Array[OutputVisual]
 
 @onready var texture_rect := $TextureRect as TextureRect
 

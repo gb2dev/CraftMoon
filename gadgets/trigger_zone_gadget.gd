@@ -1,15 +1,33 @@
 extends Gadget
 
 
-@onready var area := $"3D/Area3D" as Area3D
-@onready var area_visual := $"3D/Area3D/AreaVisual" as MeshInstance3D
-@onready var collision_shape := $"3D/Area3D/CollisionShape3D" as CollisionShape3D
+const AREA_MATERIAL = preload("res://materials/area.tres")
 
+var area: Area3D
+var area_visual: MeshInstance3D
+var collision_shape: CollisionShape3D
 var is_player_detected: bool
 
 
 func start() -> void:
-	var _error := input_pulse.connect(func(_input_index: int) -> void:
+	area = Area3D.new()
+	area.scale = Vector3.ONE * 2
+	area.collision_layer = 0
+	area.collision_mask = 2
+	var _error := area.body_entered.connect(_on_area_3d_body_entered)
+	_error = area.body_exited.connect(_on_area_3d_body_exited)
+	node_3d.add_child(area)
+
+	area_visual = MeshInstance3D.new()
+	area_visual.material_override = AREA_MATERIAL
+	area.add_child(area_visual)
+
+	collision_shape = CollisionShape3D.new()
+	area.add_child(collision_shape)
+
+	change_property(&"ZoneShape", 0) # Initialize with sphere shape
+
+	_error = input_pulse.connect(func(_input_index: int) -> void:
 		output(0, is_input_data_powered(0, true) and is_player_detected)
 	)
 

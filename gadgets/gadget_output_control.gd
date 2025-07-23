@@ -1,8 +1,8 @@
-class_name OutputControl
+class_name GadgetOutputControl
 extends Control
 
 
-var visual: OutputVisual
+var visual: GadgetOutputVisual
 var target_gadget: Gadget
 var target_input: int
 var data: Variant = false:

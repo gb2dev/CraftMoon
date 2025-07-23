@@ -1,14 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://csikkdkna1sy2"]
+[gd_scene load_steps=3 format=3 uid="uid://csikkdkna1sy2"]
 
-[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://input_control.gd" id="1_iahpu"]
+[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://gadgets/gadget_input_control.gd" id="1_iahpu"]
 
-[node name="InputControl0" type="ColorRect" groups=["InputControl"]]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iahpu"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="InputControl" type="Panel" groups=["GadgetInputControl"]]
 custom_minimum_size = Vector2(16, 16)
 offset_right = 16.0
 offset_bottom = 16.0
 tooltip_text = "Power"
-color = Color(1, 0.27451, 0.196078, 1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_iahpu")
 script = ExtResource("1_iahpu")
+theme_override_styles/panel = SubResource("StyleBoxFlat_iahpu")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1

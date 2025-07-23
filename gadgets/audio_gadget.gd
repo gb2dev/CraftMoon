@@ -6,7 +6,8 @@ var is_pulse: bool
 
 
 func start() -> void:
-	change_property(&"ThreeD", false)
+	change_property(&"ThreeD", false) # Initialize with standard AudioStreamPlayer
+
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0, true):
 			is_pulse = false

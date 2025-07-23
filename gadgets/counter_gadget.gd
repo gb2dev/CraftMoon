@@ -1,8 +1,7 @@
 extends Gadget
 
 
-@onready var bar := $ProgressBar as ProgressBar
-
+var bar: ProgressBar
 var current_count := 0:
 	set(value):
 		set_meta(&"CurrentCount", value)
@@ -12,6 +11,16 @@ var target_count := 1
 
 
 func start() -> void:
+	bar = ProgressBar.new()
+	bar.add_theme_stylebox_override(&"background", StyleBoxEmpty.new())
+	bar.max_value = 1
+	bar.step = 1
+	bar.show_percentage = false
+	bar.fill_mode = ProgressBar.FillMode.FILL_BOTTOM_TO_TOP
+	bar.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(bar)
+	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
 	var _error := input_pulse.connect(func(input_index: int) -> void:
 		match input_index:
 			0:

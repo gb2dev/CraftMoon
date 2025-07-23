@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://dtx7johfsvrx7"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=3 format=3 uid="uid://dtx7johfsvrx7"]
 
-[ext_resource type="Script" path="res://item_data.gd" id="1_drjkt"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_drjkt"]
 [ext_resource type="Texture2D" uid="uid://3k8lyescfmqm" path="res://icons/gadgets/look_at_rotator_gadget.svg" id="1_oabf1"]
 
 [resource]
 script = ExtResource("1_drjkt")
+background = Color(0.4862745, 0.25490198, 0.37254903, 1)
+category = "Movement"
 name = "Look At Rotator Gadget"
 icon = ExtResource("1_oabf1")

@@ -1,14 +1,27 @@
 extends Gadget
 
 
-@onready var timer := $Timer as Timer
-@onready var bar := $ProgressBar as ProgressBar
-
+var timer: Timer
+var bar: ProgressBar
 var first_shot := true
 var is_pulse: bool
 
 
 func start() -> void:
+	timer = Timer.new()
+	timer.one_shot = true
+	add_child(timer)
+
+	bar = ProgressBar.new()
+	bar.add_theme_stylebox_override(&"background", StyleBoxEmpty.new())
+	bar.max_value = 1
+	bar.step = 1
+	bar.show_percentage = false
+	bar.fill_mode = ProgressBar.FillMode.FILL_BOTTOM_TO_TOP
+	bar.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(bar)
+	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0, true):
 			timer.start()

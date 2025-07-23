@@ -1,9 +1,20 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://caec04as55inh"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=6 format=3 uid="uid://caec04as55inh"]
 
 [ext_resource type="Texture2D" uid="uid://btanjr213wn5h" path="res://icons/gadgets/audio_gadget.svg" id="1_klg2i"]
-[ext_resource type="Script" uid="uid://cbi1fmsqlgmqf" path="res://item_data.gd" id="1_lncyy"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_lncyy"]
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="2_78bak"]
+[ext_resource type="Texture2D" uid="uid://i0c81fhqigy6" path="res://icons/check.svg" id="3_r2dey"]
+
+[sub_resource type="Resource" id="Resource_78bak"]
+script = ExtResource("2_78bak")
+name = "Sound Finished Playing"
+icon = ExtResource("3_r2dey")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
 
 [resource]
 script = ExtResource("1_lncyy")
+background = Color(0.21176471, 0.23921569, 0.32156864, 1)
+category = "Output"
+outputs = Array[ExtResource("2_78bak")]([SubResource("Resource_78bak")])
 name = "Audio Gadget"
 icon = ExtResource("1_klg2i")
