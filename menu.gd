@@ -76,7 +76,7 @@ func toggle() -> void:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
-func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary]) -> void:
+func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dictionary]) -> void:
 	var index_offset := 0
 	var parent_index := 0
 	var logic_panel := player.editor.object_properties.logic_panel
@@ -86,15 +86,15 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_data_array: Array[Dictionary
 			parent_index = new_parent_index
 			index_offset = gadget.get_index()
 
-		var gadget_data: Dictionary = gadget_data_array[gadget.get_index()]
-		var outputs_count: int = gadget_data.connections.size()
+		var gadget_properties: Dictionary = gadget_properties_array[gadget.get_index()]
+		var outputs_count: int = gadget_properties.connections.size()
 		for output_index in outputs_count:
-			for output_data: Dictionary in gadget_data.connections[output_index]:
+			for output_properties: Dictionary in gadget_properties.connections[output_index]:
 				gadget.update_connection(
 					Gadget.ConnectionChange.CONNECT,
 					gadget.output_controls[output_index].back(),
-					logic_panel.get_children()[index_offset + output_data.target_gadget],
-					output_data.target_input,
+					logic_panel.get_children()[index_offset + output_properties.target_gadget],
+					output_properties.target_input,
 					true
 				)
 
@@ -159,14 +159,14 @@ func save_level() -> void:
 		})
 	for gadget: Gadget in gadget_nodes:
 		var path: String = "res://gadgets/" + gadget.type.to_snake_case()
-		var item_data := load(path + ".tres")
+		var gadget_data := load(path + ".tres")
 		var parent_index: int = gadget.node_3d.get_parent().get_index()
 		var gadgets: Array = save_data[parent_index + 1].gadgets
 		var connections: Array[Array]
 		var outputs_count: int = gadget.output_controls.size()
 		var _error := connections.resize(outputs_count)
 		for output_index in outputs_count:
-			for output_control: OutputControl in gadget.output_controls[output_index]:
+			for output_control: GadgetOutputControl in gadget.output_controls[output_index]:
 				if not is_instance_valid(output_control.target_gadget):
 					continue
 
@@ -176,8 +176,8 @@ func save_level() -> void:
 					),
 					"target_input": output_control.target_input,
 				})
-		var gadget_data := {
-			"type": item_data.name,
+		var gadget_properties := {
+			"type": gadget_data.name,
 			"connections": connections,
 			"position": gadget.position,
 			"properties": {}
@@ -186,8 +186,8 @@ func save_level() -> void:
 		if gadget.has_method(&"sort_property_list"):
 			property_list.sort_custom(gadget.sort_property_list)
 		for property: StringName in property_list:
-			gadget_data.properties[property] = gadget.get_meta(property)
-		gadgets.append(gadget_data)
+			gadget_properties.properties[property] = gadget.get_meta(property)
+		gadgets.append(gadget_properties)
 	var save_file_path := "user://levels/" + str(slot) + ".save"
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
@@ -224,41 +224,39 @@ func load_level(level := "") -> void:
 		level_description.text = save_data[0].description
 
 		var gadgets: Array[Gadget]
-		var gadget_data_array: Array[Dictionary]
-		for object_data: Dictionary in save_data:
+		var gadget_properties_array: Array[Dictionary]
+		for object_properties: Dictionary in save_data:
 			var object: CSGShape3D
-			match object_data.type:
+			match object_properties.type:
 				"Level":
 					continue
 				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
-					player.editor.construction_material = load(object_data.material)
-					player.editor.construction_collision = object_data.collision
+					player.editor.construction_material = load(object_properties.material)
+					player.editor.construction_collision = object_properties.collision
 					object = player.editor.construct_shape(
-						object_data.type,
-						object_data.position,
-						object_data.rotation,
-						object_data.size,
+						object_properties.type,
+						object_properties.position,
+						object_properties.rotation,
+						object_properties.size,
 						player.editor.construction_material.resource_path,
 						player.editor.construction_collision
 					)
-			for gadget_data: Dictionary in object_data.gadgets:
+			for gadget_properties: Dictionary in object_properties.gadgets:
 				player.editor.object_properties.object = object
-				var path: String = "res://gadgets/" + gadget_data.type.to_snake_case()
-				var item := load(path + ".tscn")
-				var item_data := load(path + ".tres")
+				var path: String = "res://gadgets/" + gadget_properties.type.to_snake_case()
+				var gadget_data := load(path + ".tres")
 				var gadget := player.editor.object_properties.create_gadget(
-					item,
-					item_data,
-					gadget_data.position,
+					gadget_data,
+					gadget_properties.position,
 					true
 				)
 				gadgets.append(gadget)
-				gadget_data_array.append(gadget_data)
-				for property: StringName in gadget_data.properties:
-					var value: Variant = gadget_data.properties[property]
+				gadget_properties_array.append(gadget_properties)
+				for property: StringName in gadget_properties.properties:
+					var value: Variant = gadget_properties.properties[property]
 					gadget.set_meta(property, value)
 					gadget.change_property(property, value)
-		connect_gadgets(gadgets, gadget_data_array)
+		connect_gadgets(gadgets, gadget_properties_array)
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
 	player.pivot.rotation = Vector3.ZERO

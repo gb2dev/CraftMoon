@@ -1,9 +1,35 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://bwt7c3pq2r3ck"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=10 format=3 uid="uid://bwt7c3pq2r3ck"]
 
 [ext_resource type="Texture2D" uid="uid://brwbx0qak6qyd" path="res://icons/gadgets/counter_gadget.svg" id="1_aswlg"]
-[ext_resource type="Script" path="res://item_data.gd" id="1_lc8vv"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_lc8vv"]
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="2_vq1s2"]
+[ext_resource type="Texture2D" uid="uid://mhfkijddlovn" path="res://icons/add.svg" id="3_pso4v"]
+[ext_resource type="Texture2D" uid="uid://ch0ujf42ggcf3" path="res://icons/reset.svg" id="4_o7du5"]
+[ext_resource type="Texture2D" uid="uid://i0c81fhqigy6" path="res://icons/check.svg" id="5_pso4v"]
+
+[sub_resource type="Resource" id="Resource_1qnas"]
+script = ExtResource("2_vq1s2")
+name = "Add to Counter"
+icon = ExtResource("3_pso4v")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
+
+[sub_resource type="Resource" id="Resource_wwl5i"]
+script = ExtResource("2_vq1s2")
+name = "Reset Counter"
+icon = ExtResource("4_o7du5")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
+
+[sub_resource type="Resource" id="Resource_o7du5"]
+script = ExtResource("2_vq1s2")
+name = "Counter Full (Signal)"
+icon = ExtResource("5_pso4v")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
 
 [resource]
 script = ExtResource("1_lc8vv")
+background = Color(0.7411765, 0.4862745, 0.019607844, 1)
+category = "Logic"
+inputs = Array[ExtResource("2_vq1s2")]([SubResource("Resource_1qnas"), SubResource("Resource_wwl5i")])
+outputs = Array[ExtResource("2_vq1s2")]([SubResource("Resource_o7du5")])
 name = "Counter Gadget"
 icon = ExtResource("1_aswlg")

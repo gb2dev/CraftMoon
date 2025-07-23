@@ -1,4 +1,4 @@
-[gd_scene load_steps=130 format=4 uid="uid://cffjduipbb3s5"]
+[gd_scene load_steps=109 format=4 uid="uid://cffjduipbb3s5"]
 
 [ext_resource type="Script" uid="uid://c2si8gkbnde0c" path="res://player.gd" id="1_tdh26"]
 [ext_resource type="Script" uid="uid://v8j54rbc0ik" path="res://3d_godot_robot.gd" id="2_mexc5"]
@@ -44,27 +44,6 @@
 [ext_resource type="Material" uid="uid://bs31a34x1dslk" path="res://materials/dirt/dirt.tres" id="42_8u4el"]
 [ext_resource type="Texture2D" uid="uid://cmi56iuuqmrf7" path="res://materials/dirt/preview.png" id="43_a5i73"]
 [ext_resource type="Script" uid="uid://bm1342cmwuh4u" path="res://gadgets_panel.gd" id="44_j7swm"]
-[ext_resource type="PackedScene" uid="uid://crqxykfy7df4q" path="res://gadget_item.tscn" id="45_bobas"]
-[ext_resource type="PackedScene" uid="uid://dl21ovk7gcqja" path="res://gadgets/trigger_zone_gadget.tscn" id="46_vmuuc"]
-[ext_resource type="Resource" uid="uid://bxtyxckfkon5w" path="res://gadgets/trigger_zone_gadget.tres" id="47_j6q74"]
-[ext_resource type="PackedScene" uid="uid://c2bf7nocvxdpt" path="res://gadgets/look_sensor_gadget.tscn" id="48_hhe1y"]
-[ext_resource type="Resource" uid="uid://coynjbvda5rxv" path="res://gadgets/look_sensor_gadget.tres" id="49_6jk4c"]
-[ext_resource type="PackedScene" uid="uid://dcrs0quwcw1is" path="res://gadgets/audio_gadget.tscn" id="50_8hr8l"]
-[ext_resource type="Resource" uid="uid://caec04as55inh" path="res://gadgets/audio_gadget.tres" id="51_c2etn"]
-[ext_resource type="PackedScene" uid="uid://bveeg0yuju7de" path="res://gadgets/destroyer_gadget.tscn" id="52_cgqxi"]
-[ext_resource type="Resource" uid="uid://bqmk6je8y6j4s" path="res://gadgets/destroyer_gadget.tres" id="53_api4a"]
-[ext_resource type="PackedScene" uid="uid://b58iek08ffik4" path="res://gadgets/timer_gadget.tscn" id="54_o67lt"]
-[ext_resource type="Resource" uid="uid://b0jic3u3x4twu" path="res://gadgets/timer_gadget.tres" id="55_8xvhe"]
-[ext_resource type="PackedScene" uid="uid://b0076wtaytvt8" path="res://gadgets/counter_gadget.tscn" id="56_yelk6"]
-[ext_resource type="Resource" uid="uid://bwt7c3pq2r3ck" path="res://gadgets/counter_gadget.tres" id="57_v3rbc"]
-[ext_resource type="PackedScene" uid="uid://clpfjgijn4b0k" path="res://gadgets/randomizer_gadget.tscn" id="58_0wr1b"]
-[ext_resource type="Resource" uid="uid://cq3b402dh2ku6" path="res://gadgets/randomizer_gadget.tres" id="59_cye81"]
-[ext_resource type="PackedScene" uid="uid://d2o5jxi0c85j7" path="res://gadgets/not_gate_gadget.tscn" id="60_mftst"]
-[ext_resource type="Resource" uid="uid://tabgp4v1imc4" path="res://gadgets/not_gate_gadget.tres" id="61_sd4eq"]
-[ext_resource type="PackedScene" uid="uid://52rwqsmbiy8c" path="res://gadgets/mover_gadget.tscn" id="62_f1ot5"]
-[ext_resource type="Resource" uid="uid://cjibdh73f81ei" path="res://gadgets/mover_gadget.tres" id="63_pskma"]
-[ext_resource type="PackedScene" uid="uid://b8saypygfl3cx" path="res://gadgets/look_at_rotator_gadget.tscn" id="64_3sdik"]
-[ext_resource type="Resource" uid="uid://dtx7johfsvrx7" path="res://gadgets/look_at_rotator_gadget.tres" id="65_dkvgp"]
 [ext_resource type="Script" uid="uid://6fasiw3b0eyu" path="res://gadget_properties.gd" id="66_siwmy"]
 [ext_resource type="Script" uid="uid://bwmi4472ufa3v" path="res://logic_panel.gd" id="67_djlqh"]
 [ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="68_nure8"]
@@ -5490,12 +5469,14 @@ text = "Speed"
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Gadgets" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("audio_player")]
+[node name="Gadgets" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("audio_player", "tabs", "object_properties")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
 script = ExtResource("44_j7swm")
 audio_player = NodePath("../../../../AudioStreamPlayer")
+tabs = NodePath("MarginContainer/VBoxContainer/TabContainer")
+object_properties = NodePath("../../..")
 
 [node name="MarginContainer" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets"]
 layout_mode = 1
@@ -5538,20 +5519,6 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="TriggerZoneGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Trigger Zone Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("46_vmuuc")
-item_data = ExtResource("47_j6q74")
-
-[node name="LookSensorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Look Sensor Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("48_hhe1y")
-item_data = ExtResource("49_6jk4c")
-
 [node name="Output" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
@@ -5566,21 +5533,6 @@ layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
-
-[node name="AudioGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Audio Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("50_8hr8l")
-item_data = ExtResource("51_c2etn")
-
-[node name="DestroyerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-auto_translate_mode = 1
-layout_mode = 2
-tooltip_text = "Destroyer Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("52_cgqxi")
-item_data = ExtResource("53_api4a")
 
 [node name="Logic" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
@@ -5597,36 +5549,6 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="TimerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Timer Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("54_o67lt")
-item_data = ExtResource("55_8xvhe")
-
-[node name="CounterGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Counter Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("56_yelk6")
-item_data = ExtResource("57_v3rbc")
-
-[node name="RandomizerGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-auto_translate_mode = 1
-layout_mode = 2
-tooltip_text = "Randomizer Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("58_0wr1b")
-item_data = ExtResource("59_cye81")
-
-[node name="NotGateGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-auto_translate_mode = 1
-layout_mode = 2
-tooltip_text = "Not Gate Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("60_mftst")
-item_data = ExtResource("61_sd4eq")
-
 [node name="Movement" type="MarginContainer" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
@@ -5641,21 +5563,6 @@ layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
-
-[node name="MoverGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-layout_mode = 2
-tooltip_text = "Mover Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("62_f1ot5")
-item_data = ExtResource("63_pskma")
-
-[node name="LookAtRotatorGadgetItem" parent="Object Properties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement/GridContainer" node_paths=PackedStringArray("gadgets_panel") instance=ExtResource("45_bobas")]
-auto_translate_mode = 1
-layout_mode = 2
-tooltip_text = "Look At Rotator Gadget"
-gadgets_panel = NodePath("../../../../../..")
-item = ExtResource("64_3sdik")
-item_data = ExtResource("65_dkvgp")
 
 [node name="Gadget Properties" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("vbox")]
 unique_name_in_owner = true

@@ -36,10 +36,11 @@ func place_gadget(gadget: Gadget, silent: bool) -> void:
 
 
 func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:
+	var grid := Vector2.ONE * GRID_SIZE
 	return get_local_mouse_position().clamp(
-		gadget_size,
-		size - gadget_size
-	).snapped(Vector2.ONE * GRID_SIZE) - gadget_size / 2
+		gadget_size / 2 + grid,
+		size - gadget_size / 2 - grid
+	).snapped(grid) - gadget_size / 2
 
 
 func _on_gui_input(event: InputEvent) -> void:

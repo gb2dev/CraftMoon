@@ -1,9 +1,11 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://bqmk6je8y6j4s"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=3 format=3 uid="uid://bqmk6je8y6j4s"]
 
 [ext_resource type="Texture2D" uid="uid://bo54qavhlyk31" path="res://icons/gadgets/destroyer_gadget.svg" id="1_20eli"]
-[ext_resource type="Script" path="res://item_data.gd" id="1_eiwjm"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_eiwjm"]
 
 [resource]
 script = ExtResource("1_eiwjm")
+background = Color(0.21176471, 0.23921569, 0.32156864, 1)
+category = "Output"
 name = "Destroyer Gadget"
 icon = ExtResource("1_20eli")

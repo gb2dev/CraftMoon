@@ -1,9 +1,20 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://coynjbvda5rxv"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=6 format=3 uid="uid://coynjbvda5rxv"]
 
-[ext_resource type="Script" path="res://item_data.gd" id="1_blxcq"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_blxcq"]
 [ext_resource type="Texture2D" uid="uid://dkv8546mfqm0n" path="res://icons/gadgets/look_sensor_gadget.svg" id="1_fkea8"]
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="2_g7wu8"]
+[ext_resource type="Texture2D" uid="uid://i0c81fhqigy6" path="res://icons/check.svg" id="3_y6mp3"]
+
+[sub_resource type="Resource" id="Resource_fpk6f"]
+script = ExtResource("2_g7wu8")
+name = "Visible On Screen (Signal)"
+icon = ExtResource("3_y6mp3")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
 
 [resource]
 script = ExtResource("1_blxcq")
+background = Color(0.25490198, 0.4862745, 0.27058825, 1)
+category = "Sensors"
+outputs = Array[ExtResource("2_g7wu8")]([SubResource("Resource_fpk6f")])
 name = "Look Sensor Gadget"
 icon = ExtResource("1_fkea8")

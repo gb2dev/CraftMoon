@@ -3,6 +3,7 @@ extends Control
 
 
 const SOUND_POPUP = preload("res://sounds/popup.wav")
+const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 
 @export var gadgets_panel: GadgetsPanel
 @export var gadget_properties: GadgetProperties
@@ -88,13 +89,11 @@ func get_object_material() -> BaseMaterial3D:
 		return editor.construction_material
 
 
-func create_gadget(
-	item: PackedScene,
-	item_data: ItemData,
-	pos := Vector2.INF,
-	silent := false
-) -> Gadget:
-	var gadget := item.instantiate() as Gadget
+func create_gadget(gadget_data: GadgetData, pos := Vector2.INF, silent := false) -> Gadget:
+	var node := GADGET_SCENE.instantiate()
+	var script := load(gadget_data.resource_path.replace(".tres", ".gd"))
+	node.set_script(script)
+	var gadget := node as Gadget
 	gadget._audio_player = audio_player
 	get_tree().current_scene.add_child(gadget)
 	gadget.add_to_group(&"Persist")
@@ -104,11 +103,11 @@ func create_gadget(
 		logic_panel.place_gadget(gadget, silent)
 		gadget.position = pos
 	gadget.attach_to_object(object)
-	gadget.set_icon(item_data.icon)
 	var _error := gadget.open_properties.connect(gadget_properties.gadget_changed.emit)
-	_error = gadget.open_properties.connect(gadget_properties.open.bind(item_data.name, gadget))
+	_error = gadget.open_properties.connect(gadget_properties.open.bind(gadget_data.name, gadget))
 	_error = gadget.open_properties.connect(gadgets_panel.hide)
-	gadget.type = item_data.name
+	gadget.type = gadget_data.name
+	gadget.set_gadget_data(gadget_data)
 	return gadget
 
 

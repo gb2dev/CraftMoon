@@ -1,4 +1,4 @@
-class_name OutputVisual
+class_name GadgetOutputVisual
 extends Node2D
 
 

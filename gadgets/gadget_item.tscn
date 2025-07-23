@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://crqxykfy7df4q"]
+
+[ext_resource type="Texture2D" uid="uid://chxdgx2tqwmae" path="res://icons/gadgets/background.svg" id="2_qvoxo"]
+[ext_resource type="Script" uid="uid://dswq7ohlntc0y" path="res://gadgets/gadget_item.gd" id="2_xj85w"]
+
+[node name="GadgetItem" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 64.0
+offset_bottom = 64.0
+script = ExtResource("2_xj85w")
+
+[node name="Background" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_qvoxo")
+patch_margin_left = 32
+patch_margin_top = 32
+patch_margin_right = 32
+patch_margin_bottom = 32
+
+[node name="Icon" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 3
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]

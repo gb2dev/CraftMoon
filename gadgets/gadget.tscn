@@ -1,94 +1,53 @@
-[gd_scene load_steps=6 format=3 uid="uid://gwjjy0frd8kj"]
+[gd_scene load_steps=2 format=3 uid="uid://gwjjy0frd8kj"]
 
-[ext_resource type="Texture2D" uid="uid://dmcdr7vwsln8l" path="res://icon.svg" id="2_wx2yp"]
-[ext_resource type="PackedScene" uid="uid://csikkdkna1sy2" path="res://gadgets/gadget_input_control.tscn" id="3_sx670"]
-[ext_resource type="PackedScene" uid="uid://4k43mtdgs0ya" path="res://gadgets/gadget_output_visual.tscn" id="4_7wnjn"]
-[ext_resource type="Texture2D" uid="uid://i0c81fhqigy6" path="res://icons/check.svg" id="4_l7sao"]
-[ext_resource type="PackedScene" uid="uid://l45be1pl8lmn" path="res://gadgets/gadget_output_control.tscn" id="5_7wnjn"]
+[ext_resource type="Texture2D" uid="uid://chxdgx2tqwmae" path="res://icons/gadgets/background.svg" id="1_451n5"]
 
-[node name="Gadget" type="TextureRect"]
+[node name="Gadget" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 offset_right = 64.0
 offset_bottom = 64.0
-texture = ExtResource("2_wx2yp")
-expand_mode = 1
 
-[node name="InputControls" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 9
-anchor_bottom = 1.0
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="InputControl0" parent="InputControls" instance=ExtResource("3_sx670")]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -16.0
-offset_top = -8.0
-offset_right = 0.0
-offset_bottom = 8.0
-grow_horizontal = 0
-grow_vertical = 2
-
-[node name="OutputPorts" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-grow_horizontal = 0
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="OutputPort0" type="ColorRect" parent="OutputPorts"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -8.0
-offset_right = 16.0
-offset_bottom = 8.0
-grow_vertical = 2
-color = Color(0.019607844, 0.38431373, 0.6117647, 1)
-
-[node name="TextureRect" type="TextureRect" parent="OutputPorts/OutputPort0"]
+[node name="Background" type="NinePatchRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("4_l7sao")
-expand_mode = 3
+texture = ExtResource("1_451n5")
+patch_margin_left = 32
+patch_margin_top = 32
+patch_margin_right = 32
+patch_margin_bottom = 32
 
-[node name="OutputVisuals" type="Node2D" parent="."]
-
-[node name="OutputVisual0" parent="OutputVisuals" instance=ExtResource("4_7wnjn")]
-position = Vector2(80, 32)
-
-[node name="OutputControls" type="Control" parent="."]
+[node name="Icon" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
+anchors_preset = 14
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-grow_horizontal = 0
+grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+expand_mode = 4
 
-[node name="OutputControl0" parent="OutputControls" instance=ExtResource("5_7wnjn")]
+[node name="InputControls" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-grow_vertical = 2
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="OutputVisuals" type="Node2D" parent="."]
+
+[node name="OutputPorts" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="OutputControls" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+mouse_filter = 2
 
 [node name="3D" type="Node3D" parent="."]
 

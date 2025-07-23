@@ -1,15 +1,14 @@
 [gd_scene load_steps=4 format=3 uid="uid://4k43mtdgs0ya"]
 
 [ext_resource type="Texture2D" uid="uid://p6pcpse32atj" path="res://textures/cable.png" id="1_8damo"]
-[ext_resource type="Script" uid="uid://o1141sspjftg" path="res://output_visual.gd" id="1_sw2ut"]
+[ext_resource type="Script" uid="uid://o1141sspjftg" path="res://gadgets/gadget_output_visual.gd" id="1_sw2ut"]
 
 [sub_resource type="Curve2D" id="Curve2D_iiui3"]
 
-[node name="OutputVisual0" type="Node2D"]
+[node name="OutputVisual" type="Node2D"]
 script = ExtResource("1_sw2ut")
 
 [node name="Line2D" type="Line2D" parent="."]
-z_index = 1
 texture_repeat = 2
 width = 12.0
 texture = ExtResource("1_8damo")

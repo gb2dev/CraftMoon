@@ -1,9 +1,19 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=4 uid="uid://tabgp4v1imc4"]
+[gd_resource type="Resource" script_class="GadgetData" load_steps=5 format=3 uid="uid://tabgp4v1imc4"]
 
 [ext_resource type="Texture2D" uid="uid://bxuuyhwak4bdw" path="res://icons/gadgets/not_gate_gadget.svg" id="1_7bd4w"]
-[ext_resource type="Script" path="res://item_data.gd" id="1_164se"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="1_164se"]
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="2_mgqrn"]
+
+[sub_resource type="Resource" id="Resource_0nsiv"]
+script = ExtResource("2_mgqrn")
+name = "Inverted Power"
+icon = ExtResource("1_7bd4w")
+metadata/_custom_type_script = "uid://ds5d08jvch5ld"
 
 [resource]
 script = ExtResource("1_164se")
+background = Color(0.7411765, 0.4862745, 0.019607844, 1)
+category = "Logic"
+outputs = Array[ExtResource("2_mgqrn")]([SubResource("Resource_0nsiv")])
 name = "Not Gate Gadget"
 icon = ExtResource("1_7bd4w")
