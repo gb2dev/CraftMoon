@@ -65,7 +65,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 			_error = library_button.pressed.connect(sound_select_instance.show)
 			vbox.add_child(library_button)
 
-			var _slider := add_slider("Volume: ", &"Volume", 1, 0, 1, 0.01, gadget)
+			var _slider := add_slider("Volume: ", [&"Volume"], 1, 0, 1, 0.01, gadget)
 
 			var loop_checkbox := CheckBox.new()
 			loop_checkbox.text = "Loop"
@@ -89,18 +89,35 @@ func open(type: StringName, gadget: Gadget) -> void:
 			var _error := gadget_changed.connect(gadget.area_visual.hide, Object.CONNECT_ONE_SHOT)
 
 			var shape_option := OptionButton.new()
-			shape_option.add_item("Ellipsoid")
+			shape_option.add_item("Sphere")
 			shape_option.add_item("Cuboid")
 			shape_option.selected = gadget.get_meta(&"ZoneShape", 0)
-			_error = shape_option.item_selected.connect(func(index: int) -> void:
-				gadget.change_property(&"ZoneShape", index)
-				gadget.set_meta(&"ZoneShape", index)
-			)
 			vbox.add_child(shape_option)
 
-			var _slider := add_slider("Zone width: ", &"ZoneWidth", 2, 0.1, 50, 0.1, gadget)
-			_slider = add_slider("Zone height: ", &"ZoneHeight", 2, 0.1, 50, 0.1, gadget)
-			_slider = add_slider("Zone depth: ", &"ZoneDepth", 2, 0.1, 50, 0.1, gadget)
+			var size_slider := add_slider("Zone size: ", [&"ZoneWidth", &"ZoneHeight", &"ZoneDepth"], 2, 0.1, 50, 0.1, gadget)
+			var width_slider := add_slider("Zone width: ", [&"ZoneWidth"], 2, 0.1, 50, 0.1, gadget)
+			var height_slider := add_slider("Zone height: ", [&"ZoneHeight"], 2, 0.1, 50, 0.1, gadget)
+			var depth_slider := add_slider("Zone depth: ", [&"ZoneDepth"], 2, 0.1, 50, 0.1, gadget)
+
+			var item_selected := func(index: int) -> void:
+				gadget.set_meta(&"ZoneShape", index)
+				var is_uniform_scale := index == 0
+				size_slider.visible = is_uniform_scale
+				width_slider.visible = not is_uniform_scale
+				height_slider.visible = not is_uniform_scale
+				depth_slider.visible = not is_uniform_scale
+				if is_uniform_scale:
+					size_slider.value_changed.emit(size_slider.value)
+					gadget.change_property.call_deferred(&"ZoneShape", index)
+				else:
+					gadget.change_property(&"ZoneShape", index)
+					width_slider.value_changed.emit(width_slider.value)
+					height_slider.value_changed.emit(height_slider.value)
+					depth_slider.value_changed.emit(depth_slider.value)
+
+			_error = shape_option.item_selected.connect(item_selected)
+
+			item_selected.call(0)
 		&"Look Sensor Gadget":
 			pass
 		&"Timer Gadget":
@@ -113,18 +130,18 @@ func open(type: StringName, gadget: Gadget) -> void:
 			)
 			vbox.add_child(oneshot_checkbox)
 
-			var _slider := add_slider("Wait time: ", &"WaitTime", 1, 0.1, 60, 0.1, gadget)
+			var _slider := add_slider("Wait time: ", [&"WaitTime"], 1, 0.1, 60, 0.1, gadget)
 		&"Counter Gadget":
 			var current := add_slider(
 				"Current count: ",
-				&"CurrentCount",
+				[&"CurrentCount"],
 				0,
 				0,
 				gadget.get_meta(&"TargetCount", 1),
 				1,
 				gadget
 			)
-			var target := add_slider("Target count: ", &"TargetCount", 1, 1, 100, 1, gadget)
+			var target := add_slider("Target count: ", [&"TargetCount"], 1, 1, 100, 1, gadget)
 			var _error := target.value_changed.connect(func(value: float) -> void:
 				current.max_value = value
 			)
@@ -137,13 +154,13 @@ func open(type: StringName, gadget: Gadget) -> void:
 				Object.CONNECT_ONE_SHOT
 			)
 		&"Mover Gadget":
-			var _slider := add_slider("Movement direction X: ", &"MovementDirectionX", 0, -100, 100, 0.1, gadget)
-			_slider = add_slider("Movement direction Y: ", &"MovementDirectionY", 0, -100, 100, 0.1, gadget)
-			_slider = add_slider("Movement direction Z: ", &"MovementDirectionZ", 0, -100, 100, 0.1, gadget)
+			var _slider := add_slider("Movement direction X: ", [&"MovementDirectionX"], 0, -100, 100, 0.1, gadget)
+			_slider = add_slider("Movement direction Y: ", [&"MovementDirectionY"], 0, -100, 100, 0.1, gadget)
+			_slider = add_slider("Movement direction Z: ", [&"MovementDirectionZ"], 0, -100, 100, 0.1, gadget)
 
 
 func add_slider(label_prefix: String,
-				property_name: StringName,
+				property_names: Array[StringName],
 				default_value: Variant,
 				min_value: float,
 				max_value: float,
@@ -156,13 +173,19 @@ func add_slider(label_prefix: String,
 	slider.min_value = min_value
 	slider.max_value = max_value
 	slider.step = step
-	slider.value = gadget.get_meta(property_name, default_value)
+	for property_name: StringName in property_names:
+		slider.value = gadget.get_meta(property_name, default_value)
 	var _error := slider.value_changed.connect(func(value: float) -> void:
-		gadget.change_property(property_name, value)
+		for property_name: StringName in property_names:
+			gadget.change_property(property_name, value)
+			gadget.set_meta(property_name, value)
 		label.text = label_prefix + str(snappedf(value, step))
-		gadget.set_meta(property_name, value)
 	)
 	vbox.add_child(slider)
+
+	_error = slider.visibility_changed.connect(func() -> void:
+		label.visible = slider.visible
+	)
 
 	label.text = label_prefix + str(snappedf(slider.value, step))
 
