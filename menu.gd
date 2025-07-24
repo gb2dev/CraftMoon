@@ -61,10 +61,9 @@ func toggle() -> void:
 		if control.visible:
 			return
 
-	get_tree().paused = not get_tree().paused
-	visible = get_tree().paused
-	background_dim.visible = get_tree().paused
-	if get_tree().paused:
+	visible = not visible
+	background_dim.visible = visible
+	if visible:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		Audio.play_sound("menu")
 	else:
