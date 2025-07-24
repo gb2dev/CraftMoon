@@ -396,8 +396,6 @@ func set_gadget_data(gadget_data: GadgetData) -> void:
 		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
 		_error = output_control.gui_input.connect(_on_output_control_gui_input.bind(output_control))
 
-	set_mouse_filters(MOUSE_FILTER_IGNORE)
-
 	for i in input_controls.size():
 		input_pulse.emit(i)
 
