@@ -35,6 +35,7 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var export_button: Button
 @export var delete_button: Button
 @export var level_portals: Node3D
+@export var main_menu: Control
 
 var slot := 0
 var player: Character
@@ -57,6 +58,9 @@ func _process(_delta: float) -> void:
 
 
 func toggle() -> void:
+	if main_menu.visible:
+		return
+
 	for control: Control in get_tree().get_nodes_in_group(&"UI"):
 		if control.visible:
 			return
@@ -447,3 +451,11 @@ func _on_export_button_pressed() -> void:
 func _on_delete_button_pressed() -> void:
 	delete_save(str(slot))
 	_on_moon_button_pressed()
+
+
+func _on_main_menu_button_pressed() -> void:
+	toggle()
+	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+	multiplayer.multiplayer_peer.close()
+	multiplayer.multiplayer_peer = null
+	main_menu.visible = true
