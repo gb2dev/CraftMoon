@@ -104,6 +104,8 @@ func create_gadget(gadget_data: GadgetData, pos := Vector2.INF, silent := false)
 	_error = gadget.open_properties.connect(gadgets_panel.hide)
 	gadget.type = gadget_data.name
 	gadget.set_gadget_data(gadget_data)
+	if not silent:
+		gadget.set_mouse_filters(MOUSE_FILTER_IGNORE)
 	return gadget
 
 
