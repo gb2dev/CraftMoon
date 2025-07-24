@@ -333,6 +333,7 @@ func attach_to_object(o: Node3D) -> void:
 		node_3d.position = o.get_parent().get_aabb().get_center()
 	else:
 		o.add_child(node_3d)
+	var _error := node_3d.tree_exited.connect(queue_free)
 
 
 func set_gadget_data(gadget_data: GadgetData) -> void:
