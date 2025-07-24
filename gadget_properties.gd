@@ -51,10 +51,10 @@ func open(type: StringName, gadget: Gadget) -> void:
 
 			var sound_select_instance := SOUND_SELECT.instantiate() as SoundSelect
 			_error = sound_select_instance.select_sound.connect(
-				func(sound: String, sound_name: String) -> void:
-					var path := "res://sounds/" + sound + ".wav"
+				func(sound_name: String, text: String) -> void:
+					var path := Audio.sounds[sound_name]
 					gadget.change_property(&"Sound", path)
-					select_sound_label.text = selected_sound_prefix + sound_name
+					select_sound_label.text = selected_sound_prefix + text
 					gadget.set_meta(&"Sound", path)
 					gadget.set_meta(&"SoundName", sound_name)
 			)

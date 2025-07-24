@@ -2,16 +2,9 @@ class_name Editor
 extends RayCast3D
 
 
-const SOUND_DESTROY = preload("res://sounds/destroy.wav")
-const SOUND_CLICK = preload("res://sounds/click.wav")
-const SOUND_PLACE = preload("res://sounds/place.wav")
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
-@onready var object_properties := %"Object Properties" as ObjectProperties
-@onready var input_display := %InputDisplay as InputDisplay
-
 @export var cursor: Node3D
-@export var audio_player: AudioStreamPlayer
 @export var player: Character
 @export var shape_select: Control
 @export var shape_items: Control
@@ -34,6 +27,9 @@ var construction_mode: int:
 			shape_item.set_selected(construction_mode == shape_item.get_index())
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
+
+@onready var object_properties := %"Object Properties" as ObjectProperties
+@onready var input_display := %InputDisplay as InputDisplay
 
 
 func _ready() -> void:
@@ -66,8 +62,7 @@ func _process(_delta: float) -> void:
 				highlighted_geometry = get_collider()
 				if Input.is_action_just_pressed(&"destroy"):
 					if not highlighted_geometry.is_in_group(&"Undeletable"):
-						audio_player.stream = SOUND_DESTROY
-						audio_player.play()
+						Audio.play_sound("destroy")
 						destroy.rpc(highlighted_geometry.get_path())
 				return
 		highlighted_geometry = null
@@ -179,13 +174,11 @@ func _process(_delta: float) -> void:
 						or
 						is_zero_approx(size.x) and is_zero_approx(size.z)
 					):
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
+						Audio.play_sound("place")
 						construct_shape.rpc("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
-					audio_player.stream = SOUND_CLICK
-					audio_player.play()
+					Audio.play_sound("click")
 		# Ellipsoid Construction
 		1:
 			var construction_stage := vertices.size() % 3
@@ -242,13 +235,11 @@ func _process(_delta: float) -> void:
 						or
 						is_zero_approx(size.x) and is_zero_approx(size.z)
 					):
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
+						Audio.play_sound("place")
 						construct_shape.rpc("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
-					audio_player.stream = SOUND_CLICK
-					audio_player.play()
+					Audio.play_sound("click")
 		# Cylinder/Cone Construction
 		2, 3:
 			var construction_stage := vertices.size() % 3
@@ -305,14 +296,12 @@ func _process(_delta: float) -> void:
 						or
 						is_zero_approx(size.x) and is_zero_approx(size.z)
 					):
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
+						Audio.play_sound("place")
 						construct_shape.rpc("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 
 					vertices.clear()
 				else:
-					audio_player.stream = SOUND_CLICK
-					audio_player.play()
+					Audio.play_sound("click")
 		# Torus Construction
 		4:
 			var construction_stage := vertices.size() % 3
@@ -369,14 +358,12 @@ func _process(_delta: float) -> void:
 						or
 						is_zero_approx(size.x) and is_zero_approx(size.z)
 					):
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
+						Audio.play_sound("place")
 						construct_shape.rpc("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 
 					vertices.clear()
 				else:
-					audio_player.stream = SOUND_CLICK
-					audio_player.play()
+					Audio.play_sound("click")
 		# Polygon Construction
 		5:
 			var construction_stage := vertices.size() % 3
@@ -433,13 +420,11 @@ func _process(_delta: float) -> void:
 						or
 						is_zero_approx(size.x) and is_zero_approx(size.z)
 					):
-						audio_player.stream = SOUND_PLACE
-						audio_player.play()
+						Audio.play_sound("place")
 						construct_shape.rpc("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
 					vertices.clear()
 				else:
-					audio_player.stream = SOUND_CLICK
-					audio_player.play()
+					Audio.play_sound("click")
 
 
 @rpc("any_peer", "call_local")

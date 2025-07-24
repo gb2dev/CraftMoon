@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Draw3D="*res://draw_3d.gd"
 InputHelper="*res://addons/input_helper/input_helper.gd"
 Network="*res://network.gd"
+Audio="*res://audio.gd"
 
 [debug]
 

@@ -2,13 +2,9 @@ class_name Menu
 extends Control
 
 
-const SOUND_MENU = preload("res://sounds/menu.wav")
-const SOUND_WHOOSH = preload("res://sounds/whoosh.wav")
-const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
-
 const LEVEL_PORTAL = preload("res://level_portal.tscn")
 const LEVEL_PORTAL_POSITIONS = [
 	Vector3(-4, 0, -12),
@@ -29,7 +25,6 @@ const LEVEL_PORTAL_POSITIONS = [
 	Vector3(-3, 0, 10),
 ]
 
-@export var audio_player: AudioStreamPlayer
 @export var background_dim: ColorRect
 @export var level_transition_wipe: ColorRect
 @export var level_name: LineEdit
@@ -70,8 +65,7 @@ func toggle() -> void:
 	background_dim.visible = get_tree().paused
 	if get_tree().paused:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-		audio_player.stream = SOUND_MENU
-		audio_player.play()
+		Audio.play_sound("menu")
 	else:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
@@ -268,8 +262,7 @@ func load_level(level := "") -> void:
 func delete_save(level: String) -> void:
 	var path := "user://levels/" + level + ".save"
 	if FileAccess.file_exists(path):
-		audio_player.stream = SOUND_DESTROY
-		audio_player.play()
+		Audio.play_sound("destroy")
 		var _error := DirAccess.remove_absolute(path)
 
 
@@ -331,8 +324,7 @@ func enter_play_mode() -> void:
 
 
 func wipe() -> void:
-	audio_player.stream = SOUND_WHOOSH
-	audio_player.play()
+	Audio.play_sound("whoosh")
 	var tween := get_tree().create_tween()
 	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
 	await tween.finished

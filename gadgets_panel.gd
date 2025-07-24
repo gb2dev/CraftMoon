@@ -2,10 +2,8 @@ class_name GadgetsPanel
 extends Panel
 
 
-const SOUND_DESTROY = preload("res://sounds/destroy.wav")
 const GADGET_ITEM_SCENE = preload("res://gadgets/gadget_item.tscn")
 
-@export var audio_player: AudioStreamPlayer
 @export var tabs: TabContainer
 @export var object_properties: ObjectProperties
 
@@ -44,5 +42,4 @@ func _on_gui_input(event: InputEvent) -> void:
 			gadget.set_mouse_filters(MOUSE_FILTER_STOP)
 			gadget.queue_free()
 			gadget.update_connection_positions()
-			audio_player.stream = SOUND_DESTROY
-			audio_player.play()
+			Audio.play_sound("destroy")

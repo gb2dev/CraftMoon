@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://cny7wjphq8545"
-path="res://.godot/imported/failure.wav-ed3e5292a1d2d91727a722b62de23672.sample"
+uid="uid://t6bon4wbxa3u"
+path="res://.godot/imported/destroy.wav-f642b2f1d4784786634436067cf1849c.sample"
 
 [deps]
 
-source_file="res://sounds/failure.wav"
-dest_files=["res://.godot/imported/failure.wav-ed3e5292a1d2d91727a722b62de23672.sample"]
+source_file="res://sounds/editor_only/destroy.wav"
+dest_files=["res://.godot/imported/destroy.wav-f642b2f1d4784786634436067cf1849c.sample"]
 
 [params]
 
