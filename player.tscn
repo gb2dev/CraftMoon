@@ -5169,12 +5169,11 @@ _body = NodePath("../3DGodotRobot")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("cursor", "audio_player", "player", "shape_select", "shape_items")]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("cursor", "player", "shape_select", "shape_items")]
 process_mode = 4
 target_position = Vector3(0, 0, -10)
 script = ExtResource("6_ee2o4")
 cursor = NodePath("Cursor")
-audio_player = NodePath("../../../AudioStreamPlayer")
 player = NodePath("../../..")
 shape_select = NodePath("../../../ShapeSelect")
 shape_items = NodePath("../../../ShapeSelect/ShapeItems")
@@ -5205,7 +5204,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_yskhe")
 target_position = Vector3(0, 0, -6)
 collision_mask = 4
 
-[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "audio_player", "editor", "logic_panel") groups=["UI"]]
+[node name="Object Properties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "editor", "logic_panel") groups=["UI"]]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
@@ -5223,7 +5222,6 @@ gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
 tab_container = NodePath("TabContainer")
 object_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object")
 player_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player")
-audio_player = NodePath("../AudioStreamPlayer")
 editor = NodePath("../Pivot/Camera3D/Editor")
 logic_panel = NodePath("TabContainer/Logic/ScrollContainer/Logic")
 
@@ -5236,10 +5234,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_66i60")
 tab_alignment = 1
-current_tab = 1
+current_tab = 0
 
 [node name="Properties" type="Control" parent="Object Properties/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -5466,15 +5463,15 @@ layout_mode = 2
 text = "Speed"
 
 [node name="Logic" type="HBoxContainer" parent="Object Properties/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Gadgets" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("audio_player", "tabs", "object_properties")]
+[node name="Gadgets" type="Panel" parent="Object Properties/TabContainer/Logic" node_paths=PackedStringArray("tabs", "object_properties")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
 script = ExtResource("44_j7swm")
-audio_player = NodePath("../../../../AudioStreamPlayer")
 tabs = NodePath("MarginContainer/VBoxContainer/TabContainer")
 object_properties = NodePath("../../..")
 
@@ -5591,11 +5588,10 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Logic" type="Panel" parent="Object Properties/TabContainer/Logic/ScrollContainer" node_paths=PackedStringArray("audio_player")]
+[node name="Logic" type="Panel" parent="Object Properties/TabContainer/Logic/ScrollContainer"]
 custom_minimum_size = Vector2(5000, 5000)
 layout_mode = 2
 script = ExtResource("67_djlqh")
-audio_player = NodePath("../../../../../AudioStreamPlayer")
 
 [node name="CloseButton" type="Button" parent="Object Properties"]
 layout_mode = 1

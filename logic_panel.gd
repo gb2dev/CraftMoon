@@ -47,7 +47,7 @@ func _on_gui_input(event: InputEvent) -> void:
 
 
 func _on_visibility_changed() -> void:
-	if get_parent().visible:
+	if is_visible_in_tree():
 		for gadget: Gadget in get_children():
 			gadget.visible = object_properties.object == gadget.node_3d.get_parent()
 
