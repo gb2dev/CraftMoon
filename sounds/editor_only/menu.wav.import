@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://t6bon4wbxa3u"
-path="res://.godot/imported/destroy.wav-2657b977f9be4fd7f7560ffdb4124672.sample"
+uid="uid://b8075wv34urd4"
+path="res://.godot/imported/menu.wav-977caaff81a356f7cd8cd8348dfcfb0e.sample"
 
 [deps]
 
-source_file="res://sounds/destroy.wav"
-dest_files=["res://.godot/imported/destroy.wav-2657b977f9be4fd7f7560ffdb4124672.sample"]
+source_file="res://sounds/editor_only/menu.wav"
+dest_files=["res://.godot/imported/menu.wav-977caaff81a356f7cd8cd8348dfcfb0e.sample"]
 
 [params]
 

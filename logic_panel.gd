@@ -4,9 +4,6 @@ extends Panel
 
 const PADDING_GRID_UNITS = 1
 const GRID_SIZE = 32
-const SOUND_PLACE = preload("res://sounds/place.wav")
-
-@export var audio_player: AudioStreamPlayer
 
 @onready var object_properties := %"Object Properties" as ObjectProperties
 
@@ -31,8 +28,7 @@ func place_gadget(gadget: Gadget, silent: bool) -> void:
 	gadget.update_connection_positions()
 	gadget.set_mouse_filters(MOUSE_FILTER_STOP)
 	if not silent:
-		audio_player.stream = SOUND_PLACE
-		audio_player.play()
+		Audio.play_sound("place")
 
 
 func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:

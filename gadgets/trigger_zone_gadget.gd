@@ -20,6 +20,7 @@ func start() -> void:
 
 	area_visual = MeshInstance3D.new()
 	area_visual.material_override = AREA_MATERIAL
+	area_visual.visible = false
 	area.add_child(area_visual)
 
 	collision_shape = CollisionShape3D.new()

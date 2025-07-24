@@ -2,7 +2,6 @@ class_name ObjectProperties
 extends Control
 
 
-const SOUND_POPUP = preload("res://sounds/popup.wav")
 const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 
 @export var gadgets_panel: GadgetsPanel
@@ -10,7 +9,6 @@ const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 @export var tab_container: TabContainer
 @export var object_vbox: VBoxContainer
 @export var player_vbox: VBoxContainer
-@export var audio_player: AudioStreamPlayer
 @export var editor: Editor
 @export var logic_panel: LogicPanel
 
@@ -30,8 +28,7 @@ func toggle(o: Node3D) -> void:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 		hide()
 	else:
-		audio_player.stream = SOUND_POPUP
-		audio_player.play()
+		Audio.play_sound("popup")
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		if object is Character:
 			tab_container.set_deferred(&"current_tab", 0)
@@ -94,7 +91,6 @@ func create_gadget(gadget_data: GadgetData, pos := Vector2.INF, silent := false)
 	var script := load(gadget_data.resource_path.replace(".tres", ".gd"))
 	node.set_script(script)
 	var gadget := node as Gadget
-	gadget._audio_player = audio_player
 	get_tree().current_scene.add_child(gadget)
 	gadget.add_to_group(&"Persist")
 	if pos == Vector2.INF:

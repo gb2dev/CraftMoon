@@ -21,8 +21,6 @@ const _OUTPUT_CONTROL_SCENE = preload("res://gadgets/gadget_output_control.tscn"
 const _PORT_SIZE = 16
 const _PORT_SPACING = 4
 const _CABLE_HIGHLIGHT = preload("res://textures/cable_highlight.tres")
-const _SOUND_PLACE = preload("res://sounds/place.wav")
-const _SOUND_DESTROY = preload("res://sounds/destroy.wav")
 const _POWER_ICON = preload("res://icons/power.svg")
 
 @onready var node_3d := $"3D" as Node3D
@@ -31,7 +29,6 @@ const _POWER_ICON = preload("res://icons/power.svg")
 
 var _just_dragged_output := false
 var _highlight_line: Line2D
-var _audio_player: AudioStreamPlayer
 var _output_visuals: Array
 var input_controls: Array
 var output_controls: Array
@@ -271,14 +268,12 @@ func update_connection(
 		output_control.visual = output_visual
 
 		if not silent:
-			_audio_player.stream = _SOUND_PLACE
-			_audio_player.play()
+			Audio.play_sound("place")
 	else:
 		if connection_type == ConnectionChange.DELETE:
 			output_visual.clear_points()
 			output_control.position = _get_port_position(output_controls.size(), output_index, SIDE_RIGHT)
-			_audio_player.stream = _SOUND_DESTROY
-			_audio_player.play()
+			Audio.play_sound("destroy")
 		output_control.target_gadget = null
 
 		if gadget:

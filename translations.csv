@@ -5,3 +5,9 @@ object_builder,Object Builder,Objekt-Ersteller
 properties,Object Properties,Objekt-Eigenschaften
 destroy,Destroy Object,Objekt Zerstören
 Pause Menu,,Pause-Menü
+sound_garden,Garden,Garten
+sound_failure,Failure,Fehlschlag
+sound_notification,Notification,Benachrichtigung
+sound_success,Success,Erfolg
+sound_category_music,Music,Musik
+sound_category_user_interface,User Interface,Benutzeroberfäche
