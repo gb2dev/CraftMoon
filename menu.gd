@@ -33,6 +33,7 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var save_button: Button
 @export var moon_button: Button
 @export var export_button: Button
+@export var delete_button: Button
 @export var level_portals: Node3D
 
 var slot := 0
@@ -200,6 +201,7 @@ func load_level(level := "") -> void:
 	save_button.visible = true
 	moon_button.visible = true
 	export_button.visible = true
+	delete_button.visible = true
 
 	if level.is_empty():
 		level = str(slot)
@@ -278,6 +280,7 @@ func new_level(blank := true) -> void:
 		save_button.visible = true
 		moon_button.visible = true
 		export_button.visible = true
+		delete_button.visible = true
 
 		await wipe()
 
@@ -408,6 +411,7 @@ func _on_moon_button_pressed() -> void:
 	save_button.visible = false
 	moon_button.visible = false
 	export_button.visible = false
+	delete_button.visible = false
 
 	toggle()
 
@@ -439,3 +443,8 @@ func _on_export_button_pressed() -> void:
 	var _error := scene.pack(geometry)
 	_error = DirAccess.make_dir_absolute("user://export/")
 	_error = ResourceSaver.save(scene, "user://export/export.tscn")
+
+
+func _on_delete_button_pressed() -> void:
+	delete_save(str(slot))
+	_on_moon_button_pressed()

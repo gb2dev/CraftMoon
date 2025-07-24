@@ -56,7 +56,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 					gadget.change_property(&"Sound", path)
 					select_sound_label.text = selected_sound_prefix + text
 					gadget.set_meta(&"Sound", path)
-					gadget.set_meta(&"SoundName", sound_name)
+					gadget.set_meta(&"SoundName", text)
 			)
 			vbox.add_child(sound_select_instance)
 
