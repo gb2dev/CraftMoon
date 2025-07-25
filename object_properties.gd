@@ -72,11 +72,16 @@ func close_on_free() -> void:
 		toggle(object)
 
 
-func change_object_material(m: BaseMaterial3D) -> void:
+@rpc("any_peer", "call_remote")
+func sync_object_material(material_path: String, object_path: NodePath) -> void:
+	get_node(object_path).material = load(material_path)
+
+
+func change_object_material(material_resource: BaseMaterial3D) -> void:
 	if is_instance_valid(object):
-		object.material = m
+		object.material = material_resource
 	else:
-		editor.construction_material = m
+		editor.construction_material = material_resource
 
 
 func get_object_material() -> BaseMaterial3D:

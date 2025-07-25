@@ -13,6 +13,9 @@ func _ready() -> void:
 
 func _on_pressed() -> void:
 	object_properties.change_object_material(item)
+	var object := object_properties.object
+	if object:
+		object_properties.sync_object_material.rpc(item.resource_path, object.get_path())
 
 
 func _on_visibility_changed() -> void:
