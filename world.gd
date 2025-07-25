@@ -73,6 +73,8 @@ func get_spawn_point() -> Vector3:
 
 func _remove_player(id: int) -> void:
 	if not is_multiplayer_authority() and id == 1:
+		if menu.visible:
+			menu.toggle()
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		main_menu.visible = true
 	if not multiplayer.is_server() or not players_container.has_node(str(id)):
