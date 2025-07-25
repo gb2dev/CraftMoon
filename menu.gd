@@ -2,6 +2,9 @@ class_name Menu
 extends Control
 
 
+signal level_transfer_complete
+signal wipe_out
+
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
@@ -34,6 +37,7 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var moon_button: Button
 @export var export_button: Button
 @export var delete_button: Button
+@export var main_menu_button: Button
 @export var level_portals: Node3D
 @export var main_menu: Control
 
@@ -194,6 +198,25 @@ func save_level() -> void:
 		printerr("Error! Invalid level name.")
 
 
+func transfer_level(level: String) -> void:
+	var save_file_path := "user://levels/" + level + ".save"
+	transfer.rpc(FileAccess.get_file_as_bytes(save_file_path), "user://levels/remote.save")
+
+
+@rpc("any_peer", "call_local", "reliable")
+func emit_level_transfer_complete() -> void:
+	level_transfer_complete.emit()
+
+
+@rpc("any_peer", "reliable")
+func transfer(data: PackedByteArray, filename: String) -> void:
+	var file := FileAccess.open(filename, FileAccess.WRITE)
+	var success := file.store_buffer(data)
+	file.flush()
+	if success:
+		emit_level_transfer_complete.rpc()
+
+
 func load_level(level := "") -> void:
 	level_name.selecting_enabled = true
 	level_name.editable = true
@@ -205,6 +228,7 @@ func load_level(level := "") -> void:
 	moon_button.visible = true
 	export_button.visible = true
 	delete_button.visible = true
+	main_menu_button.visible = false
 
 	if level.is_empty():
 		level = str(slot)
@@ -284,6 +308,7 @@ func new_level(blank := true) -> void:
 		moon_button.visible = true
 		export_button.visible = true
 		delete_button.visible = true
+		main_menu_button.visible = false
 
 		await wipe()
 
@@ -329,11 +354,21 @@ func enter_play_mode() -> void:
 	player.first_person = false
 
 
-func wipe() -> void:
+func wipe(await_signal := Signal()) -> void:
 	Audio.play_sound("whoosh")
 	var tween := get_tree().create_tween()
 	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
-	await tween.finished
+	var signals_to_await: Array[Signal]
+	var emit_wipe_out := func(signal_received: Signal) -> void:
+		signals_to_await.erase(signal_received)
+		if signals_to_await.is_empty():
+			wipe_out.emit()
+	signals_to_await.append(tween.finished)
+	var _error := tween.finished.connect(emit_wipe_out.bind(tween.finished))
+	if not await_signal.is_null():
+		signals_to_await.append(await_signal)
+		_error = await_signal.connect(emit_wipe_out.bind(await_signal))
+	await wipe_out
 	tween = get_tree().create_tween()
 	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
 
@@ -359,7 +394,7 @@ func spawn_level_portals() -> void:
 		var _error := dir.list_dir_begin()
 		var file_name := dir.get_next()
 		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".save"):
+			if not dir.current_is_dir() and file_name.ends_with(".save") and file_name != "remote.save":
 				var save_file_path := "user://levels/" + file_name
 				var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 				var save_data := save_file.get_var() as Array[Dictionary]
@@ -415,6 +450,7 @@ func _on_moon_button_pressed() -> void:
 	moon_button.visible = false
 	export_button.visible = false
 	delete_button.visible = false
+	main_menu_button.visible = true
 
 	toggle()
 

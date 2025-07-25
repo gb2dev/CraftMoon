@@ -20,6 +20,11 @@ func enter_portal() -> void:
 	if level.is_empty():
 		menu.new_level(false)
 	else:
-		await menu.wipe()
-		menu.load_level(level)
+		if is_multiplayer_authority():
+			menu.transfer_level(level)
+			await menu.wipe(menu.level_transfer_complete)
+			menu.load_level(level)
+		else:
+			await menu.wipe(menu.level_transfer_complete)
+			menu.load_level("remote")
 		menu.enter_edit_mode.rpc()
