@@ -15,4 +15,4 @@ func _process(_delta: float) -> void:
 	for result: Dictionary in collision_result:
 		if result.collider.name == "1":
 			portal_entered.emit(get_index())
-			set_process(false)
+			get_tree().call_group(&"LevelPortal", &"set_process", false)

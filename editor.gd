@@ -580,14 +580,3 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"properties")
 		input_display.add_input_prompt(&"destroy")
 		input_display.add_input_prompt(&"jump", tr(&"(Double Tap) Fly"))
-
-
-func toggle_ui() -> void:
-	player.crosshair.visible = not player.crosshair.visible
-	input_display.visible = not input_display.visible and (
-		process_mode == PROCESS_MODE_INHERIT
-		or get_tree().get_first_node_in_group(&"Moon")
-	)
-	if object_builder_active:
-		shape_select.visible = not shape_select.visible
-		player.crosshair.visible = false

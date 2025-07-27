@@ -7,7 +7,7 @@
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_m1r2i"]
 points = PackedVector3Array(0, -0.05, -1, -0.707126, -0.05, -0.707126, 0, 0.05, -1, 0.70693, -0.05, -0.707126, -1, -0.05, 0, -0.707126, 0.05, -0.707126, 0.70693, 0.05, -0.707126, 1, -0.05, 0, -1, 0.05, 0, -0.707126, -0.05, 0.70693, 1, 0.05, 0, 0.70693, -0.05, 0.70693, -0.707126, 0.05, 0.70693, 0, -0.05, 1, 0.70693, 0.05, 0.70693, 0, 0.05, 1)
 
-[node name="LevelPortal" type="ShapeCast3D" node_paths=PackedStringArray("label", "cylinder") groups=["Moon"]]
+[node name="LevelPortal" type="ShapeCast3D" node_paths=PackedStringArray("label", "cylinder") groups=["LevelPortal"]]
 shape = SubResource("ConvexPolygonShape3D_m1r2i")
 target_position = Vector3(0, 0, 0)
 collision_mask = 2
@@ -23,7 +23,6 @@ material = ExtResource("2_f2emm")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
 material_overlay = ExtResource("3_7kyls")
-use_collision = true
 collision_layer = 4
 radius = 1.0
 height = 0.01

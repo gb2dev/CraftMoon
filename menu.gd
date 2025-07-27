@@ -5,6 +5,7 @@ extends Control
 signal level_transfer_complete
 signal wipe_out
 
+const WIPE_TIME = 0.3
 const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
@@ -332,7 +333,7 @@ func new_level(blank := true) -> void:
 		enter_edit_mode()
 	else:
 		get_tree().call_group(&"Persist", &"queue_free")
-		get_tree().call_group(&"Moon", &"queue_free")
+		get_tree().set_group(&"LevelPortal", &"visible", false)
 		level_name.text = tr(&"New Level")
 		level_description.text = ""
 
@@ -383,20 +384,24 @@ func go_to_moon() -> void:
 	)
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
-	player.pivot.rotation = Vector3.ZERO
-	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
+	player.pivot.rotation = Vector3(0, PI, 0)
+	player._spring_arm_offset.rotation = player.pivot.rotation
+	player._spring_arm_offset._spring_arm.rotation.x = 0
+	player._body.apply_rotation_first_person(-player.pivot.global_rotation.y)
 	player.camera.rotation = Vector3.ZERO
 	enter_play_mode()
-	spawn_level_portals()
 	if is_multiplayer_authority():
 		populate_level_portals()
 	player.editor.input_display.moon_inputs()
+	get_tree().set_group(&"LevelPortal", &"visible", true)
+	await get_tree().create_timer(WIPE_TIME).timeout
+	get_tree().call_group(&"LevelPortal", &"set_process", true)
 
 
 func wipe(await_signal := Signal()) -> void:
 	Audio.play_sound("whoosh")
 	var tween := get_tree().create_tween()
-	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
+	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, WIPE_TIME)
 	var signals_to_await: Array[Signal]
 	signals_to_await.append(tween.finished)
 	var _error := tween.finished.connect(
@@ -411,13 +416,13 @@ func wipe(await_signal := Signal()) -> void:
 		)
 	await wipe_out
 	tween = get_tree().create_tween()
-	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
+	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, WIPE_TIME)
 
 
 func emit_wipe_out(signals_to_await: Array[Signal], signal_received: Signal) -> void:
-		signals_to_await.erase(signal_received)
-		if signals_to_await.is_empty():
-			wipe_out.emit()
+	signals_to_await.erase(signal_received)
+	if signals_to_await.is_empty():
+		wipe_out.emit()
 
 
 func spawn_level_portals() -> void:
@@ -552,3 +557,21 @@ func _on_level_portal_entered(portal_slot: int, blank_level: bool) -> void:
 			await wipe(level_transfer_complete)
 			load_level("remote")
 		enter_edit_mode()
+
+
+func _on_level_name_text_changed(new_text: String) -> void:
+	set_level_name.rpc(new_text)
+
+
+func _on_level_description_text_changed() -> void:
+	set_level_description.rpc(level_description.text)
+
+
+@rpc
+func set_level_name(value: String) -> void:
+	level_name.text = value
+
+
+@rpc
+func set_level_description(value: String) -> void:
+	level_description.text = value

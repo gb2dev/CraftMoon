@@ -4911,7 +4911,7 @@ name = "Dirt"
 icon = ExtResource("43_a5i73")
 
 [node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("_body", "_spring_arm_offset", "editor", "crosshair", "meshes")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 0, 0)
 collision_layer = 2
 script = ExtResource("1_tdh26")
 _body = NodePath("3DGodotRobot")

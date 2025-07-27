@@ -53,7 +53,7 @@ player_scene = ExtResource("1_uvcbi")
 environment = SubResource("Environment_tlwt5")
 
 [node name="Sun" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(0.707107, -0.612372, 0.353553, 0, 0.5, 0.866025, -0.707107, -0.612372, 0.353553, 0, 10, 0)
+transform = Transform3D(-0.7071071, 0.49999943, -0.500001, 2.9802322e-08, 0.707108, 0.70710546, 0.7071063, 0.49999857, -0.5000008, 0, 10, 0)
 shadow_enabled = true
 shadow_opacity = 0.8
 
@@ -415,6 +415,8 @@ material = ExtResource("5_yl342")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
+[connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
+[connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
 [connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
 [connection signal="pressed" from="Menu/NewLevelButton" to="Menu" method="_on_new_level_button_pressed"]
 [connection signal="pressed" from="Menu/DeleteButton" to="Menu" method="_on_delete_button_pressed"]
