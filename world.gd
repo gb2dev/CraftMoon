@@ -17,9 +17,8 @@ extends Node3D
 
 var chat_visible := false
 
+
 func _ready() -> void:
-	if OS.is_debug_build():
-		get_tree().root.title += str(OS.get_process_id())
 	multiplayer_chat.hide()
 	main_menu.show()
 	multiplayer_chat.set_process_input(true)
@@ -33,7 +32,7 @@ func _on_player_connected(peer_id: int, player_info: Dictionary) -> void:
 	for id: int in Network.players.keys():
 		var player_data: Dictionary = Network.players[id]
 		if id != peer_id:
-			var _error := rpc_id(peer_id, "sync_player_skin", id, player_data["skin"])
+			sync_player_skin.rpc_id(peer_id, id, player_data["skin"])
 
 	_add_player(peer_id, player_info)
 
@@ -62,9 +61,7 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 
 	var skin_color: Color = player_info["skin"]
 	sync_player_skin.rpc(id, skin_color)
-	var _error := player.skin_changed.connect(func(color: Color) -> void: 
-		sync_player_skin.rpc(id, color)
-	)
+	var _error := player.skin_changed.connect(_on_player_skin_changed.bind(id))
 
 	sync_player_position.rpc(id, player.position)
 
@@ -73,10 +70,8 @@ func get_spawn_point() -> Vector3:
 
 func _remove_player(id: int) -> void:
 	if not is_multiplayer_authority() and id == 1:
-		if menu.visible:
-			menu.toggle()
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-		main_menu.visible = true
+		menu._on_main_menu_button_pressed.call_deferred()
 	if not multiplayer.is_server() or not players_container.has_node(str(id)):
 		return
 	var player_node := players_container.get_node(str(id))
@@ -142,6 +137,9 @@ func _on_multiplayer_spawner_spawned(node: Node) -> void:
 		var player := node as Character
 		if player:
 			menu.player = player
-			var _error := player.skin_changed.connect(func(color: Color) -> void: 
-				sync_player_skin.rpc(id, color)
-			)
+			var _error := player.skin_changed.connect(_on_player_skin_changed.bind(id))
+
+func _on_player_skin_changed(color: Color, id: int) -> void:
+	if id == 1:
+		Network.player_info["skin"] = color
+	sync_player_skin.rpc(id, color)

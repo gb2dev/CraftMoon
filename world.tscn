@@ -422,7 +422,7 @@ material = ExtResource("5_yl342")
 [connection signal="pressed" from="Menu/ExportButton" to="Menu" method="_on_export_button_pressed"]
 [connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
-[connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed"]
+[connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Join" to="." method="_on_join_pressed"]
