@@ -135,7 +135,6 @@ text = "Your Moon"
 placeholder_text = "New Level"
 editable = false
 context_menu_enabled = false
-selecting_enabled = false
 flat = true
 
 [node name="LevelDescription" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer"]

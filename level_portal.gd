@@ -10,8 +10,12 @@ var menu: Menu
 
 
 func _process(_delta: float) -> void:
-	if is_colliding():
-		enter_portal.rpc()
+	if not is_multiplayer_authority():
+		return
+
+	for result: Dictionary in collision_result:
+		if result.collider.name == "1":
+			enter_portal.rpc()
 
 @rpc("any_peer", "call_local")
 func enter_portal() -> void:
