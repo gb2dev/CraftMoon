@@ -34,12 +34,13 @@ func _on_player_connected(peer_id: int, player_info: Dictionary) -> void:
 		if id != peer_id:
 			sync_player_skin.rpc_id(peer_id, id, player_data["skin"])
 
+	if is_multiplayer_authority():
+		menu.populate_level_portals()
 	_add_player(peer_id, player_info)
 
 func _on_host_pressed() -> void:
 	main_menu.hide()
 	var _error := Network.start_host(nick_input.text.strip_edges(), skin_color_picker.color)
-	menu.populate_level_portals()
 
 func _on_join_pressed() -> void:
 	main_menu.hide()

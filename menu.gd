@@ -449,19 +449,32 @@ func populate_level_portals() -> void:
 				var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 				var save_data := save_file.get_var() as Array[Dictionary]
 				if save_data:
-					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
-					level_portal.label.text = save_data[0].name
-					level_portal.cylinder.material = load(save_data[1].material as String)
-
-					if is_multiplayer_authority():
-						if level_portal.portal_entered.is_connected(_on_level_portal_entered.rpc):
-							level_portal.portal_entered.disconnect(_on_level_portal_entered.rpc)
-						var _connect_error := level_portal.portal_entered.connect(
-							_on_level_portal_entered.rpc.bind(false)
-						)
+					set_level_portal_details.rpc(
+						int(file_name),
+						save_data[0].name,
+						save_data[1].material as String
+					)
 			file_name = dir.get_next()
 	else:
 		printerr("An error occurred when trying to access the path.")
+
+
+@rpc("call_local")
+func set_level_portal_details(
+	portal_slot: int,
+	portal_level_name: String,
+	portal_material: String
+) -> void:
+	var level_portal := level_portals.get_child(portal_slot) as LevelPortal
+	level_portal.label.text = portal_level_name
+	level_portal.cylinder.material = load(portal_material)
+
+	if is_multiplayer_authority():
+		if level_portal.portal_entered.is_connected(_on_level_portal_entered.rpc):
+			level_portal.portal_entered.disconnect(_on_level_portal_entered.rpc)
+		var _connect_error := level_portal.portal_entered.connect(
+			_on_level_portal_entered.rpc.bind(false)
+		)
 
 
 func _on_save_button_pressed() -> void:
