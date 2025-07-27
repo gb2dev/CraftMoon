@@ -218,17 +218,18 @@ func transfer(data: PackedByteArray, filename: String) -> void:
 
 
 func load_level(level := "") -> void:
-	level_name.selecting_enabled = true
-	level_name.editable = true
-	level_name.flat = false
+	if is_multiplayer_authority():
+		level_name.editable = true
+		level_name.flat = false
 	level_description.visible = true
+	level_description.editable = is_multiplayer_authority()
 	level_name.size_flags_vertical = Control.SIZE_FILL
-	mode_button.visible = true
-	save_button.visible = true
-	moon_button.visible = true
-	export_button.visible = true
-	delete_button.visible = true
-	main_menu_button.visible = false
+	if is_multiplayer_authority():
+		mode_button.visible = true
+		save_button.visible = true
+		moon_button.visible = true
+		export_button.visible = true
+		delete_button.visible = true
 
 	if level.is_empty():
 		level = str(slot)
@@ -298,17 +299,18 @@ func delete_save(level: String) -> void:
 @rpc("any_peer", "call_local")
 func new_level(blank := true) -> void:
 	if not blank:
-		level_name.selecting_enabled = true
-		level_name.editable = true
-		level_name.flat = false
+		if is_multiplayer_authority():
+			level_name.editable = true
+			level_name.flat = false
 		level_description.visible = true
+		level_description.editable = is_multiplayer_authority()
 		level_name.size_flags_vertical = Control.SIZE_FILL
-		mode_button.visible = true
-		save_button.visible = true
-		moon_button.visible = true
-		export_button.visible = true
-		delete_button.visible = true
-		main_menu_button.visible = false
+		if is_multiplayer_authority():
+			mode_button.visible = true
+			save_button.visible = true
+			moon_button.visible = true
+			export_button.visible = true
+			delete_button.visible = true
 
 		await wipe()
 
@@ -440,7 +442,6 @@ func _on_mode_button_pressed() -> void:
 
 
 func _on_moon_button_pressed() -> void:
-	level_name.selecting_enabled = false
 	level_name.editable = false
 	level_name.flat = true
 	level_description.visible = false
@@ -450,7 +451,6 @@ func _on_moon_button_pressed() -> void:
 	moon_button.visible = false
 	export_button.visible = false
 	delete_button.visible = false
-	main_menu_button.visible = true
 
 	toggle()
 
