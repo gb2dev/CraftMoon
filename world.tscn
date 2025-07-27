@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dugaivbj1o66n"]
+[gd_scene load_steps=12 format=3 uid="uid://dugaivbj1o66n"]
 
 [ext_resource type="Script" uid="uid://d0dgljwwl463n" path="res://world.gd" id="1_e1sh7"]
 [ext_resource type="PackedScene" uid="uid://cffjduipbb3s5" path="res://player.tscn" id="1_uvcbi"]
@@ -42,6 +42,15 @@ corner_detail = 20
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_npnbc"]
 color = Color(0, 0, 0, 0)
+
+[sub_resource type="GDScript" id="GDScript_036b0"]
+script/source = "extends Label
+
+
+func _ready() -> void:
+	text =  ProjectSettings.get_setting(\"application/config/name\") + \" \" \\
+		+ ProjectSettings.get_setting(\"application/config/version\")
+"
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_e1sh7")
@@ -400,6 +409,15 @@ uppercase = true
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://cffjduipbb3s5")
 spawn_path = NodePath("../PlayersContainer")
+
+[node name="VersionLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 21.0
+grow_horizontal = 0
+script = SubResource("GDScript_036b0")
 
 [node name="PlayersContainer" type="Node3D" parent="."]
 
