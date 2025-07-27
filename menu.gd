@@ -388,12 +388,15 @@ func go_to_moon() -> void:
 	player.camera.rotation = Vector3.ZERO
 	enter_play_mode()
 	spawn_level_portals()
+	if is_multiplayer_authority():
+		populate_level_portals()
+	player.editor.input_display.moon_inputs()
 
 
 func wipe(await_signal := Signal()) -> void:
 	Audio.play_sound("whoosh")
 	var tween := get_tree().create_tween()
-	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 1.3)
+	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
 	var signals_to_await: Array[Signal]
 	signals_to_await.append(tween.finished)
 	var _error := tween.finished.connect(
@@ -408,7 +411,7 @@ func wipe(await_signal := Signal()) -> void:
 		)
 	await wipe_out
 	tween = get_tree().create_tween()
-	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 1.3)
+	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
 
 
 func emit_wipe_out(signals_to_await: Array[Signal], signal_received: Signal) -> void:
@@ -434,9 +437,8 @@ func spawn_level_portals() -> void:
 				_on_level_portal_entered.rpc.bind(true)
 			)
 
-	if player:
-		player.editor.input_display.moon_inputs()
 
+func populate_level_portals() -> void:
 	var dir := DirAccess.open("user://levels")
 	if dir:
 		var _list_dir_error := dir.list_dir_begin()
