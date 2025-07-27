@@ -242,7 +242,7 @@ func load_level(level := "") -> void:
 	var save_file := FileAccess.open(save_file_path, FileAccess.READ)
 	var save_data := save_file.get_var() as Array[Dictionary]
 	if save_data:
-		new_level.rpc()
+		new_level()
 		await get_tree().process_frame
 		level_name.text = save_data[0].name
 		level_description.text = save_data[0].description
@@ -314,7 +314,7 @@ func new_level(blank := true) -> void:
 
 		await wipe()
 
-		new_level.rpc()
+		new_level()
 		await get_tree().process_frame
 		var _floor_object := player.editor.construct_shape(
 			"Cuboid",
@@ -329,7 +329,7 @@ func new_level(blank := true) -> void:
 		player.pivot.rotation = Vector3.ZERO
 		player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
 		player.camera.rotation = Vector3.ZERO
-		enter_edit_mode.rpc()
+		enter_edit_mode()
 	else:
 		get_tree().call_group(&"Persist", &"queue_free")
 		get_tree().call_group(&"Moon", &"queue_free")
@@ -356,23 +356,65 @@ func enter_play_mode() -> void:
 	player.first_person = false
 
 
+@rpc("any_peer", "call_local")
+func go_to_moon() -> void:
+	level_name.editable = false
+	level_name.flat = true
+	level_description.visible = false
+	level_name.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mode_button.visible = false
+	save_button.visible = false
+	moon_button.visible = false
+	export_button.visible = false
+	delete_button.visible = false
+
+	await wipe()
+
+	new_level()
+	await get_tree().process_frame
+	level_name.text = tr(&"Your Moon")
+	var _floor_object := player.editor.construct_shape(
+		"Cuboid",
+		Vector3(0, -0.5, 0),
+		Vector3.ZERO,
+		Vector3(100, 1, 100),
+		MOON_MATERIAL.resource_path,
+		true
+	)
+	# TODO: Use spawn point
+	player.position = Vector3.ZERO
+	player.pivot.rotation = Vector3.ZERO
+	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
+	player.camera.rotation = Vector3.ZERO
+	enter_play_mode()
+	spawn_level_portals()
+
+
 func wipe(await_signal := Signal()) -> void:
 	Audio.play_sound("whoosh")
 	var tween := get_tree().create_tween()
-	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 0.3)
+	var _property_tweener := tween.tween_property(level_transition_wipe, ^"color", Color.WHITE, 1.3)
 	var signals_to_await: Array[Signal]
-	var emit_wipe_out := func(signal_received: Signal) -> void:
+	signals_to_await.append(tween.finished)
+	var _error := tween.finished.connect(
+		emit_wipe_out.bind(signals_to_await, tween.finished),
+		CONNECT_ONE_SHOT
+	)
+	if not await_signal.is_null():
+		signals_to_await.append(await_signal)
+		_error = await_signal.connect(
+			emit_wipe_out.bind(signals_to_await, await_signal),
+			CONNECT_ONE_SHOT
+		)
+	await wipe_out
+	tween = get_tree().create_tween()
+	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 1.3)
+
+
+func emit_wipe_out(signals_to_await: Array[Signal], signal_received: Signal) -> void:
 		signals_to_await.erase(signal_received)
 		if signals_to_await.is_empty():
 			wipe_out.emit()
-	signals_to_await.append(tween.finished)
-	var _error := tween.finished.connect(emit_wipe_out.bind(tween.finished))
-	if not await_signal.is_null():
-		signals_to_await.append(await_signal)
-		_error = await_signal.connect(emit_wipe_out.bind(await_signal))
-	await wipe_out
-	tween = get_tree().create_tween()
-	_property_tweener = tween.tween_property(level_transition_wipe, ^"color", Color.TRANSPARENT, 0.3)
 
 
 func spawn_level_portals() -> void:
@@ -381,19 +423,23 @@ func spawn_level_portals() -> void:
 		var level_portal := LEVEL_PORTAL.instantiate() as LevelPortal
 		level_portals.add_child(level_portal)
 		level_portal.position = pos
-		level_portal.menu = self
 		if i % 3 == 0:
 			level_portal.scale = Vector3.ONE * 2
 		else:
 			level_portal.label.scale = Vector3.ONE * 2
 		level_portal.label.global_position.y = 0.25
 
+		if is_multiplayer_authority():
+			var _error := level_portal.portal_entered.connect(
+				_on_level_portal_entered.rpc.bind(true)
+			)
+
 	if player:
 		player.editor.input_display.moon_inputs()
 
 	var dir := DirAccess.open("user://levels")
 	if dir:
-		var _error := dir.list_dir_begin()
+		var _list_dir_error := dir.list_dir_begin()
 		var file_name := dir.get_next()
 		while file_name != "":
 			if not dir.current_is_dir() and file_name.ends_with(".save") and file_name != "remote.save":
@@ -403,8 +449,14 @@ func spawn_level_portals() -> void:
 				if save_data:
 					var level_portal := level_portals.get_child(int(file_name)) as LevelPortal
 					level_portal.label.text = save_data[0].name
-					level_portal.level = file_name.trim_suffix(".save")
 					level_portal.cylinder.material = load(save_data[1].material as String)
+
+					if is_multiplayer_authority():
+						if level_portal.portal_entered.is_connected(_on_level_portal_entered.rpc):
+							level_portal.portal_entered.disconnect(_on_level_portal_entered.rpc)
+						var _connect_error := level_portal.portal_entered.connect(
+							_on_level_portal_entered.rpc.bind(false)
+						)
 			file_name = dir.get_next()
 	else:
 		printerr("An error occurred when trying to access the path.")
@@ -442,38 +494,8 @@ func _on_mode_button_pressed() -> void:
 
 
 func _on_moon_button_pressed() -> void:
-	level_name.editable = false
-	level_name.flat = true
-	level_description.visible = false
-	level_name.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	mode_button.visible = false
-	save_button.visible = false
-	moon_button.visible = false
-	export_button.visible = false
-	delete_button.visible = false
-
 	toggle()
-
-	await wipe()
-
-	new_level.rpc()
-	await get_tree().process_frame
-	level_name.text = tr(&"Your Moon")
-	var _floor_object := player.editor.construct_shape(
-		"Cuboid",
-		Vector3(0, -0.5, 0),
-		Vector3.ZERO,
-		Vector3(100, 1, 100),
-		MOON_MATERIAL.resource_path,
-		true
-	)
-	# TODO: Use spawn point
-	player.position = Vector3.ZERO
-	player.pivot.rotation = Vector3.ZERO
-	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
-	player.camera.rotation = Vector3.ZERO
-	enter_play_mode.rpc()
-	spawn_level_portals()
+	go_to_moon.rpc()
 
 
 func _on_export_button_pressed() -> void:
@@ -490,8 +512,28 @@ func _on_delete_button_pressed() -> void:
 
 
 func _on_main_menu_button_pressed() -> void:
-	toggle()
-	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-	multiplayer.multiplayer_peer.close()
-	multiplayer.multiplayer_peer = null
-	main_menu.visible = true
+	if multiplayer.multiplayer_peer:
+		multiplayer.multiplayer_peer.close()
+	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	Network.players.clear()
+	Network.player_info.clear()
+	var _error := get_tree().reload_current_scene()
+
+
+@rpc("any_peer", "call_local")
+func _on_level_portal_entered(portal_slot: int, blank_level: bool) -> void:
+	slot = portal_slot
+	if blank_level:
+		new_level(false)
+	else:
+		if is_multiplayer_authority():
+			transfer_level(str(portal_slot))
+			if multiplayer.get_peers().size() > 0:
+				await wipe(level_transfer_complete)
+			else:
+				await wipe()
+			load_level(str(portal_slot))
+		else:
+			await wipe(level_transfer_complete)
+			load_level("remote")
+		enter_edit_mode()

@@ -11,6 +11,9 @@ signal player_connected(peer_id: int, player_info: Dictionary)
 signal server_disconnected
 
 func _ready() -> void:
+	if OS.is_debug_build():
+		get_tree().root.title += str(OS.get_process_id())
+
 	var _error := multiplayer.server_disconnected.connect(_on_connection_failed)
 	_error = multiplayer.connection_failed.connect(_on_server_disconnected)
 	_error = multiplayer.peer_disconnected.connect(_on_player_disconnected)
