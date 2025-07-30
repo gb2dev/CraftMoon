@@ -5,7 +5,7 @@ extends Panel
 const PADDING_GRID_UNITS = 1
 const GRID_SIZE = 32
 
-@onready var object_properties := %"Object Properties" as ObjectProperties
+@onready var object_properties := %"ObjectProperties" as ObjectProperties
 
 
 func _process(_delta: float) -> void:
@@ -15,20 +15,24 @@ func _process(_delta: float) -> void:
 		gadget.update_connection_positions()
 
 
-func place_gadget(gadget: Gadget, silent: bool) -> void:
-	if gadget.get_parent() == self:
-		gadget.top_level = false
-	else:
-		gadget.get_parent().remove_child(gadget)
-		add_child(gadget)
-		gadget.add_to_group(&"Persist")
+@rpc("any_peer", "call_local")
+func place_gadget(gadget_path: NodePath, silent: bool, gadget_position: Vector2) -> void:
+	var gadget := get_node_or_null(gadget_path) as Gadget
+	prints("FIXME", is_multiplayer_authority(), gadget_path, gadget)
+	if gadget:
+		if gadget.get_parent() == self:
+			gadget.top_level = false
+		else:
+			gadget.get_parent().remove_child(gadget)
+			add_child(gadget)
+			gadget.add_to_group(&"Persist")
 
-	gadget.remove_from_group(&"Dragging")
-	gadget.position = get_snapped_gadget_position(gadget.size)
-	gadget.update_connection_positions()
-	gadget.set_mouse_filters(MOUSE_FILTER_STOP)
-	if not silent:
-		Audio.play_sound("place")
+		gadget.remove_from_group(&"Dragging")
+		gadget.position = gadget_position
+		gadget.update_connection_positions()
+		gadget.set_mouse_filters(MOUSE_FILTER_STOP)
+		if not silent:
+			Audio.play_sound("place")
 
 
 func get_snapped_gadget_position(gadget_size: Vector2) -> Vector2:
@@ -43,7 +47,11 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
-			place_gadget(gadget, false)
+			place_gadget.rpc(
+				gadget.get_path(),
+				false,
+				get_snapped_gadget_position(gadget.size)
+			)
 
 
 func _on_visibility_changed() -> void:

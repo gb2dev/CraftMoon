@@ -326,13 +326,14 @@ func update_connection_positions() -> void:
 					)
 
 
-func attach_to_object(o: Node3D) -> void:
+func attach_to_object(node_path: NodePath) -> void:
+	var node := get_node(node_path)
 	remove_child(node_3d)
-	if o.get_parent() is VisualInstance3D:
-		o.get_parent().add_child(node_3d)
-		node_3d.position = o.get_parent().get_aabb().get_center()
+	if node.get_parent() is VisualInstance3D:
+		node.get_parent().add_child(node_3d)
+		node_3d.position = node.get_parent().get_aabb().get_center()
 	else:
-		o.add_child(node_3d)
+		node.add_child(node_3d)
 	var _error := node_3d.tree_exited.connect(queue_free)
 
 

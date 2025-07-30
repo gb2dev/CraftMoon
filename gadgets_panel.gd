@@ -34,12 +34,18 @@ func _ready() -> void:
 		printerr("Failed to open gadgets directory")
 
 
+@rpc("any_peer", "call_local")
+func delete_gadget(gadget_path: NodePath) -> void:
+	var gadget := get_node(gadget_path) as Gadget
+	if gadget:
+		gadget.set_mouse_filters(MOUSE_FILTER_STOP)
+		gadget.queue_free()
+		gadget.update_connection_positions()
+		Audio.play_sound("destroy")
+
+
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch and event.is_pressed():
 		var gadget := get_tree().get_first_node_in_group(&"Dragging") as Gadget
 		if gadget:
-			# Delete Gadget
-			gadget.set_mouse_filters(MOUSE_FILTER_STOP)
-			gadget.queue_free()
-			gadget.update_connection_positions()
-			Audio.play_sound("destroy")
+			delete_gadget.rpc(gadget.get_path())

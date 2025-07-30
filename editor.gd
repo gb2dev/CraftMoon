@@ -6,8 +6,6 @@ const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
 @export var cursor: Node3D
 @export var player: Character
-@export var shape_select: Control
-@export var shape_items: Control
 
 var object_builder_active := false
 var highlighted_geometry: GeometryInstance3D:
@@ -28,8 +26,10 @@ var construction_mode: int:
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
 
-@onready var object_properties := %"Object Properties" as ObjectProperties
-@onready var input_display := %InputDisplay as InputDisplay
+@onready var object_properties := get_tree().current_scene.get_node("%ObjectProperties") as ObjectProperties
+@onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
+@onready var shape_select := get_tree().current_scene.get_node("%ShapeSelect") as Control
+@onready var shape_items := get_tree().current_scene.get_node("%ShapeItems") as Control
 
 
 func _ready() -> void:

@@ -28,7 +28,7 @@ var doubletap_time := DOUBLETAP_DELAY
 @onready var nickname: Label3D = $PlayerNick/Nickname
 @onready var body: MeshInstance3D = $"3DGodotRobot/RobotArmature/Skeleton3D/Llimbs and head"
 @onready var pivot: Node3D = $Pivot
-@onready var color_picker: ColorPickerButton = %ColorPickerButton
+#@onready var color_picker: ColorPickerButton = %ColorPickerButton FIXME
 
 var _current_speed: float
 var _respawn_point := Vector3(0, 5, 0)
@@ -145,7 +145,7 @@ func change_nick(new_nick: String) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func set_player_skin(color: Color) -> void:
-	color_picker.color = color
+	#color_picker.color = color FIXME
 	var material := body.get_surface_override_material(0) as ShaderMaterial
 	if material:
 		material.set_shader_parameter("tint_color", color)

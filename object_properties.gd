@@ -9,10 +9,11 @@ const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 @export var tab_container: TabContainer
 @export var object_vbox: VBoxContainer
 @export var player_vbox: VBoxContainer
-@export var editor: Editor
 @export var logic_panel: LogicPanel
 
+var editor: Editor
 var object: Node3D
+var gadgets_created_count: int
 
 
 func _process(_delta: float) -> void:
@@ -91,19 +92,30 @@ func get_object_material() -> BaseMaterial3D:
 		return editor.construction_material
 
 
-func create_gadget(gadget_data: GadgetData, pos := Vector2.INF, silent := false) -> Gadget:
+@rpc("any_peer", "call_local")
+func create_gadget(
+	gadget_data_path: String,
+	object_path: NodePath,
+	pos := Vector2.INF,
+	silent := false
+) -> Gadget:
+	var gadget_data := load(gadget_data_path) as GadgetData
 	var node := GADGET_SCENE.instantiate()
 	var script := load(gadget_data.resource_path.replace(".tres", ".gd"))
 	node.set_script(script)
 	var gadget := node as Gadget
 	get_tree().current_scene.add_child(gadget)
+	gadget.name = str(gadgets_created_count)
+	gadgets_created_count += 1
 	gadget.add_to_group(&"Persist")
 	if pos == Vector2.INF:
-		gadget.add_to_group(&"Dragging")
+		if multiplayer.get_remote_sender_id() == multiplayer.get_unique_id():
+			gadget.add_to_group(&"Dragging")
+		else:
+			gadget.position = Vector2.ZERO
 	else:
-		logic_panel.place_gadget(gadget, silent)
-		gadget.position = pos
-	gadget.attach_to_object(object)
+		logic_panel.place_gadget(gadget.get_path(), silent, pos)
+	gadget.attach_to_object(object_path)
 	var _error := gadget.open_properties.connect(gadget_properties.gadget_changed.emit)
 	_error = gadget.open_properties.connect(gadget_properties.open.bind(gadget_data.name, gadget))
 	_error = gadget.open_properties.connect(gadgets_panel.hide)
