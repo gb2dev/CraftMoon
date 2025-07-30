@@ -95,8 +95,8 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dict
 			for output_properties: Dictionary in gadget_properties.connections[output_index]:
 				gadget.update_connection(
 					Gadget.ConnectionChange.CONNECT,
-					gadget.output_controls[output_index].back(),
-					logic_panel.get_children()[index_offset + output_properties.target_gadget],
+					gadget.output_controls[output_index].back().get_path(),
+					logic_panel.get_children()[index_offset + output_properties.target_gadget].get_path(),
 					output_properties.target_input,
 					true
 				)
