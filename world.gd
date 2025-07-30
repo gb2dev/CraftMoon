@@ -14,6 +14,7 @@ extends Node3D
 @onready var send: Button = $MultiplayerChat/VBoxContainer/HBoxContainer/Send
 @onready var chat: TextEdit = $MultiplayerChat/VBoxContainer/Chat
 @onready var multiplayer_chat: Control = $MultiplayerChat
+@onready var object_properties := %"ObjectProperties" as ObjectProperties
 
 var chat_visible := false
 
@@ -56,6 +57,7 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 	player.position = get_spawn_point()
 	players_container.add_child(player, true)
 	if id == 1:
+		object_properties.editor = player.editor
 		menu.player = player
 
 	var nick: String = Network.players[id]["nick"]
@@ -138,6 +140,7 @@ func _on_multiplayer_spawner_spawned(node: Node) -> void:
 	if int(node.name) == id:
 		var player := node as Character
 		if player:
+			object_properties.editor = player.editor
 			menu.player = player
 			var _error := player.skin_changed.connect(_on_player_skin_changed.bind(id))
 

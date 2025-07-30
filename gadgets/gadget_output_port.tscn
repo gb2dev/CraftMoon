@@ -14,8 +14,10 @@ corner_detail = 5
 
 [node name="OutputPort" type="Panel"]
 custom_minimum_size = Vector2(16, 16)
+anchors_preset = -1
 offset_right = 16.0
 offset_bottom = 16.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cho3n")
 script = ExtResource("1_101ok")
 

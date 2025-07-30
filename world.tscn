@@ -1,10 +1,57 @@
-[gd_scene load_steps=12 format=3 uid="uid://dugaivbj1o66n"]
+[gd_scene load_steps=76 format=3 uid="uid://dugaivbj1o66n"]
 
 [ext_resource type="Script" uid="uid://d0dgljwwl463n" path="res://world.gd" id="1_e1sh7"]
 [ext_resource type="PackedScene" uid="uid://cffjduipbb3s5" path="res://player.tscn" id="1_uvcbi"]
 [ext_resource type="Script" uid="uid://dds2uohrmsp7l" path="res://menu.gd" id="5_r4y2q"]
 [ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="5_xpg20"]
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="5_yl342"]
+[ext_resource type="Script" uid="uid://cbo6lw4nt2wwq" path="res://object_properties.gd" id="6_k3lar"]
+[ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="7_olr1q"]
+[ext_resource type="PackedScene" uid="uid://r57cg16q4rki" path="res://material_item.tscn" id="8_q42o5"]
+[ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="9_b7btk"]
+[ext_resource type="Texture2D" uid="uid://0x4lekoiwfoy" path="res://textures/checkerboard/dark/texture.png" id="10_kkgr2"]
+[ext_resource type="Script" uid="uid://cbi1fmsqlgmqf" path="res://item_data.gd" id="11_iett8"]
+[ext_resource type="Material" uid="uid://bmfe3ung1r43h" path="res://materials/checkerboard_light.tres" id="12_r5m4j"]
+[ext_resource type="Texture2D" uid="uid://8wcpwh30h8lm" path="res://textures/checkerboard/light/texture.png" id="13_e77ka"]
+[ext_resource type="Material" uid="uid://dfp7mi6xfcp5e" path="res://materials/checkerboard_purple.tres" id="14_c0wax"]
+[ext_resource type="Texture2D" uid="uid://dbmar74ed6awx" path="res://textures/checkerboard/purple/texture.png" id="15_sedwk"]
+[ext_resource type="Material" uid="uid://qeb1mh3ehcuc" path="res://materials/checkerboard_red.tres" id="16_37ykd"]
+[ext_resource type="Texture2D" uid="uid://bhj5wna6ucfap" path="res://textures/checkerboard/red/texture.png" id="17_1hvhf"]
+[ext_resource type="Material" uid="uid://bf014mi81salb" path="res://materials/checkerboard_orange.tres" id="18_75cpn"]
+[ext_resource type="Texture2D" uid="uid://c7jhy6vtfh6dr" path="res://textures/checkerboard/orange/texture.png" id="19_ct3wn"]
+[ext_resource type="Material" uid="uid://da7dr863kkdvu" path="res://materials/checkerboard_green.tres" id="20_ynm8w"]
+[ext_resource type="Texture2D" uid="uid://b167xncm2vwbb" path="res://textures/checkerboard/green/texture.png" id="21_rakx2"]
+[ext_resource type="Material" uid="uid://dqfagp1m6bcop" path="res://materials/bricks/bricks.tres" id="22_3fh52"]
+[ext_resource type="Texture2D" uid="uid://tivswiy0wcqv" path="res://materials/bricks/preview.png" id="23_8f1f8"]
+[ext_resource type="Texture2D" uid="uid://75sxf8hb2pub" path="res://materials/concrete/preview.png" id="24_lxwtw"]
+[ext_resource type="Material" uid="uid://bpbbnj2btwymp" path="res://materials/stone_tiles/stone_tiles.tres" id="25_ir1d4"]
+[ext_resource type="Texture2D" uid="uid://4lpnyn84jc0q" path="res://materials/stone_tiles/preview.png" id="26_tj74d"]
+[ext_resource type="Material" uid="uid://cbwolwwwgyoxw" path="res://materials/wooden_planks/wooden_planks.tres" id="27_yy5nj"]
+[ext_resource type="Texture2D" uid="uid://drqb7o6hnpq73" path="res://materials/wooden_planks/preview.png" id="28_p5g01"]
+[ext_resource type="Material" uid="uid://g64wnw5cof7n" path="res://materials/metal_tiles/metal_tiles.tres" id="29_fl6gn"]
+[ext_resource type="Texture2D" uid="uid://bcm5relfrv606" path="res://materials/metal_tiles/preview.png" id="30_gjwlp"]
+[ext_resource type="Material" uid="uid://dgvk5rclm6ymm" path="res://materials/gold_paper/gold_paper.tres" id="31_yfwfa"]
+[ext_resource type="Texture2D" uid="uid://b0ei1qu0qqewf" path="res://materials/gold_paper/preview.png" id="32_qm10a"]
+[ext_resource type="Material" uid="uid://4r0xfcgt1mkf" path="res://materials/hazard_metal/hazard_metal.tres" id="33_7fs00"]
+[ext_resource type="Texture2D" uid="uid://d0apuxuwhgicl" path="res://materials/hazard_metal/preview.png" id="34_e0aah"]
+[ext_resource type="Material" uid="uid://b5cfubsumkga5" path="res://materials/fabric/fabric.tres" id="35_415my"]
+[ext_resource type="Texture2D" uid="uid://bu2317mw4tvh5" path="res://materials/fabric/preview.png" id="36_eewsi"]
+[ext_resource type="Material" uid="uid://b436ec1e2o5xg" path="res://materials/grass/grass.tres" id="37_71tr8"]
+[ext_resource type="Texture2D" uid="uid://dwj5tgkasql62" path="res://materials/grass/preview.png" id="38_ngeen"]
+[ext_resource type="Material" uid="uid://bs31a34x1dslk" path="res://materials/dirt/dirt.tres" id="39_t55hq"]
+[ext_resource type="Texture2D" uid="uid://cmi56iuuqmrf7" path="res://materials/dirt/preview.png" id="40_jtjyu"]
+[ext_resource type="Script" uid="uid://bm1342cmwuh4u" path="res://gadgets_panel.gd" id="41_vv6ac"]
+[ext_resource type="Script" uid="uid://6fasiw3b0eyu" path="res://gadget_properties.gd" id="42_v27xk"]
+[ext_resource type="Script" uid="uid://bwmi4472ufa3v" path="res://logic_panel.gd" id="43_vf1x1"]
+[ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="44_vsnf8"]
+[ext_resource type="Script" uid="uid://bggvxmq2odrhu" path="res://input_display.gd" id="45_afx2c"]
+[ext_resource type="PackedScene" uid="uid://nbcq2r8ym45k" path="res://shape_item.tscn" id="46_xkj61"]
+[ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="47_ednsc"]
+[ext_resource type="Texture2D" uid="uid://bo1uj0brx3u66" path="res://icons/ellipsoid.svg" id="48_su0yx"]
+[ext_resource type="Texture2D" uid="uid://buok2hkbo3446" path="res://icons/cylinder.svg" id="49_3o3pd"]
+[ext_resource type="Texture2D" uid="uid://bgtj3jvxd7312" path="res://icons/cone.svg" id="50_1hr04"]
+[ext_resource type="Texture2D" uid="uid://d0h0uapcmm6p2" path="res://icons/torus.svg" id="51_remcq"]
+[ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="52_kcilg"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fj7yv"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -52,6 +99,90 @@ func _ready() -> void:
 		+ ProjectSettings.get_setting(\"application/config/version\")
 "
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1amq5"]
+content_margin_top = 10.0
+draw_center = false
+
+[sub_resource type="Resource" id="Resource_oosws"]
+script = ExtResource("11_iett8")
+name = "Dark Checkerboard"
+icon = ExtResource("10_kkgr2")
+
+[sub_resource type="Resource" id="Resource_l5hvu"]
+script = ExtResource("11_iett8")
+name = "Light Checkerboard"
+icon = ExtResource("13_e77ka")
+
+[sub_resource type="Resource" id="Resource_lrosw"]
+script = ExtResource("11_iett8")
+name = "Purple Checkerboard"
+icon = ExtResource("15_sedwk")
+
+[sub_resource type="Resource" id="Resource_eleh8"]
+script = ExtResource("11_iett8")
+name = "Red Checkerboard"
+icon = ExtResource("17_1hvhf")
+
+[sub_resource type="Resource" id="Resource_fxrfj"]
+script = ExtResource("11_iett8")
+name = "Orange Checkerboard"
+icon = ExtResource("19_ct3wn")
+
+[sub_resource type="Resource" id="Resource_5gwrr"]
+script = ExtResource("11_iett8")
+name = "Green Checkerboard"
+icon = ExtResource("21_rakx2")
+
+[sub_resource type="Resource" id="Resource_rxu81"]
+script = ExtResource("11_iett8")
+name = "Bricks"
+icon = ExtResource("23_8f1f8")
+
+[sub_resource type="Resource" id="Resource_tje1l"]
+script = ExtResource("11_iett8")
+name = "Concrete"
+icon = ExtResource("24_lxwtw")
+
+[sub_resource type="Resource" id="Resource_0mimp"]
+script = ExtResource("11_iett8")
+name = "Stone Tiles"
+icon = ExtResource("26_tj74d")
+
+[sub_resource type="Resource" id="Resource_57k0h"]
+script = ExtResource("11_iett8")
+name = "Wooden Planks"
+icon = ExtResource("28_p5g01")
+
+[sub_resource type="Resource" id="Resource_yykvs"]
+script = ExtResource("11_iett8")
+name = "Metal Tiles"
+icon = ExtResource("30_gjwlp")
+
+[sub_resource type="Resource" id="Resource_aq2cj"]
+script = ExtResource("11_iett8")
+name = "Gold Paper"
+icon = ExtResource("32_qm10a")
+
+[sub_resource type="Resource" id="Resource_4ll5h"]
+script = ExtResource("11_iett8")
+name = "Hazard Metal"
+icon = ExtResource("34_e0aah")
+
+[sub_resource type="Resource" id="Resource_t63o8"]
+script = ExtResource("11_iett8")
+name = "Fabric"
+icon = ExtResource("36_eewsi")
+
+[sub_resource type="Resource" id="Resource_croyg"]
+script = ExtResource("11_iett8")
+name = "Grass"
+icon = ExtResource("38_ngeen")
+
+[sub_resource type="Resource" id="Resource_w8bmm"]
+script = ExtResource("11_iett8")
+name = "Dirt"
+icon = ExtResource("40_jtjyu")
+
 [node name="World" type="Node3D"]
 script = ExtResource("1_e1sh7")
 player_scene = ExtResource("1_uvcbi")
@@ -90,7 +221,7 @@ color = Color(1, 1, 1, 0)
 process_mode = 3
 visible = false
 z_index = 1
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -223,7 +354,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="MainContainer" type="VBoxContainer" parent="MainMenu"]
 layout_mode = 1
-anchors_preset = 14
+anchors_preset = -1
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
@@ -352,7 +483,6 @@ flat = true
 visible = false
 top_level = true
 layout_mode = 3
-anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
@@ -411,7 +541,7 @@ _spawnable_scenes = PackedStringArray("uid://cffjduipbb3s5")
 spawn_path = NodePath("../PlayersContainer")
 
 [node name="VersionLabel" type="Label" parent="."]
-anchors_preset = 1
+anchors_preset = -1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -40.0
@@ -433,6 +563,498 @@ material = ExtResource("5_yl342")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
+[node name="ObjectProperties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "logic_panel") groups=["UI"]]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("6_k3lar")
+gadgets_panel = NodePath("TabContainer/Logic/Gadgets")
+gadget_properties = NodePath("TabContainer/Logic/Gadget Properties")
+tab_container = NodePath("TabContainer")
+object_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object")
+player_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player")
+logic_panel = NodePath("TabContainer/Logic/ScrollContainer/Logic")
+
+[node name="TabContainer" type="TabContainer" parent="ObjectProperties"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1amq5")
+tab_alignment = 1
+current_tab = 0
+
+[node name="Properties" type="Control" parent="ObjectProperties/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Panel" type="Panel" parent="ObjectProperties/TabContainer/Properties"]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 1.0
+offset_right = 326.0
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Properties/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Object" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Material" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
+layout_mode = 2
+
+[node name="MaterialLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Material"
+label_settings = ExtResource("7_olr1q")
+
+[node name="CheckerboardLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Checkerboard"
+
+[node name="CheckerboardMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="DarkCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("9_b7btk")
+item_data = SubResource("Resource_oosws")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="LightCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("12_r5m4j")
+item_data = SubResource("Resource_l5hvu")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="PurpleCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("14_c0wax")
+item_data = SubResource("Resource_lrosw")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="RedCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("16_37ykd")
+item_data = SubResource("Resource_eleh8")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="OrangeCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("18_75cpn")
+item_data = SubResource("Resource_fxrfj")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="GreenCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("20_ynm8w")
+item_data = SubResource("Resource_5gwrr")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="StoneLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Stone"
+
+[node name="StoneMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="BricksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("22_3fh52")
+item_data = SubResource("Resource_rxu81")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="ConcreteMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("5_yl342")
+item_data = SubResource("Resource_tje1l")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="StoneTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("25_ir1d4")
+item_data = SubResource("Resource_0mimp")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="WoodLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Wood"
+
+[node name="WoodMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="WoodenPlanksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/WoodMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("27_yy5nj")
+item_data = SubResource("Resource_57k0h")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="MetalLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Metal"
+
+[node name="MetalMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="MetalTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("29_fl6gn")
+item_data = SubResource("Resource_yykvs")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="GoldPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("31_yfwfa")
+item_data = SubResource("Resource_aq2cj")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="HazardMetalPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("33_7fs00")
+item_data = SubResource("Resource_4ll5h")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="FabricLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Fabric"
+
+[node name="FabricMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="FabricMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/FabricMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("35_415my")
+item_data = SubResource("Resource_t63o8")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="NatureLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+text = "Nature"
+
+[node name="NatureMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+layout_mode = 2
+columns = 4
+
+[node name="GrassMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("37_71tr8")
+item_data = SubResource("Resource_croyg")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="DirtMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+layout_mode = 2
+item = ExtResource("39_t55hq")
+item_data = SubResource("Resource_w8bmm")
+object_properties = NodePath("../../../../../../../../..")
+
+[node name="Physics" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
+layout_mode = 2
+
+[node name="PhysicsLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
+layout_mode = 2
+text = "Physics"
+label_settings = ExtResource("7_olr1q")
+
+[node name="CollisionCheckBox" type="CheckBox" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
+layout_mode = 2
+button_pressed = true
+text = "Collision"
+
+[node name="Player" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Color" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
+layout_mode = 2
+text = "Color"
+label_settings = ExtResource("7_olr1q")
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Color"
+edit_alpha = false
+
+[node name="Attributes" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
+layout_mode = 2
+
+[node name="AttributesLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
+layout_mode = 2
+text = "Attributes"
+label_settings = ExtResource("7_olr1q")
+
+[node name="SpeedLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
+layout_mode = 2
+text = "Speed"
+
+[node name="Logic" type="HBoxContainer" parent="ObjectProperties/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Gadgets" type="Panel" parent="ObjectProperties/TabContainer/Logic" node_paths=PackedStringArray("tabs", "object_properties")]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(326, 0)
+layout_mode = 2
+script = ExtResource("41_vv6ac")
+tabs = NodePath("MarginContainer/VBoxContainer/TabContainer")
+object_properties = NodePath("../../..")
+
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Gadgets"
+label_settings = ExtResource("7_olr1q")
+
+[node name="TabContainer" type="TabContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+tab_alignment = 1
+current_tab = 0
+
+[node name="Sensors" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 0
+
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="Output" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 1
+
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="Logic" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 2
+
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="Movement" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+metadata/_tab_index = 3
+
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="Gadget Properties" type="Panel" parent="ObjectProperties/TabContainer/Logic" node_paths=PackedStringArray("vbox")]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(326, 0)
+layout_mode = 2
+script = ExtResource("42_v27xk")
+vbox = NodePath("MarginContainer/VBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties/MarginContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Logic"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Logic" type="Panel" parent="ObjectProperties/TabContainer/Logic/ScrollContainer"]
+custom_minimum_size = Vector2(5000, 5000)
+layout_mode = 2
+script = ExtResource("43_vf1x1")
+
+[node name="CloseButton" type="Button" parent="ObjectProperties"]
+layout_mode = 1
+anchors_preset = -1
+offset_right = 32.0
+offset_bottom = 32.0
+tooltip_text = "Close (Escape)"
+icon = ExtResource("44_vsnf8")
+
+[node name="InputDisplay" type="PanelContainer" parent="." node_paths=PackedStringArray("hbox")]
+unique_name_in_owner = true
+visible = false
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -10.0
+offset_top = -62.0
+offset_right = 10.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("45_afx2c")
+hbox = NodePath("MarginContainer/HBoxContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="InputDisplay"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ShapeSelect" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -214.0
+offset_top = 20.0
+offset_right = 214.0
+offset_bottom = 88.0
+grow_horizontal = 2
+
+[node name="ShapeItems" type="HBoxContainer" parent="ShapeSelect"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Cuboid" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cuboid" index="0"]
+texture = ExtResource("47_ednsc")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Cuboid" index="1"]
+anchors_preset = -1
+
+[node name="Ellipsoid" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Ellipsoid" index="0"]
+texture = ExtResource("48_su0yx")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Ellipsoid" index="1"]
+anchors_preset = -1
+
+[node name="Cylinder" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cylinder" index="0"]
+texture = ExtResource("49_3o3pd")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Cylinder" index="1"]
+anchors_preset = -1
+
+[node name="Cone" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cone" index="0"]
+texture = ExtResource("50_1hr04")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Cone" index="1"]
+anchors_preset = -1
+
+[node name="Torus" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Torus" index="0"]
+texture = ExtResource("51_remcq")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Torus" index="1"]
+anchors_preset = -1
+
+[node name="Polygon" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+layout_mode = 2
+
+[node name="TextureRect" parent="ShapeSelect/ShapeItems/Polygon" index="0"]
+texture = ExtResource("52_kcilg")
+
+[node name="Label" parent="ShapeSelect/ShapeItems/Polygon" index="1"]
+anchors_preset = -1
+
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
 [connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
@@ -449,3 +1071,17 @@ material = ExtResource("5_yl342")
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option4/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
+[connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]
+[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/Gadgets" to="ObjectProperties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
+[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_gui_input"]
+[connection signal="mouse_entered" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_exited"]
+[connection signal="visibility_changed" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_visibility_changed"]
+[connection signal="pressed" from="ObjectProperties/CloseButton" to="ObjectProperties" method="close"]
+
+[editable path="ShapeSelect/ShapeItems/Cuboid"]
+[editable path="ShapeSelect/ShapeItems/Ellipsoid"]
+[editable path="ShapeSelect/ShapeItems/Cylinder"]
+[editable path="ShapeSelect/ShapeItems/Cone"]
+[editable path="ShapeSelect/ShapeItems/Torus"]
+[editable path="ShapeSelect/ShapeItems/Polygon"]

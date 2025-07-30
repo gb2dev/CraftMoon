@@ -271,7 +271,8 @@ func load_level(level := "") -> void:
 				var path: String = "res://gadgets/" + gadget_properties.type.to_snake_case()
 				var gadget_data := load(path + ".tres")
 				var gadget := player.editor.object_properties.create_gadget(
-					gadget_data,
+					gadget_data.resource_path,
+					object.get_path(),
 					gadget_properties.position,
 					true
 				)
