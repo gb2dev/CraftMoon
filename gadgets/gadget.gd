@@ -33,6 +33,7 @@ var _output_visuals: Array
 var input_controls: Array
 var output_controls: Array
 var type: String
+var output_controls_created_count: int
 
 
 @abstract func start() -> void
@@ -102,26 +103,26 @@ func _process(delta: float) -> void:
 					if Input.is_action_just_pressed(&"action") and not _just_dragged_output:
 						if target_gadget:
 							# Connect Output
-							update_connection(
+							update_connection.rpc(
 								ConnectionChange.CONNECT,
-								output_control,
-								target_gadget,
+								output_control.get_path(),
+								target_gadget.get_path(),
 								target_input
 							)
 						else:
 							# Delete Output
-							update_connection(
+							update_connection.rpc(
 								ConnectionChange.DELETE,
-								output_control,
-								output_control.target_gadget,
+								output_control.get_path(),
+								NodePath(),
 								output_control.target_input
 							)
 					elif Input.is_action_just_pressed(&"ui_cancel"):
 						# Cancel
-						update_connection(
+						update_connection.rpc(
 							ConnectionChange.CANCEL,
-							output_control,
-							output_control.target_gadget,
+							output_control.get_path(),
+							output_control.target_gadget.get_path(),
 							output_control.target_input
 						)
 
@@ -204,13 +205,15 @@ func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
 		output_control.mouse_filter = value
 
 
+@rpc("any_peer", "call_local")
 func update_connection(
 		connection_type: ConnectionChange,
-		output_control: GadgetOutputControl,
-		gadget: Gadget,
+		output_control_path: NodePath,
+		gadget_path: NodePath,
 		input_index: int,
 		silent := false
 ) -> void:
+	var output_control := get_node(output_control_path) as GadgetOutputControl
 	var output_location := _find_nested_array_item(output_controls, output_control)
 	var output_index := output_location[1]
 	var output_visual := _output_visuals[output_index][output_location[0]] as GadgetOutputVisual
@@ -229,6 +232,7 @@ func update_connection(
 		set_mouse_filters(MOUSE_FILTER_STOP, true)
 
 	if connection_type == ConnectionChange.CONNECT:
+		var gadget := get_node(gadget_path) as Gadget
 		var input_control := gadget.input_controls[input_index] as GadgetInputControl
 		output_visual.point_b = output_visual.to_local(
 			input_control.global_position
@@ -253,6 +257,8 @@ func update_connection(
 
 		output_control = _OUTPUT_CONTROL_SCENE.instantiate()
 		$OutputControls.add_child(output_control)
+		output_control.name = str(output_controls_created_count)
+		output_controls_created_count += 1
 		output_control.position = _get_port_position(output_controls.size(), output_index, SIDE_RIGHT)
 		var _error := output_control.mouse_entered.connect(_on_output_control_mouse_entered.bind(output_control))
 		_error = output_control.mouse_exited.connect(_on_output_control_mouse_exited)
@@ -276,6 +282,7 @@ func update_connection(
 			Audio.play_sound("destroy")
 		output_control.target_gadget = null
 
+		var gadget := get_node_or_null(gadget_path) as Gadget
 		if gadget:
 			var input_control := gadget.input_controls[input_index] as GadgetInputControl
 			var input_data: Variant = gadget.get_input_data(input_index)
@@ -382,6 +389,8 @@ func set_gadget_data(gadget_data: GadgetData) -> void:
 		var output_control := _OUTPUT_CONTROL_SCENE.instantiate() as GadgetOutputControl
 		output_control.tooltip_text = output_port_data.name
 		$OutputControls.add_child(output_control)
+		output_control.name = str(output_controls_created_count)
+		output_controls_created_count += 1
 		output_control.position = _get_port_position(gadget_data.outputs.size(), index, SIDE_RIGHT)
 
 		index += 1
@@ -412,10 +421,13 @@ func _on_output_control_gui_input(event: InputEvent, output_control: GadgetOutpu
 			set_mouse_filters(MOUSE_FILTER_IGNORE, true)
 			if not is_instance_valid(output_control.target_gadget):
 				output_control.target_gadget = null
-			update_connection(
+			var target_gadget_path: NodePath
+			if output_control.target_gadget:
+				target_gadget_path = output_control.target_gadget.get_path()
+			update_connection.rpc(
 				ConnectionChange.DISCONNECT,
-				output_control,
-				output_control.target_gadget,
+				output_control.get_path(),
+				target_gadget_path,
 				output_control.target_input
 			)
 			_just_dragged_output = true

@@ -5036,14 +5036,12 @@ _body = NodePath("../3DGodotRobot")
 [node name="Camera3D" type="Camera3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 
-[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("cursor", "player", "shape_select", "shape_items")]
+[node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" node_paths=PackedStringArray("cursor", "player")]
 process_mode = 4
 target_position = Vector3(0, 0, -10)
 script = ExtResource("6_ee2o4")
 cursor = NodePath("Cursor")
 player = NodePath("../../..")
-shape_select = NodePath("")
-shape_items = NodePath("")
 
 [node name="Crosshair" type="TextureRect" parent="Pivot/Camera3D/Editor"]
 visible = false

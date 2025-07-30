@@ -15,7 +15,6 @@ func start() -> void:
 	bar = ProgressBar.new()
 	bar.add_theme_stylebox_override(&"background", StyleBoxEmpty.new())
 	bar.max_value = 1
-	bar.step = 1
 	bar.show_percentage = false
 	bar.fill_mode = ProgressBar.FillMode.FILL_BOTTOM_TO_TOP
 	bar.mouse_filter = MOUSE_FILTER_IGNORE
