@@ -18,6 +18,7 @@ func _on_pressed() -> void:
 		object_properties.sync_object_material.rpc(item.resource_path, object.get_path())
 
 
-#func _on_visibility_changed() -> void: FIXME
-	#if visible:
-		#button_pressed = object_properties.get_object_material() == item
+func _on_visibility_changed() -> void:
+	if visible:
+		# TODO: Update in real time for multiplayer
+		button_pressed = object_properties.get_object_material() == item

@@ -18,7 +18,6 @@ func _process(_delta: float) -> void:
 @rpc("any_peer", "call_local")
 func place_gadget(gadget_path: NodePath, silent: bool, gadget_position: Vector2) -> void:
 	var gadget := get_node_or_null(gadget_path) as Gadget
-	prints("FIXME", is_multiplayer_authority(), gadget_path, gadget)
 	if gadget:
 		if gadget.get_parent() == self:
 			gadget.top_level = false
