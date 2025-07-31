@@ -37,6 +37,7 @@ func tick(_delta: float) -> void:
 	timer.paused = not is_input_data_powered(0, true) and not is_pulse
 
 
+@rpc("any_peer", "call_local")
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"WaitTime":

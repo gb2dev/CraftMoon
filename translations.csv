@@ -11,3 +11,6 @@ sound_notification,Notification,Benachrichtigung
 sound_success,Success,Erfolg
 sound_category_music,Music,Musik
 sound_category_user_interface,User Interface,Benutzeroberfäche
+Movement direction X: ,,Bewegungsrichtung X: 
+Movement direction Y: ,,Bewegungsrichtung Y: 
+Movement direction Z: ,,Bewegungsrichtung Z: 

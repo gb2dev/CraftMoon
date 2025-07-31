@@ -333,6 +333,12 @@ func update_connection_positions() -> void:
 					)
 
 
+@rpc("any_peer", "call_local")
+func sync_meta(meta_name: StringName, value: Variant) -> void:
+	set_meta(meta_name, value)
+
+
+
 func attach_to_object(node_path: NodePath) -> void:
 	var node := get_node(node_path)
 	remove_child(node_3d)

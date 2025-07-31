@@ -41,6 +41,7 @@ const LEVEL_PORTAL_POSITIONS = [
 @export var main_menu_button: Button
 @export var level_portals: Node3D
 @export var main_menu: Control
+@export var object_properties_node: ObjectProperties
 
 var slot := 0
 var player: Character
@@ -219,6 +220,7 @@ func transfer(data: PackedByteArray, filename: String) -> void:
 
 
 func load_level(level := "") -> void:
+	object_properties_node.gadgets_created_count = 0
 	if is_multiplayer_authority():
 		level_name.editable = true
 		level_name.flat = false
@@ -280,7 +282,7 @@ func load_level(level := "") -> void:
 				gadget_properties_array.append(gadget_properties)
 				for property: StringName in gadget_properties.properties:
 					var value: Variant = gadget_properties.properties[property]
-					gadget.set_meta(property, value)
+					gadget.sync_meta(property, value)
 					gadget.change_property(property, value)
 		connect_gadgets(gadgets, gadget_properties_array)
 	# TODO: Use spawn point
@@ -539,12 +541,14 @@ func _on_main_menu_button_pressed() -> void:
 	Network.players.clear()
 	Network.player_info.clear()
 	var _error := get_tree().reload_current_scene()
+	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 
 
 @rpc("any_peer", "call_local")
 func _on_level_portal_entered(portal_slot: int, blank_level: bool) -> void:
 	slot = portal_slot
 	if blank_level:
+		object_properties_node.gadgets_created_count = 0
 		new_level(false)
 	else:
 		if is_multiplayer_authority():
