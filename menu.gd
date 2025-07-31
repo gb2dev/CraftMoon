@@ -46,6 +46,8 @@ const LEVEL_PORTAL_POSITIONS = [
 var slot := 0
 var player: Character
 
+@onready var world := get_tree().current_scene as World
+
 
 func _ready() -> void:
 	var _error := DirAccess.make_dir_absolute("user://levels")
@@ -104,6 +106,8 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dict
 
 
 func save_level() -> void:
+	world.sync_time_rewind()
+
 	var save_data := [{
 		"type": "Level",
 		"name": level_name.text,
@@ -343,6 +347,9 @@ func new_level(blank := true) -> void:
 
 @rpc("any_peer", "call_local")
 func enter_edit_mode() -> void:
+	world.edit_mode = true
+	world.sync_time_rewind()
+	world.time_paused_indicator.visible = true
 	mode_button.text = tr(&"Play Mode")
 	player.editor.input_display.visible = true
 	player.editor.process_mode = PROCESS_MODE_INHERIT
@@ -352,6 +359,10 @@ func enter_edit_mode() -> void:
 
 @rpc("any_peer", "call_local")
 func enter_play_mode() -> void:
+	world.edit_mode = false
+	world.sync_time_rewind()
+	world.sync_time_pause(false)
+	world.time_paused_indicator.visible = false
 	mode_button.text = tr(&"Edit Mode")
 	player.fly = false
 	player.editor.set_object_builder_active(false)
@@ -511,9 +522,9 @@ func _on_mode_button_pressed() -> void:
 		enter_edit_mode.rpc()
 		load_level()
 	else:
-		enter_play_mode.rpc()
 		save_level()
 		load_level()
+		enter_play_mode.rpc()
 
 
 func _on_moon_button_pressed() -> void:

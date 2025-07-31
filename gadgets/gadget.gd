@@ -334,9 +334,23 @@ func update_connection_positions() -> void:
 
 
 @rpc("any_peer", "call_local")
-func sync_meta(meta_name: StringName, value: Variant) -> void:
+func sync_meta(meta_name: StringName, value: Variant, reset_on_rewind := false) -> void:
+	if reset_on_rewind:
+		var meta_name_initial := &"Initial%s" % meta_name
+		if not has_meta(meta_name_initial):
+			set_meta(meta_name_initial, get_meta(meta_name, type_convert(null, typeof(value))))
 	set_meta(meta_name, value)
 
+
+func reset_metas_to_initial() -> void:
+	for meta_name: StringName in get_meta_list():
+		if meta_name.begins_with("Initial") and has_meta(meta_name):
+			var meta_name_without_initial := &"%s" % meta_name.trim_prefix("Initial")
+			if has_meta(meta_name_without_initial):
+				var value: Variant = get_meta(meta_name)
+				set_meta(meta_name_without_initial, value)
+				change_property(meta_name_without_initial, value)
+				remove_meta(meta_name)
 
 
 func attach_to_object(node_path: NodePath) -> void:
@@ -382,9 +396,9 @@ func set_gadget_data(gadget_data: GadgetData) -> void:
 		var output_port := _OUTPUT_PORT_SCENE.instantiate() as GadgetOutputPort
 		output_port.icon = output_port_data.icon
 		if output_port_data.color == Color.TRANSPARENT:
-			output_port.self_modulate = gadget_data.background
+			output_port.color = gadget_data.background
 		else:
-			output_port.self_modulate = output_port_data.color
+			output_port.color = output_port_data.color
 		$OutputPorts.add_child(output_port)
 		output_port.position = _get_port_position(gadget_data.outputs.size(), index, SIDE_RIGHT)
 

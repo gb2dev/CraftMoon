@@ -21,6 +21,9 @@ func start() -> void:
 	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var _error := input_pulse.connect(func(input_index: int) -> void:
+		if World.time_paused:
+			return
+
 		match input_index:
 			0:
 				output(0, is_input_data_powered(0, true) and current_count == target_count)
@@ -29,7 +32,7 @@ func start() -> void:
 					# Add to Counter
 					if current_count < target_count:
 						current_count += 1
-						sync_meta.rpc(&"CurrentCount", current_count)
+						sync_meta.rpc(&"CurrentCount", current_count, true)
 						bar.value = current_count
 
 						if current_count == target_count:
@@ -38,7 +41,7 @@ func start() -> void:
 				if is_input_data_powered(input_index, true):
 					# Reset Counter
 					current_count = 0
-					sync_meta.rpc(&"CurrentCount", current_count)
+					sync_meta.rpc(&"CurrentCount", current_count, true)
 					bar.value = current_count
 					output(0, false)
 	)

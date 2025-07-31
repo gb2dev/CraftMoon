@@ -13,19 +13,20 @@ corner_radius_bottom_left = 3
 corner_detail = 5
 
 [node name="InputControl" type="Panel" groups=["GadgetInputControl"]]
-custom_minimum_size = Vector2(16, 16)
-offset_right = 16.0
+custom_minimum_size = Vector2(24, 16)
+anchors_preset = -1
+offset_right = 24.0
 offset_bottom = 16.0
 tooltip_text = "Power"
 theme_override_styles/panel = SubResource("StyleBoxFlat_iahpu")
 script = ExtResource("1_iahpu")
-theme_override_styles/panel = SubResource("StyleBoxFlat_iahpu")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = -1
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -8.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
