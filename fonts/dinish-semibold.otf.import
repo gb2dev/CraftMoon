@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://5iu4iycgg084"
-path="res://.godot/imported/dinish.otf-66c851394c1e79db15a564e2ae0ec4e1.fontdata"
+uid="uid://dksxoeabc8hj"
+path="res://.godot/imported/dinish-semibold.otf-e203fdb3784fc11f22d43105c29c2846.fontdata"
 
 [deps]
 
-source_file="res://fonts/dinish.otf"
-dest_files=["res://.godot/imported/dinish.otf-66c851394c1e79db15a564e2ae0ec4e1.fontdata"]
+source_file="res://fonts/dinish-semibold.otf"
+dest_files=["res://.godot/imported/dinish-semibold.otf-e203fdb3784fc11f22d43105c29c2846.fontdata"]
 
 [params]
 
@@ -23,7 +23,7 @@ allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
 hinting=1
-subpixel_positioning=1
+subpixel_positioning=4
 keep_rounding_remainders=true
 oversampling=0.0
 Fallbacks=null

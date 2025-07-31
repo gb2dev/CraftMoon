@@ -12,14 +12,23 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_detail = 5
 
-[node name="OutputPort" type="Panel"]
+[node name="OutputPort" type="Control"]
 custom_minimum_size = Vector2(16, 16)
+layout_mode = 3
+offset_right = 16.0
+offset_bottom = 16.0
+mouse_filter = 2
+script = ExtResource("1_101ok")
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 1
 anchors_preset = -1
+offset_left = -8.0
 offset_right = 16.0
 offset_bottom = 16.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cho3n")
-script = ExtResource("1_101ok")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1

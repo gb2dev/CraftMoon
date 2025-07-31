@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://dugaivbj1o66n"]
+[gd_scene load_steps=78 format=3 uid="uid://dugaivbj1o66n"]
 
 [ext_resource type="Script" uid="uid://d0dgljwwl463n" path="res://world.gd" id="1_e1sh7"]
 [ext_resource type="PackedScene" uid="uid://cffjduipbb3s5" path="res://player.tscn" id="1_uvcbi"]
@@ -52,6 +52,7 @@
 [ext_resource type="Texture2D" uid="uid://bgtj3jvxd7312" path="res://icons/cone.svg" id="50_1hr04"]
 [ext_resource type="Texture2D" uid="uid://d0h0uapcmm6p2" path="res://icons/torus.svg" id="51_remcq"]
 [ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="52_kcilg"]
+[ext_resource type="FontFile" uid="uid://dw7nr4o2ayj6a" path="res://fonts/dinish-black.otf" id="53_olr1q"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fj7yv"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -183,9 +184,27 @@ script = ExtResource("11_iett8")
 name = "Dirt"
 icon = ExtResource("40_jtjyu")
 
-[node name="World" type="Node3D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k3lar"]
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.14767182, 0.14767182, 0.14767176, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.1148968, 0.11489682, 0.1148968, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="World" type="Node3D" node_paths=PackedStringArray("credits", "time_paused_indicator")]
 script = ExtResource("1_e1sh7")
 player_scene = ExtResource("1_uvcbi")
+credits = NodePath("Credits")
+time_paused_indicator = NodePath("TimePausedIndicator")
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -366,10 +385,11 @@ grow_vertical = 2
 theme_override_constants/separation = 50
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer"]
+[node name="TitleLabel" type="Label" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("53_olr1q")
 theme_override_font_sizes/font_size = 70
 text = "CraftMoon"
 
@@ -378,7 +398,7 @@ layout_direction = 1
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme_override_constants/separation = 20
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer/MainMenu"]
@@ -472,7 +492,19 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Quit" type="Button" parent="MainMenu/MainContainer/MainMenu/Option4"]
+[node name="Credits" type="Button" parent="MainMenu/MainContainer/MainMenu/Option4"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "CREDITS"
+flat = true
+
+[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Quit" type="Button" parent="MainMenu/MainContainer/MainMenu/Option5"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
 theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
@@ -1056,6 +1088,42 @@ texture = ExtResource("52_kcilg")
 [node name="Label" parent="ShapeSelect/ShapeItems/Polygon" index="1"]
 anchors_preset = -1
 
+[node name="Credits" type="Popup" parent="."]
+transparent_bg = true
+oversampling_override = 1.0
+initial_position = 2
+size = Vector2i(640, 360)
+
+[node name="MarginContainer" type="ScrollContainer" parent="Credits"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k3lar")
+
+[node name="Label" type="RichTextLabel" parent="Credits/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_fonts/bold_font = ExtResource("53_olr1q")
+theme_override_font_sizes/normal_font_size = 28
+theme_override_font_sizes/bold_font_size = 48
+bbcode_enabled = true
+text = "[b]Credits[/b]
+[u]Sounds[/u]
+Play & Pause Sound by Martin Dürr (magedu)
+licensed under CC BY 4.0
+Rewind Sound by Pavel Sabacky (magedu)
+licensed under CC BY 4.0"
+horizontal_alignment = 1
+
+[node name="TimePausedIndicator" type="Label" parent="."]
+visible = false
+anchors_preset = -1
+offset_right = 40.0
+offset_bottom = 21.0
+
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
 [connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
@@ -1069,7 +1137,8 @@ anchors_preset = -1
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option4/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option4/Credits" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option5/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
 [connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]

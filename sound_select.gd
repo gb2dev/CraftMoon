@@ -9,8 +9,6 @@ const CATEGORY_SCENE = preload("res://sound_select_category.tscn")
 @export var categories: TabContainer
 
 
-
-
 func _ready() -> void:
 	var _error := close_requested.connect(hide)
 

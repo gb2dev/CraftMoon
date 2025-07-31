@@ -4,13 +4,18 @@ extends Node3D
 
 signal skin_changed(color: Color)
 
+static var time_paused := true
+
+@export var player_scene: PackedScene
+@export var credits: Popup
+@export var time_paused_indicator: Label
+
 @onready var skin_color_picker: ColorPickerButton = $MainMenu/MainContainer/MainMenu/Option2/SkinColorPicker
 @onready var nick_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option1/NickInput
 @onready var address_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option3/AddressInput
 @onready var players_container: Node3D = $PlayersContainer
 @onready var main_menu: Control = $MainMenu
 @onready var menu: Menu = $Menu
-@export var player_scene: PackedScene
 
 # multiplayer chat
 @onready var message: LineEdit = $MultiplayerChat/VBoxContainer/HBoxContainer/Message
@@ -20,6 +25,11 @@ signal skin_changed(color: Color)
 @onready var object_properties := %"ObjectProperties" as ObjectProperties
 
 var chat_visible := false
+var time_elapsed := 0
+var time_start := 0
+var edit_mode := false:
+	set(value):
+		edit_mode = value
 
 
 func _ready() -> void:
@@ -31,6 +41,71 @@ func _ready() -> void:
 
 	var _error := Network.player_connected.connect(_on_player_connected)
 	_error = multiplayer.peer_disconnected.connect(_remove_player)
+
+
+func _process(_delta: float) -> void:
+	if not edit_mode:
+		return
+
+	if not time_paused:
+		update_timer_paused_indicator()
+
+	if not multiplayer.is_server():
+		return
+
+	if Input.is_action_just_pressed(&"time_play_pause"):
+		sync_time_pause.rpc(not time_paused)
+		if time_paused:
+			Audio.play_sound("pause")
+		else:
+			Audio.play_sound("play")
+
+	if Input.is_action_just_pressed(&"time_rewind"):
+		sync_time_rewind.rpc()
+		Audio.play_sound("rewind")
+
+
+func update_timer_paused_indicator() -> void:
+	var current_total_time := time_elapsed
+
+	if not time_paused:
+		current_total_time += Time.get_ticks_msec() - time_start
+
+	var time_passed_seconds := current_total_time / 1000.0
+	var minutes := floori(time_passed_seconds / 60.0)
+	var seconds := time_passed_seconds - minutes * 60
+
+	if time_paused:
+		time_paused_indicator.text = "PAUSED - %02d:%02d" % [minutes, seconds]
+	else:
+		time_paused_indicator.text = "PLAYING - %02d:%02d" % [minutes, seconds]
+
+
+@rpc("authority", "call_local")
+func sync_time_pause(value: bool) -> void:
+	if time_paused == value:
+		return
+
+	if time_paused and not value:
+		time_start = Time.get_ticks_msec()
+		time_paused = false
+		Signals.time_played.emit()
+	elif not time_paused and value:
+		time_elapsed += Time.get_ticks_msec() - time_start
+		time_paused = true
+		update_timer_paused_indicator()
+		Signals.time_paused.emit()
+
+
+@rpc("authority", "call_local")
+func sync_time_rewind() -> void:
+	time_elapsed = 0
+	time_start = 0
+	time_paused = true
+	update_timer_paused_indicator()
+	for gadget: Gadget in object_properties.logic_panel.get_children():
+		gadget.reset_metas_to_initial()
+	Signals.time_rewound.emit()
 
 
 func _on_player_connected(peer_id: int, player_info: Dictionary) -> void:
@@ -170,3 +245,7 @@ func _on_player_skin_changed(color: Color, id: int) -> void:
 
 func _on_color_picker_button_color_changed(color: Color) -> void:
 	skin_changed.emit(color)
+
+
+func _on_credits_pressed() -> void:
+	credits.show()
