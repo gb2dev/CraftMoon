@@ -7,6 +7,8 @@ layout_mode = 3
 offset_right = 64.0
 offset_bottom = 64.0
 
+[node name="OutputVisuals" type="Node2D" parent="."]
+
 [node name="Background" type="NinePatchRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -35,8 +37,6 @@ expand_mode = 4
 layout_mode = 1
 anchors_preset = 0
 mouse_filter = 2
-
-[node name="OutputVisuals" type="Node2D" parent="."]
 
 [node name="OutputPorts" type="Control" parent="."]
 layout_mode = 1

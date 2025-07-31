@@ -14,6 +14,7 @@ func tick(delta: float) -> void:
 		node_3d.get_parent().position += movement_direction * delta
 
 
+@rpc("any_peer", "call_local")
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"MovementDirectionX":

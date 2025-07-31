@@ -20,6 +20,7 @@ func tick(_delta: float) -> void:
 	pass
 
 
+@rpc("any_peer", "call_local")
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"Sound":

@@ -4,7 +4,6 @@ extends Gadget
 var bar: ProgressBar
 var current_count := 0:
 	set(value):
-		set_meta(&"CurrentCount", value)
 		property_update.emit(value)
 		current_count = value
 var target_count := 1
@@ -30,6 +29,7 @@ func start() -> void:
 					# Add to Counter
 					if current_count < target_count:
 						current_count += 1
+						sync_meta.rpc(&"CurrentCount", current_count)
 						bar.value = current_count
 
 						if current_count == target_count:
@@ -38,6 +38,7 @@ func start() -> void:
 				if is_input_data_powered(input_index, true):
 					# Reset Counter
 					current_count = 0
+					sync_meta.rpc(&"CurrentCount", current_count)
 					bar.value = current_count
 					output(0, false)
 	)
@@ -47,6 +48,7 @@ func tick(_delta: float) -> void:
 	pass
 
 
+@rpc("any_peer", "call_local")
 func change_property(property: StringName, value: Variant) -> void:
 	match property:
 		&"CurrentCount":

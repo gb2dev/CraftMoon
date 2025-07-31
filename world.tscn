@@ -217,7 +217,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "delete_button", "main_menu_button", "level_portals", "main_menu")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "delete_button", "main_menu_button", "level_portals", "main_menu", "object_properties_node")]
 process_mode = 3
 visible = false
 z_index = 1
@@ -247,6 +247,7 @@ delete_button = NodePath("DeleteButton")
 main_menu_button = NodePath("MainMenuButton")
 level_portals = NodePath("../LevelPortals")
 main_menu = NodePath("../MainMenu")
+object_properties_node = NodePath("../ObjectProperties")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
 layout_mode = 2
