@@ -58,19 +58,25 @@ func close() -> void:
 	if exclusive_window and exclusive_window.visible:
 		return
 
-	if gadget_properties.visible:
-		gadget_properties.visible = false
-		gadget_properties.gadget_changed.emit()
-		gadgets_panel.visible = true
-		if tab_container.current_tab == 1:
-			return
+	if close_gadget_properties() and tab_container.current_tab == 1:
+		return
 
 	toggle(object)
 
 
 func close_on_free() -> void:
 	if visible:
+		var _closed := close_gadget_properties()
 		toggle(object)
+
+
+func close_gadget_properties() -> bool:
+	if gadget_properties.visible:
+		gadget_properties.visible = false
+		gadget_properties.gadget_changed.emit()
+		gadgets_panel.visible = true
+		return true
+	return false
 
 
 @rpc("any_peer", "call_remote")
@@ -119,6 +125,7 @@ func create_gadget(
 	var _error := gadget.open_properties.connect(gadget_properties.gadget_changed.emit)
 	_error = gadget.open_properties.connect(gadget_properties.open.bind(gadget_data.name, gadget))
 	_error = gadget.open_properties.connect(gadgets_panel.hide)
+	_error = gadget.close_properties.connect(close_gadget_properties)
 	gadget.type = gadget_data.name
 	gadget.set_gadget_data(gadget_data)
 	if not silent:

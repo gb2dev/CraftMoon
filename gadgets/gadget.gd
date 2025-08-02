@@ -5,6 +5,7 @@ extends Control
 
 signal input_pulse(input_index: int)
 signal open_properties
+signal close_properties
 signal property_update(value: Variant)
 
 enum ConnectionChange {
@@ -131,6 +132,7 @@ func _process(delta: float) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PREDELETE:
+		close_properties.emit()
 		if is_instance_valid(node_3d):
 			node_3d.queue_free()
 		for output_index in output_controls.size():

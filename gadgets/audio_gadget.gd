@@ -75,6 +75,9 @@ func check_pulse() -> void:
 
 
 func play_sound_looped() -> void:
+	if World.time_paused:
+		return
+
 	var data: Variant = get_input_data(0)
 	if data == true or is_pulse:
 		audio_player.play()
