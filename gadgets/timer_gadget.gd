@@ -10,6 +10,7 @@ var is_pulse: bool
 func start() -> void:
 	timer = Timer.new()
 	timer.one_shot = true
+	var _error := timer.timeout.connect(_on_timer_timeout)
 	add_child(timer)
 
 	bar = ProgressBar.new()
@@ -21,7 +22,7 @@ func start() -> void:
 	add_child(bar)
 	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	var _error := input_pulse.connect(func(_input_index: int) -> void:
+	_error = input_pulse.connect(func(_input_index: int) -> void:
 		if is_input_data_powered(0, true) and not World.time_paused:
 			timer.start()
 			first_shot = false

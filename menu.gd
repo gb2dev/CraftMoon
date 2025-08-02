@@ -223,20 +223,25 @@ func transfer(data: PackedByteArray, filename: String) -> void:
 		emit_level_transfer_complete.rpc()
 
 
-func load_level(level := "") -> void:
-	object_properties_node.gadgets_created_count = 0
-	if is_multiplayer_authority():
+@rpc("any_peer", "call_local")
+func prepare_load_level() -> void:
+	sync_reset_gadgets_created_count()
+	if multiplayer.is_server():
 		level_name.editable = true
 		level_name.flat = false
 	level_description.visible = true
-	level_description.editable = is_multiplayer_authority()
+	level_description.editable = multiplayer.is_server()
 	level_name.size_flags_vertical = Control.SIZE_FILL
-	if is_multiplayer_authority():
+	if multiplayer.is_server():
 		mode_button.visible = true
 		save_button.visible = true
 		moon_button.visible = true
 		export_button.visible = true
 		delete_button.visible = true
+
+
+func load_level(level := "") -> void:
+	prepare_load_level.rpc()
 
 	if level.is_empty():
 		level = str(slot)
@@ -289,10 +294,18 @@ func load_level(level := "") -> void:
 					gadget.sync_meta(property, value)
 					gadget.change_property(property, value)
 		connect_gadgets(gadgets, gadget_properties_array)
+
+	respawn_player.rpc()
+
+
+@rpc("any_peer", "call_local")
+func respawn_player() -> void:
 	# TODO: Use spawn point
 	player.position = Vector3.ZERO
-	player.pivot.rotation = Vector3.ZERO
-	player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
+	player.pivot.rotation = Vector3(0, PI, 0)
+	player._spring_arm_offset.rotation = player.pivot.rotation
+	player._spring_arm_offset._spring_arm.rotation.x = 0
+	player._body.apply_rotation_first_person(-player.pivot.global_rotation.y)
 	player.camera.rotation = Vector3.ZERO
 
 
@@ -332,11 +345,7 @@ func new_level(blank := true) -> void:
 			DEFAULT_MATERIAL.resource_path,
 			true
 		)
-		# TODO: Use spawn point
-		player.position = Vector3.ZERO
-		player.pivot.rotation = Vector3.ZERO
-		player._body.apply_rotation_first_person(player.pivot.global_rotation.y)
-		player.camera.rotation = Vector3.ZERO
+		respawn_player()
 		enter_edit_mode()
 	else:
 		get_tree().call_group(&"Persist", &"queue_free")
@@ -397,13 +406,7 @@ func go_to_moon() -> void:
 		MOON_MATERIAL.resource_path,
 		true
 	)
-	# TODO: Use spawn point
-	player.position = Vector3.ZERO
-	player.pivot.rotation = Vector3(0, PI, 0)
-	player._spring_arm_offset.rotation = player.pivot.rotation
-	player._spring_arm_offset._spring_arm.rotation.x = 0
-	player._body.apply_rotation_first_person(-player.pivot.global_rotation.y)
-	player.camera.rotation = Vector3.ZERO
+	respawn_player()
 	if is_multiplayer_authority():
 		populate_level_portals()
 	player.editor.input_display.moon_inputs()
@@ -520,11 +523,9 @@ func _on_mode_button_pressed() -> void:
 	toggle()
 	if player.editor.process_mode == PROCESS_MODE_DISABLED:
 		enter_edit_mode.rpc()
-		load_level()
 	else:
-		save_level()
-		load_level()
 		enter_play_mode.rpc()
+	respawn_player.rpc()
 
 
 func _on_moon_button_pressed() -> void:
@@ -556,10 +557,14 @@ func _on_main_menu_button_pressed() -> void:
 
 
 @rpc("any_peer", "call_local")
+func sync_reset_gadgets_created_count() -> void:
+	object_properties_node.gadgets_created_count = 0
+
+@rpc("any_peer", "call_local")
 func _on_level_portal_entered(portal_slot: int, blank_level: bool) -> void:
 	slot = portal_slot
 	if blank_level:
-		object_properties_node.gadgets_created_count = 0
+		sync_reset_gadgets_created_count.rpc()
 		new_level(false)
 	else:
 		if is_multiplayer_authority():
