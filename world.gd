@@ -5,6 +5,7 @@ extends Node3D
 signal skin_changed(color: Color)
 
 static var time_paused := true
+static var destroyed_nodes: Dictionary[Node, Node]
 
 @export var player_scene: PackedScene
 @export var credits: Popup
@@ -105,6 +106,9 @@ func sync_time_rewind() -> void:
 	update_timer_paused_indicator()
 	for gadget: Gadget in object_properties.logic_panel.get_children():
 		gadget.reset_metas_to_initial()
+	for parent: Node in destroyed_nodes.keys():
+		parent.add_child(destroyed_nodes[parent])
+	destroyed_nodes.clear()
 	Signals.time_rewound.emit()
 
 

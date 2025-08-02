@@ -361,7 +361,10 @@ func attach_to_object(node_path: NodePath) -> void:
 		node_3d.position = node.get_parent().get_aabb().get_center()
 	else:
 		node.add_child(node_3d)
-	var _error := node_3d.tree_exited.connect(queue_free)
+	var _error := node_3d.tree_exited.connect(func() -> void:
+		if not World.destroyed_nodes.values().has(node_3d.get_parent()):
+			queue_free()
+	)
 
 
 func set_gadget_data(gadget_data: GadgetData) -> void:

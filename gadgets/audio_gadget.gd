@@ -62,7 +62,8 @@ func change_property(property: StringName, value: Variant) -> void:
 			audio_player.volume_db = volume
 
 			audio_player.finished.connect(func() -> void:
-				output(0, true, true)
+				if not World.time_paused:
+					output(0, true, true)
 			)
 
 			node_3d.add_child(audio_player)

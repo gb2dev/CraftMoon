@@ -6,15 +6,25 @@ const AREA_MATERIAL = preload("res://materials/area.tres")
 var area: Area3D
 var area_visual: MeshInstance3D
 var collision_shape: CollisionShape3D
-var is_player_detected: bool
+var is_player_detected: bool:
+	set(value):
+		is_player_detected = value
+		if is_input_data_powered(0, true):
+			if World.time_paused:
+				await Signals.time_played
+				output(0, is_player_detected)
+			else:
+				output(0, is_player_detected)
 
 
 func start() -> void:
+	var _error := Signals.time_rewound.connect(_on_time_rewound)
+
 	area = Area3D.new()
 	area.scale = Vector3.ONE * 2
 	area.collision_layer = 0
 	area.collision_mask = 2
-	var _error := area.body_entered.connect(_on_area_3d_body_entered)
+	_error = area.body_entered.connect(_on_area_3d_body_entered)
 	_error = area.body_exited.connect(_on_area_3d_body_exited)
 	node_3d.add_child(area)
 
@@ -59,12 +69,11 @@ func change_property(property: StringName, value: Variant) -> void:
 func _on_area_3d_body_entered(_body: Node3D) -> void:
 	is_player_detected = true
 
-	if is_input_data_powered(0, true):
-		output(0, is_player_detected)
-
 
 func _on_area_3d_body_exited(_body: Node3D) -> void:
 	is_player_detected = false
 
-	if is_input_data_powered(0, true):
-		output(0, is_player_detected)
+
+func _on_time_rewound() -> void:
+	output(0, false)
+	is_player_detected = area.has_overlapping_bodies()

@@ -132,7 +132,7 @@ func open(type: StringName, gadget: Gadget) -> void:
 					gadget.change_property.rpc.call_deferred(&"ZoneShape", index)
 				else:
 					gadget.change_property.rpc(&"ZoneShape", index)
-					sync_emit_signal.rpc(width_slider.get_path(), &"value_changed", width_slider.value) # FIXME Sync?
+					sync_emit_signal.rpc(width_slider.get_path(), &"value_changed", width_slider.value)
 					sync_emit_signal.rpc(height_slider.get_path(), &"value_changed", height_slider.value)
 					sync_emit_signal.rpc(depth_slider.get_path(), &"value_changed", depth_slider.value)
 

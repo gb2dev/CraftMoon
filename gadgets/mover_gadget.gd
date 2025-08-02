@@ -2,15 +2,16 @@ extends Gadget
 
 
 var movement_direction := Vector3.ZERO
+var initial_transform: Transform3D
 
 
 func start() -> void:
-	pass
+	var _error := Signals.time_rewound.connect(_on_time_rewound)
+	initial_transform = node_3d.get_parent_node_3d().transform
 
 
 func tick(delta: float) -> void:
-	# TODO: change to true when there is a pause/play system
-	if is_input_data_powered(0, false):
+	if is_input_data_powered(0, true) and not World.time_paused:
 		node_3d.get_parent().position += movement_direction * delta
 
 
@@ -23,3 +24,7 @@ func change_property(property: StringName, value: Variant) -> void:
 			movement_direction.y = value
 		&"MovementDirectionZ":
 			movement_direction.z = value
+
+
+func _on_time_rewound() -> void:
+	node_3d.get_parent_node_3d().transform = initial_transform
