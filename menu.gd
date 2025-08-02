@@ -385,6 +385,7 @@ func go_to_moon() -> void:
 
 	await wipe()
 
+	enter_play_mode()
 	new_level()
 	await get_tree().process_frame
 	level_name.text = tr(&"Your Moon")
@@ -403,7 +404,6 @@ func go_to_moon() -> void:
 	player._spring_arm_offset._spring_arm.rotation.x = 0
 	player._body.apply_rotation_first_person(-player.pivot.global_rotation.y)
 	player.camera.rotation = Vector3.ZERO
-	enter_play_mode()
 	if is_multiplayer_authority():
 		populate_level_portals()
 	player.editor.input_display.moon_inputs()
