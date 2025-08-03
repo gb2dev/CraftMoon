@@ -1,11 +1,13 @@
 class_name Body
 extends Node3D
 
+
 const LERP_VELOCITY = 0.15
 
 @export_category("Objects")
 @export var _character: Character = null
 @export var animation_player: AnimationPlayer = null
+
 
 func apply_rotation(_velocity: Vector3) -> void:
 	var new_rotation_y := lerp_angle(rotation.y, atan2(-_velocity.x, -_velocity.z), LERP_VELOCITY)
@@ -13,9 +15,11 @@ func apply_rotation(_velocity: Vector3) -> void:
 
 	sync_player_rotation.rpc(new_rotation_y)
 
+
 func apply_rotation_first_person(angle: float) -> void:
 	rotation.y = angle
 	sync_player_rotation.rpc(angle)
+
 
 func animate(_velocity: Vector3) -> void:
 	if not _character.is_on_floor():
@@ -34,6 +38,7 @@ func animate(_velocity: Vector3) -> void:
 		return
 
 	animation_player.play("Idle")
+
 
 @rpc("any_peer", "reliable")
 func sync_player_rotation(rotation_y: float) -> void:

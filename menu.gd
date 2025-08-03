@@ -29,6 +29,8 @@ const LEVEL_PORTAL_POSITIONS = [
 	Vector3(-3, 0, 10),
 ]
 
+static var shown: bool
+
 @export var background_dim: ColorRect
 @export var level_transition_wipe: ColorRect
 @export var level_name: LineEdit
@@ -596,3 +598,7 @@ func set_level_name(value: String) -> void:
 @rpc
 func set_level_description(value: String) -> void:
 	level_description.text = value
+
+
+func _on_visibility_changed() -> void:
+	shown = visible

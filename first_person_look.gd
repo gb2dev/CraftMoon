@@ -1,5 +1,6 @@
 extends Node3D
 
+
 @export var _body: Body
 
 var joypad_look: Vector2
@@ -16,6 +17,7 @@ var mouse_look_sensitivity: float = 1.0
 
 @onready var camera := $Camera3D as Camera3D
 @onready var player := get_parent() as Character
+
 
 func _process(_delta: float) -> void:
 	if not player.first_person: return
@@ -44,6 +46,7 @@ func _process(_delta: float) -> void:
 
 	# Clamp vertical camera rotation for both mouse and joypad
 	camera.rotation.x = clamp(camera.rotation.x, -PI / 2, PI / 2)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not player.first_person: return

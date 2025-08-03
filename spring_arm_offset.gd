@@ -7,6 +7,9 @@ const MOUSE_SENSIBILITY: float = 0.005
 @export var _spring_arm: SpringArm3D = null
 
 func _unhandled_input(event: InputEvent) -> void:
+	if Menu.shown:
+		return
+
 	var event_mouse_motion := event as InputEventMouseMotion
 	if event_mouse_motion and is_multiplayer_authority():
 		rotate_y(-event_mouse_motion.relative.x * MOUSE_SENSIBILITY)

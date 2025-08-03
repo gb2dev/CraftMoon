@@ -1124,6 +1124,7 @@ anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 21.0
 
+[connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
 [connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
