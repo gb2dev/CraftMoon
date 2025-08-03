@@ -12,7 +12,6 @@ enum ConnectionChange {
 	CONNECT,
 	DISCONNECT,
 	DELETE,
-	CANCEL,
 }
 
 const _INPUT_CONTROL_SCENE = preload("res://gadgets/gadget_input_control.tscn")
@@ -120,12 +119,20 @@ func _process(delta: float) -> void:
 							)
 					elif Input.is_action_just_pressed(&"ui_cancel"):
 						# Cancel
-						update_connection.rpc(
-							ConnectionChange.CANCEL,
-							output_control.get_path(),
-							output_control.target_gadget.get_path(),
-							output_control.target_input
-						)
+						if is_instance_valid(output_control.target_gadget_disconnected):
+							update_connection.rpc(
+								ConnectionChange.CONNECT,
+								output_control.get_path(),
+								output_control.target_gadget_disconnected.get_path(),
+								output_control.target_input
+							)
+						else:
+							update_connection.rpc(
+								ConnectionChange.DELETE,
+								output_control.get_path(),
+								NodePath(),
+								output_control.target_input
+							)
 
 					_just_dragged_output = false
 
@@ -229,6 +236,7 @@ func update_connection(
 		output_controls[output_index].append(output_control)
 		_output_visuals[output_index].append(output_visual)
 		_output_visuals[output_index].erase(output_visual)
+		output_control.target_gadget_disconnected = output_control.target_gadget
 	else:
 		output_control.remove_from_group(&"Dragging")
 		set_mouse_filters(MOUSE_FILTER_STOP, true)
