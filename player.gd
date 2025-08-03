@@ -1,6 +1,7 @@
 class_name Character
 extends CharacterBody3D
 
+
 const NORMAL_SPEED = 6.0
 const SPRINT_SPEED = 10.0
 const JUMP_VELOCITY = 10
@@ -32,11 +33,13 @@ var _current_speed: float
 var _respawn_point := Vector3(0, 5, 0)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
+
 func _enter_tree() -> void:
 	set_multiplayer_authority(str(name).to_int())
 
 	_set_current_camera()
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+
 
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority(): return
@@ -75,15 +78,18 @@ func _physics_process(delta: float) -> void:
 	var _collided := move_and_slide()
 	_body.animate(velocity)
 
+
 func _process(_delta: float) -> void:
 	if not is_multiplayer_authority(): return
 	_check_fall_and_respawn()
+
 
 func freeze() -> void:
 	velocity.x = 0
 	velocity.z = 0
 	_current_speed = 0
 	_body.animate(Vector3.ZERO)
+
 
 func _move() -> void:
 	var _input_direction: Vector2 = Vector2.ZERO
@@ -111,6 +117,7 @@ func _move() -> void:
 	velocity.x = move_toward(velocity.x, 0, _current_speed)
 	velocity.z = move_toward(velocity.z, 0, _current_speed)
 
+
 func is_running() -> bool:
 	if Input.is_action_pressed("sprint"):
 		_current_speed = SPRINT_SPEED
@@ -119,13 +126,16 @@ func is_running() -> bool:
 		_current_speed = NORMAL_SPEED
 		return false
 
+
 func _check_fall_and_respawn() -> void:
 	if global_transform.origin.y < -15.0:
 		_respawn()
 
+
 func _respawn() -> void:
 	global_transform.origin = _respawn_point
 	velocity = Vector3.ZERO
+
 
 func _set_current_camera() -> void:
 	if camera:
@@ -136,10 +146,12 @@ func _set_current_camera() -> void:
 		camera = $SpringArmOffset/SpringArm3D/Camera3D
 	camera.current = is_multiplayer_authority()
 
+
 @rpc("any_peer", "call_local", "reliable")
 func change_nick(new_nick: String) -> void:
 	if nickname:
 		nickname.text = new_nick
+
 
 @rpc("any_peer", "call_local", "reliable")
 func set_player_skin(color: Color) -> void:
