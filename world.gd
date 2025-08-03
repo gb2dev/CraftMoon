@@ -37,6 +37,7 @@ func _ready() -> void:
 	multiplayer_chat.hide()
 	main_menu.show()
 	multiplayer_chat.set_process_input(true)
+	Menu.shown = false
 	if not multiplayer.is_server():
 		return
 
