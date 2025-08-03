@@ -411,6 +411,7 @@ func go_to_moon() -> void:
 	respawn_player()
 	if is_multiplayer_authority():
 		populate_level_portals()
+		multiplayer.multiplayer_peer.refuse_new_connections = false
 	player.editor.input_display.moon_inputs()
 	get_tree().set_group(&"LevelPortal", &"visible", true)
 	await get_tree().create_timer(WIPE_TIME).timeout
@@ -564,6 +565,8 @@ func sync_reset_gadgets_created_count() -> void:
 
 @rpc("any_peer", "call_local")
 func _on_level_portal_entered(portal_slot: int, blank_level: bool) -> void:
+	if is_multiplayer_authority():
+		multiplayer.multiplayer_peer.refuse_new_connections = true
 	slot = portal_slot
 	if blank_level:
 		sync_reset_gadgets_created_count.rpc()
