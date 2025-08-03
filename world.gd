@@ -109,6 +109,7 @@ func sync_time_rewind() -> void:
 	for parent: Node in destroyed_nodes.keys():
 		parent.add_child(destroyed_nodes[parent])
 	destroyed_nodes.clear()
+	Signals.time_paused.emit()
 	Signals.time_rewound.emit()
 
 

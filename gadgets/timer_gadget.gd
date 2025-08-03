@@ -4,7 +4,6 @@ extends Gadget
 var timer: Timer
 var bar: ProgressBar
 var first_shot := true
-var is_pulse: bool
 
 
 func start() -> void:
@@ -12,6 +11,8 @@ func start() -> void:
 	timer.one_shot = true
 	var _error := timer.timeout.connect(_on_timer_timeout)
 	add_child(timer)
+
+	_error = Signals.time_rewound.connect(reset_timer)
 
 	bar = ProgressBar.new()
 	bar.add_theme_stylebox_override(&"background", StyleBoxEmpty.new())
@@ -22,20 +23,21 @@ func start() -> void:
 	add_child(bar)
 	bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	_error = input_pulse.connect(func(_input_index: int) -> void:
-		if is_input_data_powered(0, true) and not World.time_paused:
-			timer.start()
-			first_shot = false
-			check_pulse.call_deferred()
-			output(1, false)
+	_error = input_pulse.connect(func(input_index: int) -> void:
+		if input_index == 1 and is_input_data_powered(1, true):
+			reset_timer()
 	)
 
 
 func tick(_delta: float) -> void:
-	if not first_shot:
-		bar.value = 1 - timer.time_left / timer.wait_time
+	if not timer.paused:
+		if first_shot:
+			first_shot = false
+			reset_timer()
+		else:
+			bar.value = 1 - timer.time_left / timer.wait_time
 
-	timer.paused = World.time_paused or (not is_input_data_powered(0, true) and not is_pulse)
+	timer.paused = not is_input_data_powered(0, true) or World.time_paused
 
 
 @rpc("any_peer", "call_local")
@@ -47,9 +49,10 @@ func change_property(property: StringName, value: Variant) -> void:
 			timer.one_shot = value
 
 
-func check_pulse() -> void:
-	if get_input_data(0) == false:
-		is_pulse = true
+func reset_timer() -> void:
+	timer.start()
+	output.call_deferred(1, false)
+	bar.value = 0
 
 
 func _on_timer_timeout() -> void:
