@@ -4,6 +4,7 @@ extends Control
 
 var visual: GadgetOutputVisual
 var target_gadget: Gadget
+var target_gadget_disconnected: Gadget
 var target_input: int
 var data: Variant = false:
 	set(value):
