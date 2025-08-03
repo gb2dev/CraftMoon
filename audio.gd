@@ -37,21 +37,16 @@ func get_sound_categories() -> Array[String]:
 
 func get_sounds(sound_category: String, add_to_dict := false) -> Array[String]:
 	var dir_path := SOUNDS_DIR + "/" + sound_category
-	var dir := DirAccess.open(dir_path)
+	var items := ResourceLoader.list_directory(dir_path)
 	var result: Array[String]
 
-	if dir:
-		var _error := dir.list_dir_begin()
-		var file_name := dir.get_next()
-		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".wav"):
-				var sound := file_name.trim_suffix(".wav")
-				result.append(sound)
-				if add_to_dict:
-					var file_path := dir_path + "/" + file_name
-					sounds[sound] = file_path
-			file_name = dir.get_next()
-		dir.list_dir_end()
-	else:
-		printerr("Failed to open directory " + dir_path)
+	for item: String in items:
+		if item.ends_with("/"):
+			continue
+		var sound := item.get_basename()
+		result.append(sound)
+		if add_to_dict:
+			var file_path := dir_path + "/" + item
+			sounds[sound] = file_path
+
 	return result
