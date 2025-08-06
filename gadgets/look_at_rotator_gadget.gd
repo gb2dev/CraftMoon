@@ -19,5 +19,9 @@ func change_property(_property: StringName, _value: Variant) -> void:
 	pass
 
 
+func setup_properties(_gadget_properties: GadgetProperties) -> void:
+	pass
+
+
 func _on_time_rewound() -> void:
 	node_3d.get_parent_node_3d().transform = initial_transform

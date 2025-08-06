@@ -66,5 +66,31 @@ func change_property(property: StringName, value: Variant) -> void:
 			bar.max_value = value
 
 
+func setup_properties(gadget_properties: GadgetProperties) -> void:
+	var current := gadget_properties.add_slider(
+		"Current count: ",
+		[&"CurrentCount"],
+		0,
+		0,
+		get_meta(&"TargetCount", 1),
+		1,
+		self
+	)
+	var target := gadget_properties.add_slider("Target count: ", [&"TargetCount"], 1, 1, 100, 1, self)
+	var _connect_error := target.value_changed.connect(func(value: float) -> void:
+		current.max_value = value
+		gadget_properties.sync_slider_max_value.rpc(current.get_path(), value)
+	)
+	var update_value := func(value: float) -> void:
+		if current:
+			current.set_value_no_signal(value)
+			var _emit_error := current.emit_signal(&"update_text", value)
+	_connect_error = property_update.connect(update_value)
+	_connect_error = gadget_properties.gadget_changed.connect(
+		property_update.disconnect.bind(update_value),
+		Object.CONNECT_ONE_SHOT
+	)
+
+
 func sort_property_list(a: StringName, _b: StringName) -> bool:
 	return a == &"TargetCount"

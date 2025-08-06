@@ -14,6 +14,10 @@ func change_property(_property: StringName, _value: Variant) -> void:
 	pass
 
 
+func setup_properties(_gadget_properties: GadgetProperties) -> void:
+	pass
+
+
 func respawn_player(player: Character) -> void:
-	if node_3d:
+	if node_3d and is_input_data_powered(0, true):
 		player.position = node_3d.global_position

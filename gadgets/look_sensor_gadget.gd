@@ -37,6 +37,10 @@ func change_property(_property: StringName, _value: Variant) -> void:
 	pass
 
 
+func setup_properties(_gadget_properties: GadgetProperties) -> void:
+	pass
+
+
 func _on_visible_on_screen_notifier_3d_screen_entered() -> void:
 	is_visible_on_screen = true
 

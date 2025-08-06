@@ -26,5 +26,11 @@ func change_property(property: StringName, value: Variant) -> void:
 			movement_direction.z = value
 
 
+func setup_properties(gadget_properties: GadgetProperties) -> void:
+	var _slider := gadget_properties.add_slider("Movement direction X: ", [&"MovementDirectionX"], 0, -100, 100, 0.1, self)
+	_slider = gadget_properties.add_slider("Movement direction Y: ", [&"MovementDirectionY"], 0, -100, 100, 0.1, self)
+	_slider = gadget_properties.add_slider("Movement direction Z: ", [&"MovementDirectionZ"], 0, -100, 100, 0.1, self)
+
+
 func _on_time_rewound() -> void:
 	node_3d.get_parent_node_3d().transform = initial_transform

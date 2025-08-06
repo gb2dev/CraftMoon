@@ -49,6 +49,21 @@ func change_property(property: StringName, value: Variant) -> void:
 			timer.one_shot = value
 
 
+func setup_properties(gadget_properties: GadgetProperties) -> void:
+	var oneshot_checkbox := CheckBox.new()
+	oneshot_checkbox.text = "One shot"
+	oneshot_checkbox.name = gadget_properties.get_control_name(oneshot_checkbox.text)
+	oneshot_checkbox.button_pressed = get_meta(&"OneShot", true)
+	var _error := oneshot_checkbox.pressed.connect(func() -> void:
+		change_property.rpc(&"OneShot", oneshot_checkbox.button_pressed)
+		sync_meta.rpc(&"OneShot", oneshot_checkbox.button_pressed)
+		gadget_properties.sync_checkbox_pressed.rpc(oneshot_checkbox.get_path(), oneshot_checkbox.button_pressed)
+	)
+	gadget_properties.vbox.add_child(oneshot_checkbox)
+
+	var _slider := gadget_properties.add_slider("Wait time: ", [&"WaitTime"], 1, 0.1, 60, 0.1, self)
+
+
 func reset_timer() -> void:
 	timer.start()
 	output.call_deferred(1, false)

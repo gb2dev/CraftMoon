@@ -39,7 +39,7 @@ var output_controls_created_count: int
 @abstract func start() -> void
 @abstract func tick(delta: float) -> void
 @abstract func change_property(property: StringName, value: Variant) -> void
-
+@abstract func setup_properties(gadget_properties: GadgetProperties) -> void
 
 func _process(delta: float) -> void:
 	tick(delta)

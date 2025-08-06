@@ -19,3 +19,7 @@ func tick(_delta: float) -> void:
 @rpc("any_peer", "call_local")
 func change_property(_property: StringName, _value: Variant) -> void:
 	pass
+
+
+func setup_properties(_gadget_properties: GadgetProperties) -> void:
+	pass
