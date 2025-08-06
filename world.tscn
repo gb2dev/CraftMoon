@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=3 uid="uid://dugaivbj1o66n"]
+[gd_scene load_steps=79 format=3 uid="uid://dugaivbj1o66n"]
 
 [ext_resource type="Script" uid="uid://d0dgljwwl463n" path="res://world.gd" id="1_e1sh7"]
 [ext_resource type="PackedScene" uid="uid://cffjduipbb3s5" path="res://player.tscn" id="1_uvcbi"]
@@ -53,6 +53,7 @@
 [ext_resource type="Texture2D" uid="uid://d0h0uapcmm6p2" path="res://icons/torus.svg" id="51_remcq"]
 [ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="52_kcilg"]
 [ext_resource type="FontFile" uid="uid://dw7nr4o2ayj6a" path="res://fonts/dinish-black.otf" id="53_olr1q"]
+[ext_resource type="PackedScene" uid="uid://ph1cgojjyex" path="res://ui/notifications.tscn" id="54_q42o5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fj7yv"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -1123,6 +1124,9 @@ visible = false
 anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 21.0
+
+[node name="Notifications" parent="." instance=ExtResource("54_q42o5")]
+mouse_filter = 2
 
 [connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]

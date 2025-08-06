@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0kgsflweacc6"]
+
+[ext_resource type="Script" uid="uid://b7pwk7diva3eh" path="res://ui/notification.gd" id="1_a21k8"]
+
+[node name="Notification" type="Panel" node_paths=PackedStringArray("icon", "text", "timer", "hbox")]
+custom_minimum_size = Vector2(0, 32)
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("1_a21k8")
+icon = NodePath("HBoxContainer/Icon")
+text = NodePath("HBoxContainer/Text")
+timer = NodePath("HBoxContainer/Timer")
+hbox = NodePath("HBoxContainer")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_right = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 3
+
+[node name="Text" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "sasa"
+vertical_alignment = 1
+
+[node name="Timer" type="Timer" parent="HBoxContainer"]
