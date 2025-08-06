@@ -1,6 +1,7 @@
 class_name ObjectProperties
 extends Control
 
+signal selected_material_changed
 
 const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 
@@ -79,9 +80,11 @@ func close_gadget_properties() -> bool:
 	return false
 
 
-@rpc("any_peer", "call_remote")
+@rpc("any_peer")
 func sync_object_material(material_path: String, object_path: NodePath) -> void:
 	get_node(object_path).material = load(material_path)
+	if object.get_path() == object_path:
+		selected_material_changed.emit()
 
 
 func change_object_material(material_resource: BaseMaterial3D) -> void:

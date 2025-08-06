@@ -311,7 +311,6 @@ func respawn_player() -> void:
 	player.camera.rotation = Vector3.ZERO
 
 
-# TODO: Add menu option
 func delete_save(level: String) -> void:
 	var path := "user://levels/" + level + ".save"
 	if FileAccess.file_exists(path):

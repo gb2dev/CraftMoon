@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=4 uid="uid://r57cg16q4rki"]
+[gd_scene load_steps=4 format=3 uid="uid://r57cg16q4rki"]
 
 [ext_resource type="ButtonGroup" uid="uid://bq757s60eitwd" path="res://material_button_group.tres" id="1_4dgrl"]
-[ext_resource type="Script" path="res://material_item.gd" id="1_vd4rs"]
+[ext_resource type="Script" uid="uid://cbbijpmbf7d2k" path="res://material_item.gd" id="1_vd4rs"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eekc2"]
 content_margin_left = 4.0
@@ -23,4 +23,4 @@ expand_icon = true
 script = ExtResource("1_vd4rs")
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]
-[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="visibility_changed" from="." to="." method="_on_selected_material_changed"]
