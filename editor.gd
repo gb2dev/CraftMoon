@@ -488,8 +488,9 @@ func construct_shape(
 			cylinder.add_to_group(&"Persist")
 			cylinder.position = pos
 			cylinder.rotation = rot
-			cylinder.radius = size.x / 2
-			cylinder.height = size.y
+			cylinder.radius = 1
+			cylinder.height = 2
+			cylinder.scale = size / 2
 			cylinder.material = load(material)
 			cylinder.use_collision = use_collision
 			if cylinder.get_index() == 0:
@@ -506,8 +507,9 @@ func construct_shape(
 			cone.add_to_group(&"Persist")
 			cone.position = pos
 			cone.rotation = rot
-			cone.radius = size.x / 2
-			cone.height = size.y
+			cone.radius = 1
+			cone.height = 2
+			cone.scale = size / 2
 			cone.material = load(material)
 			cone.use_collision = use_collision
 			if cone.get_index() == 0:

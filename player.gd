@@ -5,7 +5,7 @@ extends CharacterBody3D
 const NORMAL_SPEED = 6.0
 const SPRINT_SPEED = 10.0
 const JUMP_VELOCITY = 10
-const DOUBLETAP_DELAY = 0.25
+const DOUBLETAP_DELAY = 0.35
 
 @export_category("Objects")
 @export var _body: Body = null
