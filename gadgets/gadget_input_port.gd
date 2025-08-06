@@ -1,4 +1,4 @@
-class_name GadgetInputControl
+class_name GadgetInputPort
 extends Panel
 
 var icon: Texture2D:

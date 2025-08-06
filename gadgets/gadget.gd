@@ -14,7 +14,7 @@ enum ConnectionChange {
 	DELETE,
 }
 
-const _INPUT_CONTROL_SCENE = preload("res://gadgets/gadget_input_control.tscn")
+const _INPUT_CONTROL_SCENE = preload("res://gadgets/gadget_input_port.tscn")
 const _OUTPUT_PORT_SCENE = preload("res://gadgets/gadget_output_port.tscn")
 const _OUTPUT_VISUAL_SCENE = preload("res://gadgets/gadget_output_visual.tscn")
 const _OUTPUT_CONTROL_SCENE = preload("res://gadgets/gadget_output_control.tscn")
@@ -64,9 +64,9 @@ func _process(delta: float) -> void:
 					var target_gadget: Gadget
 					var target_input: int
 
-					var nearest_input_control: GadgetInputControl
+					var nearest_input_control: GadgetInputPort
 					var nearest_input_control_distance := INF
-					for input_control: GadgetInputControl in get_tree().get_nodes_in_group(&"GadgetInputControl"):
+					for input_control: GadgetInputPort in get_tree().get_nodes_in_group(&"GadgetInputPort"):
 						var distance := mouse_pos.distance_squared_to(
 							input_control.global_position + input_control.size / 2
 						)
@@ -76,7 +76,7 @@ func _process(delta: float) -> void:
 
 					if nearest_input_control:
 						var new_target_gadget := nearest_input_control.get_parent().get_parent()
-						var new_target_input := int(nearest_input_control.name.trim_prefix("GadgetInputControl"))
+						var new_target_input := int(nearest_input_control.name.trim_prefix("GadgetInputPort"))
 						# Prevent connecting to an input more than once
 						if output_controls[output_index].any(func(other: GadgetOutputControl) -> bool:
 							if other == output_control:
@@ -151,7 +151,7 @@ func _notification(what: int) -> void:
 				var gadget := output_control.target_gadget
 				var input_index := output_control.target_input
 				if is_instance_valid(gadget):
-					var input_control := gadget.input_controls[input_index] as GadgetInputControl
+					var input_control := gadget.input_controls[input_index] as GadgetInputPort
 					input_control.output_controls.erase(output_control)
 					input_control.output_visuals.erase(output_visual)
 
@@ -192,7 +192,7 @@ func is_input_data_powered(input_index: int, unconnected_means_powered: bool) ->
 
 func get_input_data(input_index: int) -> Variant:
 	var values: Array[Variant]
-	var input_control := input_controls[input_index] as GadgetInputControl
+	var input_control := input_controls[input_index] as GadgetInputPort
 	for output_control: GadgetOutputControl in input_control.output_controls:
 		values.append(output_control.data)
 	return values.max()
@@ -208,7 +208,7 @@ func output(output_index: int, data: Variant, pulse := false) -> void:
 func set_mouse_filters(value: MouseFilter, outputs_only := false) -> void:
 	if not outputs_only:
 		mouse_filter = value
-		for input_control: GadgetInputControl in get_tree().get_nodes_in_group(&"GadgetInputControl"):
+		for input_control: GadgetInputPort in get_tree().get_nodes_in_group(&"GadgetInputPort"):
 			input_control.mouse_filter = value
 	for output_control: GadgetOutputControl in get_tree().get_nodes_in_group(&"GadgetOutputControl"):
 		output_control.mouse_filter = value
@@ -243,7 +243,7 @@ func update_connection(
 
 	if connection_type == ConnectionChange.CONNECT:
 		var gadget := get_node(gadget_path) as Gadget
-		var input_control := gadget.input_controls[input_index] as GadgetInputControl
+		var input_control := gadget.input_controls[input_index] as GadgetInputPort
 		output_visual.point_b = output_visual.to_local(
 			input_control.global_position
 			+ Vector2(0, input_control.size.y / 2)
@@ -294,7 +294,7 @@ func update_connection(
 
 		var gadget := get_node_or_null(gadget_path) as Gadget
 		if gadget:
-			var input_control := gadget.input_controls[input_index] as GadgetInputControl
+			var input_control := gadget.input_controls[input_index] as GadgetInputPort
 			var input_data: Variant = gadget.get_input_data(input_index)
 			input_control.output_controls.erase(output_control)
 			input_control.output_visuals.erase(output_visual)
@@ -312,7 +312,7 @@ func update_connection_positions() -> void:
 				] as GadgetOutputVisual
 				var input_control := output_control.target_gadget.input_controls[
 					output_control.target_input
-				] as GadgetInputControl
+				] as GadgetInputPort
 				output_visual.point_b = output_visual.to_local(
 					input_control.global_position
 					+ Vector2(0, input_control.size.y / 2)
@@ -323,7 +323,7 @@ func update_connection_positions() -> void:
 					- Vector2(output_control.size.x, output_control.size.y / 2)
 				)
 
-	for input_control: GadgetInputControl in input_controls:
+	for input_control: GadgetInputPort in input_controls:
 		for output_index in input_control.output_controls.size():
 			var output_control := input_control.output_controls[output_index]
 			var output_visual := input_control.output_visuals[output_index]
@@ -392,7 +392,7 @@ func set_gadget_data(gadget_data: GadgetData) -> void:
 
 	var index := 0
 	for input_port_data: GadgetPortData in inputs:
-		var input_control := _INPUT_CONTROL_SCENE.instantiate() as GadgetInputControl
+		var input_control := _INPUT_CONTROL_SCENE.instantiate() as GadgetInputPort
 		input_control.icon = input_port_data.icon
 		input_control.tooltip_text = input_port_data.name
 		if input_port_data.color == Color.TRANSPARENT:
@@ -400,7 +400,7 @@ func set_gadget_data(gadget_data: GadgetData) -> void:
 		else:
 			input_control.self_modulate = input_port_data.color
 		$InputControls.add_child(input_control)
-		input_control.name = "GadgetInputControl" + str(index)
+		input_control.name = "GadgetInputPort" + str(index)
 		input_control.position = _get_port_position(inputs.size(), index, SIDE_LEFT)
 		index += 1
 

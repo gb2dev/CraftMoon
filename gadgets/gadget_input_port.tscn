@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://csikkdkna1sy2"]
 
-[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://gadgets/gadget_input_control.gd" id="1_iahpu"]
+[ext_resource type="Script" uid="uid://bsjrl68kkspew" path="res://gadgets/gadget_input_port.gd" id="1_iahpu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iahpu"]
 content_margin_left = 0.0
@@ -12,7 +12,7 @@ corner_radius_top_left = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="InputControl" type="Panel" groups=["GadgetInputControl"]]
+[node name="InputControl" type="Panel" groups=["GadgetInputPort"]]
 custom_minimum_size = Vector2(24, 16)
 anchors_preset = -1
 offset_right = 24.0
