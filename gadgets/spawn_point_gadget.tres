@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="GadgetData" load_steps=4 format=3 uid="uid://dr6jylsk3fadn"]
+
+[ext_resource type="Script" uid="uid://ds5d08jvch5ld" path="res://gadgets/gadget_port_data.gd" id="1_tsjrg"]
+[ext_resource type="Texture2D" uid="uid://6s7gjstisuj8" path="res://icons/gadgets/spawn_point.svg" id="1_wwhim"]
+[ext_resource type="Script" uid="uid://dya6cq5w0nhy1" path="res://gadgets/gadget_data.gd" id="2_wwhim"]
+
+[resource]
+script = ExtResource("2_wwhim")
+background = Color(0.21176471, 0.23921569, 0.32156864, 1)
+category = "Output"
+name = "Spawn Point Gadget"
+icon = ExtResource("1_wwhim")
+metadata/_custom_type_script = "uid://dya6cq5w0nhy1"

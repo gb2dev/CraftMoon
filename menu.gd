@@ -302,8 +302,8 @@ func load_level(level := "") -> void:
 
 @rpc("any_peer", "call_local")
 func respawn_player() -> void:
-	# TODO: Use spawn point
 	player.position = Vector3.ZERO
+	Signals.player_respawn.emit(player)
 	player.pivot.rotation = Vector3(0, PI, 0)
 	player._spring_arm_offset.rotation = player.pivot.rotation
 	player._spring_arm_offset._spring_arm.rotation.x = 0

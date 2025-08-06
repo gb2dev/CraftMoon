@@ -9,3 +9,7 @@ signal time_rewound
 #region UI Notifications
 signal ui_notification(icon: String, text: String, timeout: float)
 #endregion
+
+#region Level
+signal player_respawn(player: Character)
+#endregion
