@@ -206,7 +206,7 @@ func add_slider(label_prefix: String,
 		slider.value = gadget.get_meta(property_name, default_value)
 	slider.add_user_signal("update_text")
 	var _obj_connect_error := slider.connect(&"update_text", func(value: float) -> void:
-		sync_label_text.rpc(label.get_path(), tr(label_prefix) + str(snappedf(value, step)))
+		sync_label_text.rpc(label.get_path(), get_slider_label_text(label_prefix, value, slider.step))
 	)
 	var _sig_connect_error := slider.value_changed.connect(func(value: float) -> void:
 		sync_slider_value.rpc(slider.get_path(), value)
@@ -222,9 +222,15 @@ func add_slider(label_prefix: String,
 		label.visible = slider.visible
 	)
 
-	label.text = tr(label_prefix) + str(snappedf(slider.value, step))
+	label.text = get_slider_label_text(label_prefix, slider.value, slider.step)
 
 	return slider
+
+
+func get_slider_label_text(label_prefix: String, slider_value: float, step: float) -> String:
+	var step_str := str(step).rstrip("0")
+	var decimal_places := step_str.get_slice(".", 1).length()
+	return "%s%.*f" % [tr(label_prefix), decimal_places, slider_value]
 
 
 func get_control_name(text: String) -> String:
