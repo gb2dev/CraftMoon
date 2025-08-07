@@ -1,32 +1,38 @@
-[gd_scene load_steps=5 format=3 uid="uid://dhk73hlsho2h4"]
+[gd_scene load_steps=4 format=3 uid="uid://dhk73hlsho2h4"]
 
 [ext_resource type="Script" uid="uid://blpq4ald60kw3" path="res://level_portal.gd" id="1_lhsdp"]
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="2_f2emm"]
-[ext_resource type="Material" uid="uid://b1b3lugj0tbb0" path="res://materials/highlight.tres" id="3_7kyls"]
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_m1r2i"]
-points = PackedVector3Array(0, -0.05, -1, -0.707126, -0.05, -0.707126, 0, 0.05, -1, 0.70693, -0.05, -0.707126, -1, -0.05, 0, -0.707126, 0.05, -0.707126, 0.70693, 0.05, -0.707126, 1, -0.05, 0, -1, 0.05, 0, -0.707126, -0.05, 0.70693, 1, 0.05, 0, 0.70693, -0.05, 0.70693, -0.707126, 0.05, 0.70693, 0, -0.05, 1, 0.70693, 0.05, 0.70693, 0, 0.05, 1)
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_njh1l"]
+radius = 6.0
 
-[node name="LevelPortal" type="ShapeCast3D" node_paths=PackedStringArray("label", "cylinder") groups=["LevelPortal"]]
-shape = SubResource("ConvexPolygonShape3D_m1r2i")
-target_position = Vector3(0, 0, 0)
-collision_mask = 2
+[node name="LevelPortal" type="Node3D" node_paths=PackedStringArray("label", "cylinder") groups=["LevelPortal"]]
 script = ExtResource("1_lhsdp")
 label = NodePath("Label3D")
 cylinder = NodePath("CSGCylinder3D")
 
 [node name="CSGTorus3D" type="CSGTorus3D" parent="."]
-inner_radius = 1.0
-outer_radius = 1.1
+inner_radius = 5.0
+outer_radius = 5.5
 ring_sides = 4
 material = ExtResource("2_f2emm")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
-material_overlay = ExtResource("3_7kyls")
 collision_layer = 4
-radius = 1.0
+radius = 5.0
 height = 0.01
 material = ExtResource("2_f2emm")
 
 [node name="Label3D" type="Label3D" parent="."]
 billboard = 1
+font_size = 512
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("CylinderShape3D_njh1l")
+
+[connection signal="input_event" from="Area3D" to="." method="_on_area_3d_input_event"]
+[connection signal="mouse_entered" from="Area3D" to="." method="_on_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="Area3D" to="." method="_on_area_3d_mouse_exited"]

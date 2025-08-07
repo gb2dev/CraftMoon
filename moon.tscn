@@ -1,0 +1,83 @@
+[gd_scene load_steps=8 format=3 uid="uid://dgiept873jjr6"]
+
+[ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="1_3tcni"]
+[ext_resource type="Script" uid="uid://bvj10krgfa2o3" path="res://moon.gd" id="1_rjvio"]
+[ext_resource type="Material" uid="uid://bpbbnj2btwymp" path="res://materials/stone_tiles/stone_tiles.tres" id="3_2g4ib"]
+[ext_resource type="Material" uid="uid://cbwolwwwgyoxw" path="res://materials/wooden_planks/wooden_planks.tres" id="4_e0epg"]
+[ext_resource type="Material" uid="uid://g64wnw5cof7n" path="res://materials/metal_tiles/metal_tiles.tres" id="5_bq21b"]
+[ext_resource type="Material" uid="uid://bmfe3ung1r43h" path="res://materials/checkerboard_light.tres" id="6_1r202"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bq21b"]
+size = Vector3(2, 2, 1.7)
+
+[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera") groups=["Moon"]]
+script = ExtResource("1_rjvio")
+level_portals = NodePath("LevelPortals")
+level_select_camera = NodePath("LevelSelectCamera")
+
+[node name="Floor" type="CSGBox3D" parent="." groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+use_collision = true
+size = Vector3(200, 1, 200)
+material = ExtResource("1_3tcni")
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="CSGCombiner3D" groups=["Undeletable"]]
+use_collision = true
+radius = 16.0
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="CSGCombiner3D" groups=["Undeletable"]]
+operation = 2
+use_collision = true
+radius = 15.0
+material = ExtResource("3_2g4ib")
+
+[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+use_collision = true
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="CSGCombiner3D2" groups=["Undeletable"]]
+use_collision = true
+radius = 15.0
+material = ExtResource("4_e0epg")
+
+[node name="CSGSphere3D2" type="CSGBox3D" parent="CSGCombiner3D2" groups=["Undeletable"]]
+operation = 1
+use_collision = true
+size = Vector3(32, 1, 32)
+material = ExtResource("4_e0epg")
+
+[node name="Computer" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -6)
+use_collision = true
+
+[node name="Area3D" type="Area3D" parent="Computer"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0.14999998)
+shape = SubResource("BoxShape3D_bq21b")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Computer"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.625, 0)
+size = Vector3(1, 0.25, 2)
+material = ExtResource("5_bq21b")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Computer"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.1920929e-07, 1.5, -0.5999999)
+size = Vector3(0.2, 2, 2)
+material = ExtResource("6_1r202")
+
+[node name="LevelPortals" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="LevelSelectCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 70, 0)
+
+[connection signal="body_entered" from="Computer/Area3D" to="." method="_on_computer_entered"]
+[connection signal="body_exited" from="Computer/Area3D" to="." method="_on_computer_exited"]

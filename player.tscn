@@ -5011,7 +5011,7 @@ script = ExtResource("4_ygggd")
 _spring_arm = NodePath("SpringArm3D")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="SpringArmOffset"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 spring_length = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="SpringArmOffset/SpringArm3D"]

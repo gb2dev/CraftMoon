@@ -38,6 +38,7 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(str(name).to_int())
 
 	_set_current_camera()
+	var _error := Signals.is_using_computer_changed.connect(_set_current_camera)
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 

@@ -236,7 +236,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "delete_button", "main_menu_button", "level_portals", "main_menu", "object_properties_node")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
 process_mode = 3
 visible = false
 z_index = 1
@@ -264,7 +264,6 @@ moon_button = NodePath("MoonButton")
 export_button = NodePath("ExportButton")
 delete_button = NodePath("DeleteButton")
 main_menu_button = NodePath("MainMenuButton")
-level_portals = NodePath("../LevelPortals")
 main_menu = NodePath("../MainMenu")
 object_properties_node = NodePath("../ObjectProperties")
 
@@ -585,14 +584,6 @@ script = SubResource("GDScript_036b0")
 [node name="PlayersContainer" type="Node3D" parent="."]
 
 [node name="Geometry" type="Node3D" parent="."]
-
-[node name="Floor" type="CSGBox3D" parent="Geometry" groups=["Persist", "Undeletable"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-use_collision = true
-size = Vector3(100, 1, 100)
-material = ExtResource("5_yl342")
-
-[node name="LevelPortals" type="Node3D" parent="."]
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
