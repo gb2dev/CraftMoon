@@ -511,7 +511,7 @@ theme_override_font_sizes/font_size = 35
 text = "QUIT"
 flat = true
 
-[node name="MultiplayerChat" type="Control" parent="."]
+[node name="MultiplayerChat" type="Control" parent="." groups=["UI"]]
 visible = false
 top_level = true
 layout_mode = 3
@@ -540,6 +540,7 @@ layout_mode = 2
 size_flags_vertical = 3
 text = "
 "
+editable = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MultiplayerChat/VBoxContainer"]
 layout_mode = 2
@@ -548,6 +549,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
+keep_editing_on_text_submit = true
 
 [node name="Send" type="Button" parent="MultiplayerChat/VBoxContainer/HBoxContainer"]
 layout_mode = 2

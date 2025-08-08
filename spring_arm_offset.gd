@@ -12,6 +12,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if Menu.shown:
 		return
 
+	for control: Control in get_tree().get_nodes_in_group(&"UI"):
+		if control.visible:
+			return
+
 	var event_mouse_motion := event as InputEventMouseMotion
 	if event_mouse_motion and is_multiplayer_authority():
 		rotate_y(-event_mouse_motion.relative.x * MOUSE_SENSIBILITY)

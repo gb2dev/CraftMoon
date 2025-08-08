@@ -34,6 +34,9 @@ func _on_area_3d_input_event(
 	_normal: Vector3,
 	_shape_idx: int
 ) -> void:
+	if not is_visible_in_tree():
+		return
+
 	var mouse_button_event := event as InputEventMouseButton
 	if mouse_button_event and mouse_button_event.pressed:
 		match mouse_button_event.button_index:

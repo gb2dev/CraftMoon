@@ -46,8 +46,19 @@ func _ready() -> void:
 	var _error := Network.player_connected.connect(_on_player_connected)
 	_error = multiplayer.peer_disconnected.connect(_remove_player)
 
+	modio = ModIO.new()
+	# Connect ModIO
+
 
 func _process(_delta: float) -> void:
+	if chat_visible:
+		if Input.is_action_just_pressed(&"ui_cancel"):
+			toggle_chat()
+		elif Input.is_action_just_pressed(&"ui_accept"):
+			_on_send_pressed()
+	elif Input.is_action_just_pressed(&"toggle_chat"):
+		toggle_chat()
+
 	if not edit_mode:
 		return
 
@@ -192,28 +203,23 @@ func _on_quit_pressed() -> void:
 
 # ---------- MULTIPLAYER CHAT ----------
 func toggle_chat() -> void:
-	if main_menu.visible:
+	if main_menu.visible or Menu.shown:
 		return
 
 	chat_visible = !chat_visible
 	if chat_visible:
 		multiplayer_chat.show()
-		message.grab_focus()
-	else:
-		multiplayer_chat.hide()
 		get_viewport().set_input_as_handled()
+		message.grab_focus()
+		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+	else:
+		multiplayer_chat.hide.call_deferred()
+		get_viewport().set_input_as_handled()
+		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
 func is_chat_visible() -> bool:
 	return chat_visible
-
-
-func _input(event: InputEvent) -> void:
-	var key_event := event as InputEventKey
-	if event.is_action_pressed("toggle_chat"):
-		toggle_chat()
-	elif key_event and key_event.keycode == KEY_ENTER:
-		_on_send_pressed()
 
 
 func _on_send_pressed() -> void:

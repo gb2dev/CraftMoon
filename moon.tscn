@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dgiept873jjr6"]
+[gd_scene load_steps=12 format=3 uid="uid://dgiept873jjr6"]
 
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="1_3tcni"]
 [ext_resource type="Script" uid="uid://bvj10krgfa2o3" path="res://moon.gd" id="1_rjvio"]
@@ -7,6 +7,7 @@
 [ext_resource type="Material" uid="uid://g64wnw5cof7n" path="res://materials/metal_tiles/metal_tiles.tres" id="5_bq21b"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="6_1r202"]
 [ext_resource type="Texture2D" uid="uid://cgiumkr7mo0s5" path="res://icons/input/keyboard/E.svg" id="7_5nvcs"]
+[ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="7_tdk27"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bq21b"]
 size = Vector3(2, 1, 3)
@@ -19,13 +20,17 @@ albedo_texture = ExtResource("7_5nvcs")
 [sub_resource type="QuadMesh" id="QuadMesh_tdk27"]
 material = SubResource("StandardMaterial3D_8li54")
 
-[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area") groups=["Moon"]]
+[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area", "community_levels", "community_levels_layout", "page_buttons_layout", "http_request") groups=["Moon"]]
 script = ExtResource("1_rjvio")
 level_portals = NodePath("LevelPortals")
 level_select_camera = NodePath("LevelSelectCamera")
 computer_screen = NodePath("ComputerScreen")
 interaction_hint = NodePath("InteractionHint")
 computer_area = NodePath("Computer/ComputerArea")
+community_levels = NodePath("ComputerScreen/CommunityLevels")
+community_levels_layout = NodePath("ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer/CommunityLevelsLayout")
+page_buttons_layout = NodePath("ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer/PageButtonsLayout")
+http_request = NodePath("HTTPRequest")
 
 [node name="Floor" type="CSGBox3D" parent="." groups=["Undeletable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -87,26 +92,33 @@ material = ExtResource("6_1r202")
 
 [node name="LevelPortals" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+visible = false
 
 [node name="LevelSelectCamera" type="Camera3D" parent="." groups=["UICamera"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 70, 0)
 
-[node name="ComputerScreen" type="Panel" parent="." groups=["UI"]]
+[node name="ComputerScreen" type="TabContainer" parent="." groups=["UI"]]
 visible = false
-custom_minimum_size = Vector2(640, 360)
+custom_minimum_size = Vector2(960, 540)
 anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -43.0
-offset_top = -47.5
-offset_right = 43.0
-offset_bottom = 47.5
+offset_left = -480.0
+offset_top = -270.0
+offset_right = 480.0
+offset_bottom = 270.0
 grow_horizontal = 2
 grow_vertical = 2
+current_tab = 0
+tabs_visible = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen"]
+[node name="Buttons" type="Control" parent="ComputerScreen"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/Buttons"]
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 1
 anchors_preset = -1
@@ -121,18 +133,58 @@ offset_bottom = 47.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="AdventureButton" type="Button" parent="ComputerScreen/VBoxContainer"]
+[node name="AdventureButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Adventure"
 
-[node name="CommunityButton" type="Button" parent="ComputerScreen/VBoxContainer"]
+[node name="CommunityButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
 layout_mode = 2
 text = "Community"
 
-[node name="CreateButton" type="Button" parent="ComputerScreen/VBoxContainer"]
+[node name="CreateButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
 layout_mode = 2
 text = "Create"
+
+[node name="CommunityLevels" type="ScrollContainer" parent="ComputerScreen"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="ComputerScreen/CommunityLevels"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Community Levels"
+label_settings = ExtResource("7_tdk27")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="CommunityLevelsLayout" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+
+[node name="PageButtonsLayout" type="HBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
 
 [node name="InteractionHint" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6.5)
@@ -148,7 +200,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.4, 0.0009999275)
 text = "Use Computer"
 outline_size = 0
 
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
 [connection signal="body_entered" from="Computer/ComputerArea" to="." method="_on_computer_entered"]
 [connection signal="body_exited" from="Computer/ComputerArea" to="." method="_on_computer_exited"]
-[connection signal="pressed" from="ComputerScreen/VBoxContainer/CommunityButton" to="." method="_on_community_button_pressed"]
-[connection signal="pressed" from="ComputerScreen/VBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="ComputerScreen/Buttons/VBoxContainer/CommunityButton" to="." method="_on_community_button_pressed"]
+[connection signal="pressed" from="ComputerScreen/Buttons/VBoxContainer/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
