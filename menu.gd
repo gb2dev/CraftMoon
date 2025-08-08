@@ -371,8 +371,7 @@ func spawn_moon() -> void:
 	world.add_child(moon)
 	var _error := moon.enter_level.connect(_on_level_entered.rpc)
 	moon.spawn_level_portals()
-	if multiplayer.is_server():
-		moon.populate_level_portals() # TODO
+	moon.populate_level_portals()
 
 
 @rpc("any_peer", "call_local")

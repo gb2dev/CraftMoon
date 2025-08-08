@@ -52,7 +52,22 @@ func spawn_level_portals() -> void:
 			)
 
 
+@rpc("any_peer")
+func sync_level_portal_details() -> void:
+	if is_multiplayer_authority():
+		for level_portal: LevelPortal in level_portals.get_children():
+			set_level_portal_details.bind(
+				level_portal.get_index(),
+				level_portal.label.text,
+				level_portal.cylinder.material.resource_path
+			).rpc_id(multiplayer.get_remote_sender_id())
+
+
 func populate_level_portals() -> void:
+	if not is_multiplayer_authority():
+		sync_level_portal_details.rpc_id(1)
+		return
+
 	var dir := DirAccess.open("user://levels")
 	if dir:
 		var _list_dir_error := dir.list_dir_begin()
@@ -73,6 +88,7 @@ func populate_level_portals() -> void:
 		printerr("An error occurred when trying to access the path.")
 
 
+@rpc
 func set_level_portal_details(
 	portal_slot: int,
 	portal_level_name: String,
