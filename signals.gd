@@ -15,5 +15,5 @@ signal player_respawn(player: Character)
 #endregion
 
 #region Moon
-signal is_using_computer_changed
+signal level_select_closed
 #endregion

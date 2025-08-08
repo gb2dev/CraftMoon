@@ -59,6 +59,10 @@ func toggle() -> void:
 		if control.visible:
 			return
 
+	for camera: Camera3D in get_tree().get_nodes_in_group(&"UICamera"):
+		if camera.current:
+			return
+
 	visible = not visible
 	background_dim.visible = visible
 	if visible:

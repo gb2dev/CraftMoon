@@ -28,6 +28,22 @@ const LEVEL_PORTAL_POSITIONS = [
 
 @export var level_portals: Node3D
 @export var level_select_camera: Camera3D
+@export var computer_screen: Control
+@export var interaction_hint: Node3D
+@export var computer_area: Area3D
+
+
+func _process(_delta: float) -> void:
+	if Input.is_action_just_pressed(&"interact") or (is_using_computer and Input.is_action_just_pressed(&"ui_cancel")):
+		if interaction_hint.visible:
+			use_computer()
+		elif is_using_computer:
+			unuse_computer()
+
+
+func _exit_tree() -> void:
+	if is_multiplayer_authority():
+		unuse_computer()
 
 
 func spawn_level_portals() -> void:
@@ -120,18 +136,45 @@ func clear_level_portal_details(portal_slot: int) -> void:
 		)
 
 
+func use_computer() -> void:
+	is_using_computer = true
+	interaction_hint.visible = false
+	computer_screen.visible = true
+	Menu.shown = true
+	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+
+
+func unuse_computer() -> void:
+	is_using_computer = false
+	interaction_hint.visible = is_host_in_computer_area()
+	computer_screen.visible = false
+	Menu.shown = false
+	Signals.level_select_closed.emit()
+	level_select_camera.current = false
+	if not Menu.shown:
+		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+
+
+func is_host_in_computer_area() -> bool:
+	return computer_area.get_overlapping_bodies().any(func(body: Node3D) -> bool:
+		return is_multiplayer_authority() and body.name == "1"
+	)
+
+
 func _on_computer_entered(body: Node3D) -> void:
-	if body.name == "1":
-		is_using_computer = true
-		Signals.is_using_computer_changed.emit()
-		level_select_camera.current = true
-		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
+	if is_multiplayer_authority() and body.name == "1":
+		interaction_hint.visible = true
 
 
 func _on_computer_exited(body: Node3D) -> void:
-	if body.name == "1":
-		is_using_computer = false
-		Signals.is_using_computer_changed.emit()
-		level_select_camera.current = false
-		if not Menu.shown:
-			DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+	if is_multiplayer_authority() and body.name == "1":
+		interaction_hint.visible = false
+
+
+func _on_create_button_pressed() -> void:
+	computer_screen.visible = false
+	level_select_camera.current = true
+
+
+func _on_community_button_pressed() -> void:
+	print("TODO: list community levels")

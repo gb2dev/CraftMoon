@@ -38,7 +38,7 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(str(name).to_int())
 
 	_set_current_camera()
-	var _error := Signals.is_using_computer_changed.connect(_set_current_camera)
+	var _error := Signals.level_select_closed.connect(_set_current_camera)
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
@@ -51,7 +51,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	doubletap_time -= delta
-	if Input.is_action_just_pressed(&"jump") and editor.process_mode == PROCESS_MODE_INHERIT:
+	if Input.is_action_just_pressed(&"jump") and editor.process_mode == PROCESS_MODE_INHERIT and not Menu.shown:
 		if doubletap_time >= 0:
 			fly = not fly
 		else:
@@ -61,16 +61,16 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 		_body.animate(velocity)
 
-	if is_on_floor():
-		if Input.is_action_just_pressed("jump"):
+	if is_on_floor() and not Menu.shown:
+		if Input.is_action_just_pressed(&"jump"):
 			velocity.y = JUMP_VELOCITY
 	else:
 		velocity.y -= gravity * delta
 
 	if fly:
-		if Input.is_action_pressed(&"jump"):
+		if Input.is_action_pressed(&"jump") and not Menu.shown:
 			velocity.y = JUMP_VELOCITY
-		elif Input.is_action_pressed(&"crouch"):
+		elif Input.is_action_pressed(&"crouch") and not Menu.shown:
 			velocity.y = -JUMP_VELOCITY
 		else:
 			velocity.y = 0
@@ -94,7 +94,7 @@ func freeze() -> void:
 
 func _move() -> void:
 	var _input_direction: Vector2 = Vector2.ZERO
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() and not Menu.shown:
 		_input_direction = Input.get_vector(
 			"move_left", "move_right",
 			"move_forward", "move_back"
