@@ -136,9 +136,11 @@ func save_level() -> void:
 					type = "Cone"
 				else:
 					type = "Cylinder"
-				node_size.x = geometry.radius * 2
-				node_size.y = geometry.height
-				node_size.z = 1
+				node_size = Vector3(
+					geometry.scale.x * 2,
+					geometry.height * geometry.scale.y,
+					geometry.scale.z * 2
+				)
 			"CSGTorus3D":
 				type = "Torus"
 				node_size = geometry.scale * 2
