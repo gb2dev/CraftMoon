@@ -236,11 +236,11 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
+[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "upload_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
 process_mode = 3
 visible = false
 z_index = 1
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -260,6 +260,7 @@ level_name = NodePath("HBoxContainer/VBoxContainer/LevelName")
 level_description = NodePath("HBoxContainer/VBoxContainer/LevelDescription")
 mode_button = NodePath("ModeButton")
 save_button = NodePath("SaveButton")
+upload_button = NodePath("UploadButton")
 moon_button = NodePath("MoonButton")
 export_button = NodePath("ExportButton")
 delete_button = NodePath("DeleteButton")
@@ -335,6 +336,11 @@ visible = false
 layout_mode = 2
 text = "Export"
 
+[node name="UploadButton" type="Button" parent="Menu"]
+visible = false
+layout_mode = 2
+text = "Upload"
+
 [node name="LoadButton" type="Button" parent="Menu"]
 visible = false
 layout_mode = 2
@@ -371,105 +377,112 @@ grow_vertical = 2
 color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="MainContainer" type="VBoxContainer" parent="MainMenu"]
+[node name="TitleLabel" type="Label" parent="MainMenu"]
 layout_mode = 1
-anchors_preset = -1
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -257.0
-offset_bottom = 257.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -156.5
+offset_top = 20.0
+offset_right = 156.5
+offset_bottom = 109.00003
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 50
-alignment = 1
-
-[node name="TitleLabel" type="Label" parent="MainMenu/MainContainer"]
-layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 0
 theme_override_fonts/font = ExtResource("53_olr1q")
 theme_override_font_sizes/font_size = 70
 text = "CraftMoon"
 
-[node name="MainMenu" type="VBoxContainer" parent="MainMenu/MainContainer"]
+[node name="MainContainer" type="VBoxContainer" parent="MainMenu"]
+visible = false
 layout_direction = 1
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.5
+offset_top = -210.0
+offset_right = 164.5
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer/MainMenu"]
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
 
-[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/MainMenu/Option1"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option1"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Nickname : "
 
-[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/MainMenu/Option1"]
+[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/Option1"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "YourNick"
 max_length = 20
 expand_to_text_length = true
 
-[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/MainMenu/Option2"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option2"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Player Skin : "
 
-[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/MainMenu/Option2"]
+[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/Option2"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/MainMenu/Option3"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option3"]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "IP Address : "
 
-[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/MainMenu/Option3"]
+[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/Option3"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "localhost"
 alignment = 1
 expand_to_text_length = true
 
-[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer/MainMenu"]
+[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer"]
 layout_mode = 2
 theme_override_constants/separation = 30
 theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
 
-[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 theme_override_constants/separation = 30
 alignment = 1
 
-[node name="Host" type="Button" parent="MainMenu/MainContainer/MainMenu/Buttons"]
+[node name="Host" type="Button" parent="MainMenu/MainContainer/Buttons"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
@@ -477,7 +490,7 @@ theme_override_font_sizes/font_size = 35
 text = "HOST"
 flat = true
 
-[node name="Join" type="Button" parent="MainMenu/MainContainer/MainMenu/Buttons"]
+[node name="Join" type="Button" parent="MainMenu/MainContainer/Buttons"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.525257, 0, 1)
@@ -485,25 +498,137 @@ theme_override_font_sizes/font_size = 35
 text = "JOIN"
 flat = true
 
-[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Credits" type="Button" parent="MainMenu/MainContainer/MainMenu/Option4"]
+[node name="Credits" type="Button" parent="MainMenu/MainContainer/Option4"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "CREDITS"
 flat = true
 
-[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer/MainMenu"]
+[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Quit" type="Button" parent="MainMenu/MainContainer/MainMenu/Option5"]
+[node name="Quit" type="Button" parent="MainMenu/MainContainer/Option5"]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
+theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
+theme_override_font_sizes/font_size = 35
+text = "QUIT"
+flat = true
+
+[node name="LoginContainer" type="VBoxContainer" parent="MainMenu"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.5
+offset_top = -210.0
+offset_right = 164.5
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
+
+[node name="Option1" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option1"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Email : "
+
+[node name="EmailInput" type="LineEdit" parent="MainMenu/LoginContainer/Option1"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "your@email.com"
+expand_to_text_length = true
+
+[node name="Option2" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="GetSecurityCode" type="Button" parent="MainMenu/LoginContainer/Option2"]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
+theme_override_font_sizes/font_size = 35
+text = "GET SECURITY CODE"
+flat = true
+
+[node name="Option3" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option3"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Security Code : "
+
+[node name="SecurityCodeInput" type="LineEdit" parent="MainMenu/LoginContainer/Option3"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "ABC12"
+max_length = 20
+expand_to_text_length = true
+
+[node name="Option4" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Login" type="Button" parent="MainMenu/LoginContainer/Option4"]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
+theme_override_font_sizes/font_size = 35
+disabled = true
+text = "LOGIN"
+flat = true
+
+[node name="StatusLabel" type="Label" parent="MainMenu/LoginContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.858824, 0, 0, 0.862745)
+theme_override_font_sizes/font_size = 35
+horizontal_alignment = 1
+
+[node name="Option5" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Quit" type="Button" parent="MainMenu/LoginContainer/Option5"]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
 theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
@@ -515,6 +640,7 @@ flat = true
 visible = false
 top_level = true
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
@@ -575,7 +701,7 @@ _spawnable_scenes = PackedStringArray("uid://cffjduipbb3s5")
 spawn_path = NodePath("../PlayersContainer")
 
 [node name="VersionLabel" type="Label" parent="."]
-anchors_preset = -1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -40.0
@@ -593,6 +719,7 @@ script = SubResource("GDScript_036b0")
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
@@ -988,7 +1115,7 @@ icon = ExtResource("44_vsnf8")
 [node name="InputDisplay" type="PanelContainer" parent="." node_paths=PackedStringArray("hbox")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = -1
+anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -1014,7 +1141,7 @@ theme_override_constants/separation = 10
 [node name="ShapeSelect" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
-anchors_preset = -1
+anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -214.0
@@ -1113,7 +1240,6 @@ horizontal_alignment = 1
 
 [node name="TimePausedIndicator" type="Label" parent="."]
 visible = false
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 21.0
 
@@ -1128,14 +1254,18 @@ mouse_filter = 2
 [connection signal="pressed" from="Menu/DeleteButton" to="Menu" method="_on_delete_button_pressed"]
 [connection signal="pressed" from="Menu/SaveButton" to="Menu" method="_on_save_button_pressed"]
 [connection signal="pressed" from="Menu/ExportButton" to="Menu" method="_on_export_button_pressed"]
+[connection signal="pressed" from="Menu/UploadButton" to="." method="_on_upload_button_pressed"]
 [connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
 [connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
-[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Buttons/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option4/Credits" to="." method="_on_credits_pressed"]
-[connection signal="pressed" from="MainMenu/MainContainer/MainMenu/Option5/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/Buttons/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/Buttons/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/Option4/Credits" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/Option5/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MainMenu/LoginContainer/Option2/GetSecurityCode" to="." method="_on_get_security_code_pressed"]
+[connection signal="pressed" from="MainMenu/LoginContainer/Option4/Login" to="." method="_on_login_pressed"]
+[connection signal="pressed" from="MainMenu/LoginContainer/Option5/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="spawned" from="PlayerMultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
 [connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]

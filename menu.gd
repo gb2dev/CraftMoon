@@ -20,6 +20,7 @@ static var slot := 0
 @export var level_description: TextEdit
 @export var mode_button: Button
 @export var save_button: Button
+@export var upload_button: Button
 @export var moon_button: Button
 @export var export_button: Button
 @export var delete_button: Button
@@ -188,7 +189,7 @@ func save_level() -> void:
 		for property: StringName in property_list:
 			gadget_properties.properties[property] = gadget.get_meta(property)
 		gadgets.append(gadget_properties)
-	var save_file_path := "user://levels/" + str(slot) + ".save"
+	var save_file_path := get_save_file_path(str(slot))
 	var save_file := FileAccess.open(save_file_path, FileAccess.WRITE)
 	if save_file:
 		var _success := save_file.store_var(save_data)
@@ -196,9 +197,12 @@ func save_level() -> void:
 		printerr("Error! Invalid level name.")
 
 
-func transfer_level(level: String) -> void:
-	var save_file_path := "user://levels/" + level + ".save"
-	transfer.rpc(FileAccess.get_file_as_bytes(save_file_path), "user://levels/remote.save")
+func transfer_level(save_file_path: String) -> void:
+	transfer.rpc(FileAccess.get_file_as_bytes(save_file_path), get_save_file_path("remote"))
+
+
+static func get_save_file_path(save_file_name: String) -> String:
+	return "user://levels/" + save_file_name + ".save"
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -229,15 +233,15 @@ func prepare_load_level() -> void:
 		save_button.visible = true
 		moon_button.visible = true
 		export_button.visible = true
+		upload_button.visible = true
 		delete_button.visible = true
 
 
-func load_level(level := "") -> void:
+func load_level(save_file_path := "") -> void:
 	prepare_load_level.rpc()
 
-	if level.is_empty():
-		level = str(slot)
-	var save_file_path := "user://levels/" + level + ".save"
+	if save_file_path.is_empty():
+		save_file_path = get_save_file_path(str(slot))
 
 	if not FileAccess.file_exists(save_file_path):
 		printerr("Error! Save file not found.")
@@ -301,8 +305,8 @@ func respawn_player() -> void:
 	player.camera.rotation = Vector3.ZERO
 
 
-static func delete_save(level: String) -> void:
-	var path := "user://levels/" + level + ".save"
+static func delete_save(save_file_name: String) -> void:
+	var path := get_save_file_path(save_file_name)
 	if FileAccess.file_exists(path):
 		Audio.play_sound("destroy")
 		var _error := DirAccess.remove_absolute(path)
@@ -322,6 +326,7 @@ func new_level(blank := true) -> void:
 			save_button.visible = true
 			moon_button.visible = true
 			export_button.visible = true
+			upload_button.visible = true
 			delete_button.visible = true
 
 		await wipe()
@@ -390,6 +395,7 @@ func go_to_moon() -> void:
 	save_button.visible = false
 	moon_button.visible = false
 	export_button.visible = false
+	upload_button.visible = false
 	delete_button.visible = false
 
 	await wipe()
@@ -496,7 +502,7 @@ func sync_reset_gadgets_created_count() -> void:
 
 
 @rpc("any_peer", "call_local")
-func _on_level_entered(level_slot: int, blank_level: bool) -> void:
+func _on_level_entered(path: String, level_slot: int, blank_level: bool) -> void:
 	if is_multiplayer_authority():
 		multiplayer.multiplayer_peer.refuse_new_connections = true
 	slot = level_slot
@@ -505,15 +511,15 @@ func _on_level_entered(level_slot: int, blank_level: bool) -> void:
 		new_level(false)
 	else:
 		if is_multiplayer_authority():
-			transfer_level(str(level_slot))
+			transfer_level(path)
 			if multiplayer.get_peers().size() > 0:
 				await wipe(level_transfer_complete)
 			else:
 				await wipe()
-			load_level(str(level_slot))
+			load_level(path)
 		else:
 			await wipe(level_transfer_complete)
-			load_level("remote")
+			load_level(get_save_file_path("remote"))
 		enter_edit_mode()
 
 

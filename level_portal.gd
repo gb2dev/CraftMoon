@@ -16,7 +16,8 @@ func select() -> void:
 	if not is_multiplayer_authority():
 		return
 
-	portal_entered.emit(get_index())
+	var slot := get_index()
+	portal_entered.emit(Menu.get_save_file_path(str(slot)), slot)
 
 
 func _on_area_3d_mouse_entered() -> void:

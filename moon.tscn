@@ -100,7 +100,7 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 7
 [node name="ComputerScreen" type="TabContainer" parent="." groups=["UI"]]
 visible = false
 custom_minimum_size = Vector2(960, 540)
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

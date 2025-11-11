@@ -2,12 +2,12 @@ class_name Moon
 extends Node3D
 
 
-signal enter_level(level_slot: int, blank_level: bool)
+signal enter_level(path: String, level_slot: int, blank_level: bool)
 
 static var is_using_computer: bool
 
 const MAX_COMMUNITY_LEVEL_PAGE_BUTTONS = 9
-const MAX_COMMUNITY_LEVELS_PER_PAGE = 2
+const MAX_COMMUNITY_LEVELS_PER_PAGE = 10
 const LEVEL_PORTAL = preload("res://level_portal.tscn")
 const LEVEL_PORTAL_POSITIONS = [
 	Vector3(-4, 0, -11),
@@ -252,7 +252,7 @@ func show_community_levels() -> void:
 	for node in community_levels_layout.get_children() + page_buttons_layout.get_children():
 		node.queue_free()
 
-	var mods := World.modio.get_mods("", current_community_levels_page, MAX_COMMUNITY_LEVELS_PER_PAGE, [])
+	var mods := World.modio.get_mods("", current_community_levels_page, MAX_COMMUNITY_LEVELS_PER_PAGE, ["Level"])
 
 	var pages_count := mods["pages_count"] as int
 	current_community_levels_page = clamp(current_community_levels_page, 1, pages_count)
@@ -303,15 +303,11 @@ func show_community_levels() -> void:
 
 
 func download_and_unzip_mod(mod_url: String, mod_id: int) -> void:
-	print("Downloading mod from: ", mod_url)
-
-	# Start the download
 	var error := http_request.request(mod_url)
 	if error != OK:
-		print("Failed to start download: ", error)
+		printerr("Error! Failed to start download: ", error)
 		return
 
-	# Store mod_id for later use in the callback
 	http_request.set_meta(&"mod_id", mod_id)
 
 
@@ -324,12 +320,9 @@ func _on_http_request_request_completed(
 	var mod_id_str := str(http_request.get_meta(&"mod_id"))
 
 	if response_code != 200:
-		print("Download failed with response code: ", response_code)
+		printerr("Error! Download failed with response code: ", response_code)
 		return
 
-	print("Download completed, file size: ", body.size())
-
-	# Save the downloaded file
 	var download_path := "user://mods/"
 	var _error := DirAccess.open("user://").make_dir_recursive("mods")
 
@@ -338,12 +331,10 @@ func _on_http_request_request_completed(
 	if file:
 		var _success := file.store_buffer(body)
 		file.close()
-		print("Saved zip file to: ", zip_file_path)
 
-		# Now unzip it
 		unzip_mod(zip_file_path, mod_id_str)
 	else:
-		print("Failed to save zip file")
+		printerr("Error! Failed to save zip file")
 
 
 func unzip_mod(zip_path: String, mod_id_str: String) -> void:
@@ -351,49 +342,36 @@ func unzip_mod(zip_path: String, mod_id_str: String) -> void:
 	var error := zip_reader.open(zip_path)
 
 	if error != OK:
-		print("Failed to open zip file: ", error)
+		printerr("Error! Failed to open zip file: ", error)
 		return
 
 	var extract_path := "user://mods/" + mod_id_str + "/"
 	var _error := DirAccess.open("user://").make_dir_recursive("mods/" + mod_id_str)
 
 	var files := zip_reader.get_files()
-	print("Extracting ", files.size(), " files...")
+
+	var output_path: String
 
 	for file_path in files:
 		var file_data := zip_reader.read_file(file_path)
 		if file_data.size() > 0:
-			# Create directory structure if needed
 			var dir_path := extract_path + file_path.get_base_dir()
 			if dir_path != extract_path:
 				_error = DirAccess.open("user://").make_dir_recursive(
 					"mods/" + mod_id_str + "/" + file_path.get_base_dir()
 				)
 
-			# Write the file
-			var output_path := extract_path + file_path
+			output_path = extract_path + file_path
 			var output_file := FileAccess.open(output_path, FileAccess.WRITE)
 			if output_file:
 				var _success := output_file.store_buffer(file_data)
 				output_file.close()
-				print("Extracted: ", file_path)
 			else:
-				print("Failed to create file: ", output_path)
+				printerr("Failed to create file: ", output_path)
 
 	_error = zip_reader.close()
 
-	# Optionally delete the zip file after extraction
 	_error = DirAccess.open("user://").remove(zip_path)
 
-	print("Mod extraction completed to: ", extract_path)
-
-	# Call your function to load/process the mod
-	load_extracted_mod(extract_path, mod_id_str)
-
-
-func load_extracted_mod(mod_path: String, mod_id_str: String) -> void:
-	# TODO: Process your extracted mod files here
-	prints("Loading mod", mod_path, mod_id_str)
-	# You can scan the directory for specific files you need
-	# var dir = DirAccess.open(mod_path)
-	# etc...
+	if output_path:
+		enter_level.emit(output_path, -1, false)

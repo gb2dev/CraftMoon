@@ -11,12 +11,19 @@ static var destroyed_nodes: Dictionary[Node, Node]
 @export var credits: Popup
 @export var time_paused_indicator: Label
 
-@onready var skin_color_picker: ColorPickerButton = $MainMenu/MainContainer/MainMenu/Option2/SkinColorPicker
-@onready var nick_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option1/NickInput
-@onready var address_input: LineEdit = $MainMenu/MainContainer/MainMenu/Option3/AddressInput
+@onready var skin_color_picker: ColorPickerButton = $MainMenu/MainContainer/Option2/SkinColorPicker
+@onready var nick_input: LineEdit = $MainMenu/MainContainer/Option1/NickInput
+@onready var address_input: LineEdit = $MainMenu/MainContainer/Option3/AddressInput
 @onready var players_container: Node3D = $PlayersContainer
 @onready var main_menu: Control = $MainMenu
 @onready var menu: Menu = $Menu
+@onready var login_container: VBoxContainer = $MainMenu/LoginContainer
+@onready var main_container: VBoxContainer = $MainMenu/MainContainer
+@onready var security_code_input: LineEdit = $MainMenu/LoginContainer/Option3/SecurityCodeInput
+@onready var email_input: LineEdit = $MainMenu/LoginContainer/Option1/EmailInput
+@onready var get_security_code: Button = $MainMenu/LoginContainer/Option2/GetSecurityCode
+@onready var status_label: Label = $MainMenu/LoginContainer/StatusLabel
+@onready var login: Button = $MainMenu/LoginContainer/Option4/Login
 
 # multiplayer chat
 @onready var message: LineEdit = $MultiplayerChat/VBoxContainer/HBoxContainer/Message
@@ -33,6 +40,7 @@ var edit_mode := false:
 		edit_mode = value
 
 static var modio: ModIO
+static var modio_token: String
 
 
 func _ready() -> void:
@@ -47,7 +55,18 @@ func _ready() -> void:
 	_error = multiplayer.peer_disconnected.connect(_remove_player)
 
 	modio = ModIO.new()
-	# Connect ModIO
+	add_child(modio)
+	var _connected := modio.connect("https://g-10598.modapi.io/v1", "5e07891fe571c166b912d659a085f617", 10598)
+	
+	var arguments := {}
+	for argument in OS.get_cmdline_args():
+		if argument.contains("="):
+			var key_value := argument.split("=")
+			arguments[key_value[0].trim_prefix("--")] = key_value[1]
+	if arguments.has("modio-token"):
+		modio_token = arguments["modio-token"]
+		login_container.hide()
+		main_container.show()
 
 
 func _process(_delta: float) -> void:
@@ -261,3 +280,37 @@ func _on_color_picker_button_color_changed(color: Color) -> void:
 
 func _on_credits_pressed() -> void:
 	credits.show()
+
+
+func _on_login_pressed() -> void:
+	var response := modio.login_with_security_code(security_code_input.text)
+	if response.is_empty():
+		status_label.text = tr("Error: Invalid Security Code")
+	else:
+		modio_token = response
+		login_container.hide()
+		main_container.show()
+
+
+func _on_get_security_code_pressed() -> void:
+	login.disabled = false
+	get_security_code.disabled = true
+	modio.request_security_code(email_input.text)
+	await get_tree().create_timer(10).timeout
+	get_security_code.disabled = false
+
+
+func _on_upload_button_pressed() -> void:
+	var base_path := "user://levels/" + str(menu.slot)
+	var image := get_viewport().get_texture().get_image()
+	var image_path := base_path + ".png"
+	var _err := image.save_png(image_path)
+	var save_path := base_path + ".save"
+	var _mod_id := modio.upload_mod(
+		modio_token,
+		ProjectSettings.globalize_path(save_path),
+		menu.level_name.text,
+		menu.level_description.text,
+		ProjectSettings.globalize_path(image_path),
+		["Level"]
+	)

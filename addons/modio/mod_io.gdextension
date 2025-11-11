@@ -5,6 +5,8 @@ compatibility_minimum = 4.5
 [libraries]
 windows.debug.x86_64 = "win/mod_io.debug.x64.dll"
 windows.release.x86_64 = "win/mod_io.x64.dll"
+linux.debug.x86_64 = "linux/libmod_io.debug.x64.so"
+linux.release.x86_64 = "linux/libmod_io.x64.so"
 
 [Icon]
 ModIO = "res://addons/mod_io/icons/modio.svg"
