@@ -8,18 +8,22 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="CraftMoon"
 config/version="0.3"
 run/main_scene="uid://dugaivbj1o66n"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Draw3D="*res://draw_3d.gd"
-InputHelper="*res://addons/input_helper/input_helper.gd"
+InputHelper="*uid://cholww48njaeh"
 Network="*res://network.gd"
 Audio="*res://audio.gd"
 Signals="*res://signals.gd"

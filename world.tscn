@@ -1,4 +1,4 @@
-[gd_scene load_steps=79 format=3 uid="uid://dugaivbj1o66n"]
+[gd_scene format=3 uid="uid://dugaivbj1o66n"]
 
 [ext_resource type="Script" uid="uid://d0dgljwwl463n" path="res://world.gd" id="1_e1sh7"]
 [ext_resource type="PackedScene" uid="uid://cffjduipbb3s5" path="res://player.tscn" id="1_uvcbi"]
@@ -200,23 +200,23 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="World" type="Node3D" node_paths=PackedStringArray("credits", "time_paused_indicator")]
+[node name="World" type="Node3D" unique_id=1662680374 node_paths=PackedStringArray("credits", "time_paused_indicator")]
 script = ExtResource("1_e1sh7")
 player_scene = ExtResource("1_uvcbi")
 credits = NodePath("Credits")
 time_paused_indicator = NodePath("TimePausedIndicator")
 
-[node name="Environment" type="Node3D" parent="."]
+[node name="Environment" type="Node3D" parent="." unique_id=1678589333]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=249074786]
 environment = SubResource("Environment_tlwt5")
 
-[node name="Sun" type="DirectionalLight3D" parent="Environment"]
+[node name="Sun" type="DirectionalLight3D" parent="Environment" unique_id=339554242]
 transform = Transform3D(-0.7071071, 0.49999943, -0.500001, 2.9802322e-08, 0.707108, 0.70710546, 0.7071063, 0.49999857, -0.5000008, 0, 10, 0)
 shadow_enabled = true
 shadow_opacity = 0.8
 
-[node name="BackgroundDim" type="ColorRect" parent="."]
+[node name="BackgroundDim" type="ColorRect" parent="." unique_id=316571671]
 visible = false
 z_index = 1
 anchors_preset = 15
@@ -226,7 +226,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.392157)
 
-[node name="LevelTransitionWipe" type="ColorRect" parent="."]
+[node name="LevelTransitionWipe" type="ColorRect" parent="." unique_id=1451433798]
 z_index = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -236,7 +236,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Menu" type="VBoxContainer" parent="." node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "upload_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
+[node name="Menu" type="VBoxContainer" parent="." unique_id=305442762 node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "upload_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
 process_mode = 3
 visible = false
 z_index = 1
@@ -268,25 +268,25 @@ main_menu_button = NodePath("MainMenuButton")
 main_menu = NodePath("../MainMenu")
 object_properties_node = NodePath("../ObjectProperties")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Menu"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Menu" unique_id=1790696598]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Panel" type="PanelContainer" parent="Menu/HBoxContainer"]
+[node name="Panel" type="PanelContainer" parent="Menu/HBoxContainer" unique_id=117329860]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_dwbse")
 
-[node name="TextureRect" type="TextureRect" parent="Menu/HBoxContainer/Panel"]
+[node name="TextureRect" type="TextureRect" parent="Menu/HBoxContainer/Panel" unique_id=392443161]
 custom_minimum_size = Vector2(118, 118)
 layout_mode = 2
 texture = ExtResource("5_xpg20")
 expand_mode = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Menu/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/HBoxContainer" unique_id=1227355825]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LevelName" type="LineEdit" parent="Menu/HBoxContainer/VBoxContainer"]
+[node name="LevelName" type="LineEdit" parent="Menu/HBoxContainer/VBoxContainer" unique_id=1322537306]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_uneditable_color = Color(0.878431, 0.878431, 0.878431, 1)
@@ -297,7 +297,7 @@ editable = false
 context_menu_enabled = false
 flat = true
 
-[node name="LevelDescription" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer"]
+[node name="LevelDescription" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer" unique_id=375625883]
 visible = false
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
@@ -305,61 +305,61 @@ size_flags_vertical = 3
 placeholder_text = "Description"
 context_menu_enabled = false
 
-[node name="Control" type="Control" parent="Menu"]
+[node name="Control" type="Control" parent="Menu" unique_id=1568808155]
 layout_mode = 2
 
-[node name="Control2" type="Control" parent="Menu"]
+[node name="Control2" type="Control" parent="Menu" unique_id=958716771]
 layout_mode = 2
 
-[node name="ModeButton" type="Button" parent="Menu"]
+[node name="ModeButton" type="Button" parent="Menu" unique_id=1207487912]
 visible = false
 layout_mode = 2
 text = "Play Mode"
 
-[node name="NewLevelButton" type="Button" parent="Menu"]
+[node name="NewLevelButton" type="Button" parent="Menu" unique_id=467899553]
 visible = false
 layout_mode = 2
 text = "New Level"
 
-[node name="DeleteButton" type="Button" parent="Menu"]
+[node name="DeleteButton" type="Button" parent="Menu" unique_id=290940358]
 visible = false
 layout_mode = 2
 text = "Delete"
 
-[node name="SaveButton" type="Button" parent="Menu"]
+[node name="SaveButton" type="Button" parent="Menu" unique_id=972739602]
 visible = false
 layout_mode = 2
 text = "Save"
 
-[node name="ExportButton" type="Button" parent="Menu"]
+[node name="ExportButton" type="Button" parent="Menu" unique_id=1990674762]
 visible = false
 layout_mode = 2
 text = "Export"
 
-[node name="UploadButton" type="Button" parent="Menu"]
+[node name="UploadButton" type="Button" parent="Menu" unique_id=716439082]
 visible = false
 layout_mode = 2
 text = "Upload"
 
-[node name="LoadButton" type="Button" parent="Menu"]
+[node name="LoadButton" type="Button" parent="Menu" unique_id=258693999]
 visible = false
 layout_mode = 2
 text = "Load"
 
-[node name="MoonButton" type="Button" parent="Menu"]
+[node name="MoonButton" type="Button" parent="Menu" unique_id=1514993761]
 visible = false
 layout_mode = 2
 text = "Return to Moon"
 
-[node name="MainMenuButton" type="Button" parent="Menu"]
+[node name="MainMenuButton" type="Button" parent="Menu" unique_id=1923944406]
 layout_mode = 2
 text = "Main Menu"
 
-[node name="QuitButton" type="Button" parent="Menu"]
+[node name="QuitButton" type="Button" parent="Menu" unique_id=1923014059]
 layout_mode = 2
 text = "Quit"
 
-[node name="MainMenu" type="Control" parent="."]
+[node name="MainMenu" type="Control" parent="." unique_id=683887848]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -367,7 +367,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="MainMenu"]
+[node name="ColorRect" type="ColorRect" parent="MainMenu" unique_id=1926584730]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -377,7 +377,7 @@ grow_vertical = 2
 color = Color(0.0901961, 0.0901961, 0.0901961, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="TitleLabel" type="Label" parent="MainMenu"]
+[node name="TitleLabel" type="Label" parent="MainMenu" unique_id=1715416262]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -393,7 +393,7 @@ theme_override_fonts/font = ExtResource("53_olr1q")
 theme_override_font_sizes/font_size = 70
 text = "CraftMoon"
 
-[node name="MainContainer" type="VBoxContainer" parent="MainMenu"]
+[node name="MainContainer" type="VBoxContainer" parent="MainMenu" unique_id=1750362290]
 visible = false
 layout_direction = 1
 layout_mode = 1
@@ -413,76 +413,76 @@ size_flags_vertical = 4
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer"]
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer" unique_id=1310340008]
 layout_mode = 2
 theme_override_constants/separation = 10
 theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
 
-[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1465382040]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option1"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option1" unique_id=900631640]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Nickname : "
 
-[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/Option1"]
+[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/Option1" unique_id=646170812]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "YourNick"
 max_length = 20
 expand_to_text_length = true
 
-[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=361982379]
 layout_mode = 2
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option2"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option2" unique_id=1687878958]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Player Skin : "
 
-[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/Option2"]
+[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/Option2" unique_id=694688853]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1923294691]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option3"]
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option3" unique_id=1790709192]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "IP Address : "
 
-[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/Option3"]
+[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/Option3" unique_id=1011717860]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "localhost"
 alignment = 1
 expand_to_text_length = true
 
-[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer"]
+[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer" unique_id=512933074]
 layout_mode = 2
 theme_override_constants/separation = 30
 theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
 
-[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=301663309]
 layout_mode = 2
 theme_override_constants/separation = 30
 alignment = 1
 
-[node name="Host" type="Button" parent="MainMenu/MainContainer/Buttons"]
+[node name="Host" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=581409685]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
@@ -490,7 +490,7 @@ theme_override_font_sizes/font_size = 35
 text = "HOST"
 flat = true
 
-[node name="Join" type="Button" parent="MainMenu/MainContainer/Buttons"]
+[node name="Join" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=776435520]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.525257, 0, 1)
@@ -498,25 +498,25 @@ theme_override_font_sizes/font_size = 35
 text = "JOIN"
 flat = true
 
-[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=844814299]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Credits" type="Button" parent="MainMenu/MainContainer/Option4"]
+[node name="Credits" type="Button" parent="MainMenu/MainContainer/Option4" unique_id=112623463]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = "CREDITS"
 flat = true
 
-[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer"]
+[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165169]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Quit" type="Button" parent="MainMenu/MainContainer/Option5"]
+[node name="Quit" type="Button" parent="MainMenu/MainContainer/Option5" unique_id=1343435430]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
 theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
@@ -524,7 +524,7 @@ theme_override_font_sizes/font_size = 35
 text = "QUIT"
 flat = true
 
-[node name="LoginContainer" type="VBoxContainer" parent="MainMenu"]
+[node name="LoginContainer" type="VBoxContainer" parent="MainMenu" unique_id=421130937]
 layout_direction = 1
 layout_mode = 1
 anchors_preset = 8
@@ -543,36 +543,36 @@ size_flags_vertical = 4
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HSeparator1" type="HSeparator" parent="MainMenu/LoginContainer"]
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/LoginContainer" unique_id=689967654]
 layout_mode = 2
 theme_override_constants/separation = 10
 theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
 
-[node name="Option1" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+[node name="Option1" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2105438797]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option1"]
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option1" unique_id=1404383656]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Email : "
 
-[node name="EmailInput" type="LineEdit" parent="MainMenu/LoginContainer/Option1"]
+[node name="EmailInput" type="LineEdit" parent="MainMenu/LoginContainer/Option1" unique_id=1756929839]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "your@email.com"
 expand_to_text_length = true
 
-[node name="Option2" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+[node name="Option2" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2084063165]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="GetSecurityCode" type="Button" parent="MainMenu/LoginContainer/Option2"]
+[node name="GetSecurityCode" type="Button" parent="MainMenu/LoginContainer/Option2" unique_id=459456381]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
@@ -580,32 +580,32 @@ theme_override_font_sizes/font_size = 35
 text = "GET SECURITY CODE"
 flat = true
 
-[node name="Option3" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+[node name="Option3" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=718097512]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option3"]
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option3" unique_id=1056052360]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 35
 text = "Security Code : "
 
-[node name="SecurityCodeInput" type="LineEdit" parent="MainMenu/LoginContainer/Option3"]
+[node name="SecurityCodeInput" type="LineEdit" parent="MainMenu/LoginContainer/Option3" unique_id=1631761737]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 placeholder_text = "ABC12"
 max_length = 20
 expand_to_text_length = true
 
-[node name="Option4" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+[node name="Option4" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=142168206]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Login" type="Button" parent="MainMenu/LoginContainer/Option4"]
+[node name="Login" type="Button" parent="MainMenu/LoginContainer/Option4" unique_id=266225463]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
@@ -614,7 +614,7 @@ disabled = true
 text = "LOGIN"
 flat = true
 
-[node name="StatusLabel" type="Label" parent="MainMenu/LoginContainer"]
+[node name="StatusLabel" type="Label" parent="MainMenu/LoginContainer" unique_id=1385683446]
 custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -622,13 +622,13 @@ theme_override_colors/font_color = Color(0.858824, 0, 0, 0.862745)
 theme_override_font_sizes/font_size = 35
 horizontal_alignment = 1
 
-[node name="Option5" type="HBoxContainer" parent="MainMenu/LoginContainer"]
+[node name="Option5" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=625026865]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 
-[node name="Quit" type="Button" parent="MainMenu/LoginContainer/Option5"]
+[node name="Quit" type="Button" parent="MainMenu/LoginContainer/Option5" unique_id=1815319201]
 layout_mode = 2
 theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
 theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
@@ -636,7 +636,7 @@ theme_override_font_sizes/font_size = 35
 text = "QUIT"
 flat = true
 
-[node name="MultiplayerChat" type="Control" parent="." groups=["UI"]]
+[node name="MultiplayerChat" type="Control" parent="." unique_id=542990841 groups=["UI"]]
 visible = false
 top_level = true
 layout_mode = 3
@@ -652,7 +652,7 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MultiplayerChat"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MultiplayerChat" unique_id=879072021]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -661,27 +661,27 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="Chat" type="TextEdit" parent="MultiplayerChat/VBoxContainer"]
+[node name="Chat" type="TextEdit" parent="MultiplayerChat/VBoxContainer" unique_id=1558268378]
 layout_mode = 2
 size_flags_vertical = 3
 text = "
 "
 editable = false
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MultiplayerChat/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MultiplayerChat/VBoxContainer" unique_id=1330137313]
 layout_mode = 2
 
-[node name="Message" type="LineEdit" parent="MultiplayerChat/VBoxContainer/HBoxContainer"]
+[node name="Message" type="LineEdit" parent="MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1212106684]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 keep_editing_on_text_submit = true
 
-[node name="Send" type="Button" parent="MultiplayerChat/VBoxContainer/HBoxContainer"]
+[node name="Send" type="Button" parent="MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1959046554]
 layout_mode = 2
 text = "Send"
 
-[node name="ChatTitle" type="Label" parent="MultiplayerChat"]
+[node name="ChatTitle" type="Label" parent="MultiplayerChat" unique_id=604449909]
 top_level = true
 layout_mode = 0
 anchor_right = 1.0
@@ -696,11 +696,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
 
-[node name="PlayerMultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+[node name="PlayerMultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1425155103]
 _spawnable_scenes = PackedStringArray("uid://cffjduipbb3s5")
 spawn_path = NodePath("../PlayersContainer")
 
-[node name="VersionLabel" type="Label" parent="."]
+[node name="VersionLabel" type="Label" parent="." unique_id=1234857205]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -709,13 +709,13 @@ offset_bottom = 21.0
 grow_horizontal = 0
 script = SubResource("GDScript_036b0")
 
-[node name="PlayersContainer" type="Node3D" parent="."]
+[node name="PlayersContainer" type="Node3D" parent="." unique_id=391944199]
 
-[node name="Geometry" type="Node3D" parent="."]
+[node name="Geometry" type="Node3D" parent="." unique_id=675976392]
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=255530098]
 
-[node name="ObjectProperties" type="Control" parent="." node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "logic_panel") groups=["UI"]]
+[node name="ObjectProperties" type="Control" parent="." unique_id=1606810875 node_paths=PackedStringArray("gadgets_panel", "gadget_properties", "tab_container", "object_vbox", "player_vbox", "logic_panel") groups=["UI"]]
 unique_name_in_owner = true
 visible = false
 layout_mode = 3
@@ -736,7 +736,7 @@ object_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginCont
 player_vbox = NodePath("TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player")
 logic_panel = NodePath("TabContainer/Logic/ScrollContainer/Logic")
 
-[node name="TabContainer" type="TabContainer" parent="ObjectProperties"]
+[node name="TabContainer" type="TabContainer" parent="ObjectProperties" unique_id=1948631306]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -747,18 +747,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_1amq5")
 tab_alignment = 1
 current_tab = 0
 
-[node name="Properties" type="Control" parent="ObjectProperties/TabContainer"]
+[node name="Properties" type="Control" parent="ObjectProperties/TabContainer" unique_id=1807960462]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Panel" type="Panel" parent="ObjectProperties/TabContainer/Properties"]
+[node name="Panel" type="Panel" parent="ObjectProperties/TabContainer/Properties" unique_id=710727326]
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 1.0
 offset_right = 326.0
 grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Properties/Panel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Properties/Panel" unique_id=71560528]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -766,219 +766,219 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer" unique_id=1633823037]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="Object" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
+[node name="Object" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer" unique_id=1186271826]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Material" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
+[node name="Material" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object" unique_id=1497698543]
 layout_mode = 2
 
-[node name="MaterialLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="MaterialLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=96005713]
 layout_mode = 2
 text = "Material"
 label_settings = ExtResource("7_olr1q")
 
-[node name="CheckerboardLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="CheckerboardLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=885126336]
 layout_mode = 2
 text = "Checkerboard"
 
-[node name="CheckerboardMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="CheckerboardMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=1554960343]
 layout_mode = 2
 columns = 4
 
-[node name="DarkCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="DarkCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=1236689452 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("9_b7btk")
 item_data = SubResource("Resource_oosws")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="LightCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="LightCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=303757691 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("12_r5m4j")
 item_data = SubResource("Resource_l5hvu")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="PurpleCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="PurpleCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=2124660447 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("14_c0wax")
 item_data = SubResource("Resource_lrosw")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="RedCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="RedCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=2068776560 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("16_37ykd")
 item_data = SubResource("Resource_eleh8")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="OrangeCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="OrangeCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=840714056 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("18_75cpn")
 item_data = SubResource("Resource_fxrfj")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="GreenCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="GreenCheckerboardMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/CheckerboardMaterialItems" unique_id=1088227190 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("20_ynm8w")
 item_data = SubResource("Resource_5gwrr")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="StoneLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="StoneLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=673065947]
 layout_mode = 2
 text = "Stone"
 
-[node name="StoneMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="StoneMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=228990731]
 layout_mode = 2
 columns = 4
 
-[node name="BricksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="BricksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" unique_id=1442816260 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("22_3fh52")
 item_data = SubResource("Resource_rxu81")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="ConcreteMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="ConcreteMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" unique_id=1964112413 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("5_yl342")
 item_data = SubResource("Resource_tje1l")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="StoneTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="StoneTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/StoneMaterialItems" unique_id=1606862433 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("25_ir1d4")
 item_data = SubResource("Resource_0mimp")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="WoodLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="WoodLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=1745442555]
 layout_mode = 2
 text = "Wood"
 
-[node name="WoodMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="WoodMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=918849539]
 layout_mode = 2
 columns = 4
 
-[node name="WoodenPlanksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/WoodMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="WoodenPlanksMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/WoodMaterialItems" unique_id=244874255 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("27_yy5nj")
 item_data = SubResource("Resource_57k0h")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="MetalLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="MetalLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=26051474]
 layout_mode = 2
 text = "Metal"
 
-[node name="MetalMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="MetalMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=246836071]
 layout_mode = 2
 columns = 4
 
-[node name="MetalTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="MetalTilesMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" unique_id=480723426 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("29_fl6gn")
 item_data = SubResource("Resource_yykvs")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="GoldPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="GoldPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" unique_id=1898695066 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("31_yfwfa")
 item_data = SubResource("Resource_aq2cj")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="HazardMetalPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="HazardMetalPaperMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/MetalMaterialItems" unique_id=701538226 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("33_7fs00")
 item_data = SubResource("Resource_4ll5h")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="FabricLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="FabricLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=618755172]
 layout_mode = 2
 text = "Fabric"
 
-[node name="FabricMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="FabricMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=1913332472]
 layout_mode = 2
 columns = 4
 
-[node name="FabricMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/FabricMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="FabricMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/FabricMaterialItems" unique_id=244500658 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("35_415my")
 item_data = SubResource("Resource_t63o8")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="NatureLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="NatureLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=736596868]
 layout_mode = 2
 text = "Nature"
 
-[node name="NatureMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material"]
+[node name="NatureMaterialItems" type="GridContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material" unique_id=209827557]
 layout_mode = 2
 columns = 4
 
-[node name="GrassMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="GrassMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" unique_id=1366198712 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("37_71tr8")
 item_data = SubResource("Resource_croyg")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="DirtMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
+[node name="DirtMaterialItem" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Material/NatureMaterialItems" unique_id=1721507499 node_paths=PackedStringArray("object_properties") instance=ExtResource("8_q42o5")]
 layout_mode = 2
 item = ExtResource("39_t55hq")
 item_data = SubResource("Resource_w8bmm")
 object_properties = NodePath("../../../../../../../../..")
 
-[node name="Physics" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object"]
+[node name="Physics" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object" unique_id=1318607674]
 layout_mode = 2
 
-[node name="PhysicsLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
+[node name="PhysicsLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics" unique_id=731243843]
 layout_mode = 2
 text = "Physics"
 label_settings = ExtResource("7_olr1q")
 
-[node name="CollisionCheckBox" type="CheckBox" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics"]
+[node name="CollisionCheckBox" type="CheckBox" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics" unique_id=234223108]
 layout_mode = 2
 button_pressed = true
 text = "Collision"
 
-[node name="Player" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer"]
+[node name="Player" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer" unique_id=431274098]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Color" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
+[node name="Color" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player" unique_id=1160137973]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
+[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color" unique_id=168292603]
 layout_mode = 2
 text = "Color"
 label_settings = ExtResource("7_olr1q")
 
-[node name="ColorPickerButton" type="ColorPickerButton" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color"]
+[node name="ColorPickerButton" type="ColorPickerButton" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color" unique_id=600310670]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Color"
 edit_alpha = false
 
-[node name="Attributes" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player"]
+[node name="Attributes" type="VBoxContainer" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player" unique_id=817573790]
 layout_mode = 2
 
-[node name="AttributesLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
+[node name="AttributesLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes" unique_id=1480217080]
 layout_mode = 2
 text = "Attributes"
 label_settings = ExtResource("7_olr1q")
 
-[node name="SpeedLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes"]
+[node name="SpeedLabel" type="Label" parent="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Attributes" unique_id=1656401622]
 layout_mode = 2
 text = "Speed"
 
-[node name="Logic" type="HBoxContainer" parent="ObjectProperties/TabContainer"]
+[node name="Logic" type="HBoxContainer" parent="ObjectProperties/TabContainer" unique_id=573826436]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Gadgets" type="Panel" parent="ObjectProperties/TabContainer/Logic" node_paths=PackedStringArray("tabs", "object_properties")]
+[node name="Gadgets" type="Panel" parent="ObjectProperties/TabContainer/Logic" unique_id=1739277019 node_paths=PackedStringArray("tabs", "object_properties")]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(326, 0)
 layout_mode = 2
@@ -986,7 +986,7 @@ script = ExtResource("41_vv6ac")
 tabs = NodePath("MarginContainer/VBoxContainer/TabContainer")
 object_properties = NodePath("../../..")
 
-[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets"]
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets" unique_id=1693439481]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -998,22 +998,22 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer" unique_id=43040913]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer" unique_id=1520746761]
 layout_mode = 2
 text = "Gadgets"
 label_settings = ExtResource("7_olr1q")
 
-[node name="TabContainer" type="TabContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer"]
+[node name="TabContainer" type="TabContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer" unique_id=1044650493]
 layout_mode = 2
 size_flags_vertical = 3
 tab_alignment = 1
 current_tab = 0
 
-[node name="Sensors" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Sensors" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer" unique_id=1990203261]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
@@ -1021,13 +1021,13 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 0
 
-[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors"]
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Sensors" unique_id=1695494645]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="Output" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Output" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer" unique_id=596505829]
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -1036,13 +1036,13 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 1
 
-[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output"]
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Output" unique_id=1256231173]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="Logic" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Logic" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer" unique_id=1555680363]
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -1051,13 +1051,13 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 2
 
-[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic"]
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Logic" unique_id=1987145802]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="Movement" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Movement" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer" unique_id=606251054]
 visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 10
@@ -1066,13 +1066,13 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 metadata/_tab_index = 3
 
-[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement"]
+[node name="GridContainer" type="GridContainer" parent="ObjectProperties/TabContainer/Logic/Gadgets/MarginContainer/VBoxContainer/TabContainer/Movement" unique_id=611396099]
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 4
 
-[node name="Gadget Properties" type="Panel" parent="ObjectProperties/TabContainer/Logic" node_paths=PackedStringArray("vbox")]
+[node name="Gadget Properties" type="Panel" parent="ObjectProperties/TabContainer/Logic" unique_id=286666066 node_paths=PackedStringArray("vbox")]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(326, 0)
@@ -1080,7 +1080,7 @@ layout_mode = 2
 script = ExtResource("42_v27xk")
 vbox = NodePath("MarginContainer/VBoxContainer")
 
-[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties"]
+[node name="MarginContainer" type="MarginContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties" unique_id=1196494310]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1092,19 +1092,19 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectProperties/TabContainer/Logic/Gadget Properties/MarginContainer" unique_id=855836884]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Logic"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ObjectProperties/TabContainer/Logic" unique_id=1535372799]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Logic" type="Panel" parent="ObjectProperties/TabContainer/Logic/ScrollContainer"]
+[node name="Logic" type="Panel" parent="ObjectProperties/TabContainer/Logic/ScrollContainer" unique_id=127573513]
 custom_minimum_size = Vector2(5000, 5000)
 layout_mode = 2
 script = ExtResource("43_vf1x1")
 
-[node name="CloseButton" type="Button" parent="ObjectProperties"]
+[node name="CloseButton" type="Button" parent="ObjectProperties" unique_id=550489704]
 layout_mode = 1
 anchors_preset = -1
 offset_right = 32.0
@@ -1112,7 +1112,7 @@ offset_bottom = 32.0
 tooltip_text = "Close (Escape)"
 icon = ExtResource("44_vsnf8")
 
-[node name="InputDisplay" type="PanelContainer" parent="." node_paths=PackedStringArray("hbox")]
+[node name="InputDisplay" type="PanelContainer" parent="." unique_id=177128360 node_paths=PackedStringArray("hbox")]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 7
@@ -1129,16 +1129,16 @@ grow_vertical = 0
 script = ExtResource("45_afx2c")
 hbox = NodePath("MarginContainer/HBoxContainer")
 
-[node name="MarginContainer" type="MarginContainer" parent="InputDisplay"]
+[node name="MarginContainer" type="MarginContainer" parent="InputDisplay" unique_id=737222637]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_right = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="InputDisplay/MarginContainer" unique_id=1856255203]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ShapeSelect" type="PanelContainer" parent="."]
+[node name="ShapeSelect" type="PanelContainer" parent="." unique_id=1786910694]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 5
@@ -1150,11 +1150,11 @@ offset_right = 214.0
 offset_bottom = 88.0
 grow_horizontal = 2
 
-[node name="ShapeItems" type="HBoxContainer" parent="ShapeSelect"]
+[node name="ShapeItems" type="HBoxContainer" parent="ShapeSelect" unique_id=229352879]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Cuboid" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Cuboid" parent="ShapeSelect/ShapeItems" unique_id=1197525686 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Cuboid" index="0"]
@@ -1163,7 +1163,7 @@ texture = ExtResource("47_ednsc")
 [node name="Label" parent="ShapeSelect/ShapeItems/Cuboid" index="1"]
 anchors_preset = -1
 
-[node name="Ellipsoid" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Ellipsoid" parent="ShapeSelect/ShapeItems" unique_id=1633833575 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Ellipsoid" index="0"]
@@ -1172,7 +1172,7 @@ texture = ExtResource("48_su0yx")
 [node name="Label" parent="ShapeSelect/ShapeItems/Ellipsoid" index="1"]
 anchors_preset = -1
 
-[node name="Cylinder" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Cylinder" parent="ShapeSelect/ShapeItems" unique_id=1360861703 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Cylinder" index="0"]
@@ -1181,7 +1181,7 @@ texture = ExtResource("49_3o3pd")
 [node name="Label" parent="ShapeSelect/ShapeItems/Cylinder" index="1"]
 anchors_preset = -1
 
-[node name="Cone" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Cone" parent="ShapeSelect/ShapeItems" unique_id=1007328544 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Cone" index="0"]
@@ -1190,7 +1190,7 @@ texture = ExtResource("50_1hr04")
 [node name="Label" parent="ShapeSelect/ShapeItems/Cone" index="1"]
 anchors_preset = -1
 
-[node name="Torus" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Torus" parent="ShapeSelect/ShapeItems" unique_id=172720688 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Torus" index="0"]
@@ -1199,7 +1199,7 @@ texture = ExtResource("51_remcq")
 [node name="Label" parent="ShapeSelect/ShapeItems/Torus" index="1"]
 anchors_preset = -1
 
-[node name="Polygon" parent="ShapeSelect/ShapeItems" instance=ExtResource("46_xkj61")]
+[node name="Polygon" parent="ShapeSelect/ShapeItems" unique_id=1745663202 instance=ExtResource("46_xkj61")]
 layout_mode = 2
 
 [node name="TextureRect" parent="ShapeSelect/ShapeItems/Polygon" index="0"]
@@ -1208,13 +1208,13 @@ texture = ExtResource("52_kcilg")
 [node name="Label" parent="ShapeSelect/ShapeItems/Polygon" index="1"]
 anchors_preset = -1
 
-[node name="Credits" type="Popup" parent="."]
+[node name="Credits" type="Popup" parent="." unique_id=1991210054]
 transparent_bg = true
 oversampling_override = 1.0
 initial_position = 2
 size = Vector2i(640, 360)
 
-[node name="MarginContainer" type="ScrollContainer" parent="Credits"]
+[node name="MarginContainer" type="ScrollContainer" parent="Credits" unique_id=1336761110]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1222,7 +1222,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_k3lar")
 
-[node name="Label" type="RichTextLabel" parent="Credits/MarginContainer"]
+[node name="Label" type="RichTextLabel" parent="Credits/MarginContainer" unique_id=682739332]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -1234,16 +1234,16 @@ text = "[b]Credits[/b]
 [u]Sounds[/u]
 Play & Pause Sound by Martin Dürr (magedu)
 licensed under CC BY 4.0
-Rewind Sound by Pavel Sabacky (magedu)
+Rewind Sound by Pavel Sabacky
 licensed under CC BY 4.0"
 horizontal_alignment = 1
 
-[node name="TimePausedIndicator" type="Label" parent="."]
+[node name="TimePausedIndicator" type="Label" parent="." unique_id=432607075]
 visible = false
 offset_right = 40.0
 offset_bottom = 21.0
 
-[node name="Notifications" parent="." instance=ExtResource("54_q42o5")]
+[node name="Notifications" parent="." unique_id=159077098 instance=ExtResource("54_q42o5")]
 mouse_filter = 2
 
 [connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
