@@ -50,7 +50,7 @@ func show_tooltip() -> void:
 		name_label.text = label.text
 		desc_label.visible = true
 		desc_label.text = description if not description.is_empty() else "(No description)"
-		instructions_label.text = "Left-click to edit - Right-click to delete"
+		instructions_label.text = "Left-click to edit - Middle-click to delete"
 
 	var screen_pos := get_viewport().get_camera_3d().unproject_position(global_position)
 	screen_pos.y -= 50
@@ -78,5 +78,5 @@ func _on_area_3d_input_event(
 		match mouse_button_event.button_index:
 			MOUSE_BUTTON_LEFT:
 				select()
-			MOUSE_BUTTON_RIGHT:
+			MOUSE_BUTTON_MIDDLE:
 				portal_properties.emit(get_index())

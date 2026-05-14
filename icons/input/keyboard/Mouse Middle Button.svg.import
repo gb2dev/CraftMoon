@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7e7ocv8wixes"
-path="res://.godot/imported/Mouse Wheel.svg-3988f96dba5807da68058f2e2e2f46d1.ctex"
+path="res://.godot/imported/Mouse Middle Button.svg-b6379d9195835c37d10678a1bd238e73.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/input/keyboard/Mouse Wheel.svg"
-dest_files=["res://.godot/imported/Mouse Wheel.svg-3988f96dba5807da68058f2e2e2f46d1.ctex"]
+source_file="res://icons/input/keyboard/Mouse Middle Button.svg"
+dest_files=["res://.godot/imported/Mouse Middle Button.svg-b6379d9195835c37d10678a1bd238e73.ctex"]
 
 [params]
 

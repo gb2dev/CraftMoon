@@ -585,3 +585,5 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"properties")
 		input_display.add_input_prompt(&"destroy")
 		input_display.add_input_prompt(&"jump", tr(&"(Double Tap) Fly"))
+		input_display.add_input_prompt(&"time_play_pause", tr(&"Play/Pause"))
+		input_display.add_input_prompt(&"time_rewind", tr(&"Rewind"))
