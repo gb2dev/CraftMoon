@@ -383,9 +383,14 @@ func enter_play_mode() -> void:
 func spawn_moon() -> void:
 	var moon := MOON_SCENE.instantiate() as Moon
 	world.add_child(moon)
-	var _error := moon.enter_level.connect(_on_level_entered.rpc)
+	var _error := moon.enter_level.connect(_on_moon_level_entered)
 	moon.spawn_level_portals()
 	moon.populate_level_portals()
+
+
+func _on_moon_level_entered(path: String, level_slot: int, blank_level: bool) -> void:
+	if is_multiplayer_authority():
+		_on_level_entered.rpc(path, level_slot, blank_level)
 
 
 @rpc("any_peer", "call_local")
