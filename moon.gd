@@ -40,6 +40,7 @@ var current_community_levels_page := 1
 @export var community_levels_layout: Container
 @export var page_buttons_layout: Container
 @export var http_request: HTTPRequest
+@export var tooltip: PanelContainer
 
 
 func _process(_delta: float) -> void:
@@ -59,6 +60,7 @@ func spawn_level_portals() -> void:
 	for i in LEVEL_PORTAL_POSITIONS.size():
 		var pos: Vector3 = LEVEL_PORTAL_POSITIONS[i] * 4
 		var level_portal := LEVEL_PORTAL.instantiate() as LevelPortal
+		level_portal.moon = self
 		level_portals.add_child(level_portal)
 		level_portal.position = pos
 		if i % 3 == 0:
@@ -72,8 +74,10 @@ func spawn_level_portals() -> void:
 				enter_level.emit.bind(true)
 			)
 			_error = level_portal.portal_properties.connect(func(slot: int) -> void:
-				Menu.delete_save(str(slot))
-				clear_level_portal_details.rpc(slot)
+				var portal := level_portals.get_child(slot) as LevelPortal
+				if not portal.label.text.is_empty():
+					Menu.delete_save(str(slot))
+					clear_level_portal_details.rpc(slot)
 			)
 
 
@@ -106,7 +110,8 @@ func populate_level_portals() -> void:
 					set_level_portal_details(
 						int(file_name),
 						save_data[0].name,
-						save_data[1].material as String
+						save_data[1].material as String,
+						save_data[0].get("description", "")
 					)
 			file_name = dir.get_next()
 	else:
@@ -117,11 +122,13 @@ func populate_level_portals() -> void:
 func set_level_portal_details(
 	portal_slot: int,
 	portal_level_name: String,
-	portal_material: String
+	portal_material: String,
+	portal_description: String = ""
 ) -> void:
 	var level_portal := level_portals.get_child(portal_slot) as LevelPortal
 	level_portal.label.text = portal_level_name
 	level_portal.cylinder.material = load(portal_material)
+	level_portal.description = portal_description
 
 	if is_multiplayer_authority():
 		if level_portal.portal_entered.is_connected(enter_level.emit):
@@ -136,6 +143,10 @@ func clear_level_portal_details(portal_slot: int) -> void:
 	var level_portal := level_portals.get_child(portal_slot) as LevelPortal
 	level_portal.label.text = ""
 	level_portal.cylinder.material = LevelPortal.DEFAULT_MATERIAL
+	level_portal.description = ""
+
+	if tooltip.visible:
+		level_portal.show_tooltip()
 
 	if is_multiplayer_authority():
 		if level_portal.portal_entered.is_connected(enter_level.emit):
@@ -162,6 +173,7 @@ func unuse_computer() -> void:
 	Signals.level_select_closed.emit()
 	level_select_camera.current = false
 	level_portals.visible = false
+	tooltip.visible = false
 	if not Menu.shown:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 

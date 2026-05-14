@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dgiept873jjr6"]
+[gd_scene load_steps=13 format=3 uid="uid://dgiept873jjr6"]
 
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="1_3tcni"]
 [ext_resource type="Script" uid="uid://bvj10krgfa2o3" path="res://moon.gd" id="1_rjvio"]
@@ -8,6 +8,7 @@
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="6_1r202"]
 [ext_resource type="Texture2D" uid="uid://cgiumkr7mo0s5" path="res://icons/input/keyboard/E.svg" id="7_5nvcs"]
 [ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="7_tdk27"]
+[ext_resource type="PackedScene" uid="uid://c5vh7p3xg8d4" path="res://ui/level_tooltip.tscn" id="13_abc"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bq21b"]
 size = Vector3(2, 1, 3)
@@ -20,7 +21,7 @@ albedo_texture = ExtResource("7_5nvcs")
 [sub_resource type="QuadMesh" id="QuadMesh_tdk27"]
 material = SubResource("StandardMaterial3D_8li54")
 
-[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area", "community_levels", "community_levels_layout", "page_buttons_layout", "http_request") groups=["Moon"]]
+[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area", "community_levels", "community_levels_layout", "page_buttons_layout", "http_request", "tooltip") groups=["Moon"]]
 script = ExtResource("1_rjvio")
 level_portals = NodePath("LevelPortals")
 level_select_camera = NodePath("LevelSelectCamera")
@@ -31,6 +32,7 @@ community_levels = NodePath("ComputerScreen/CommunityLevels")
 community_levels_layout = NodePath("ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer/CommunityLevelsLayout")
 page_buttons_layout = NodePath("ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer/PageButtonsLayout")
 http_request = NodePath("HTTPRequest")
+tooltip = NodePath("LevelTooltip")
 
 [node name="Floor" type="CSGBox3D" parent="." groups=["Undeletable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -201,6 +203,8 @@ text = "Use Computer"
 outline_size = 0
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="LevelTooltip" parent="." instance=ExtResource("13_abc")]
 
 [connection signal="body_entered" from="Computer/ComputerArea" to="." method="_on_computer_entered"]
 [connection signal="body_exited" from="Computer/ComputerArea" to="." method="_on_computer_exited"]
