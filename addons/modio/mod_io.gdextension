@@ -9,4 +9,4 @@ linux.debug.x86_64 = "linux/libmod_io.debug.x64.so"
 linux.release.x86_64 = "linux/libmod_io.x64.so"
 
 [Icon]
-ModIO = "res://addons/mod_io/icons/modio.svg"
+ModIO = "res://addons/modio/icons/modio.svg"

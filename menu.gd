@@ -38,6 +38,9 @@ func _ready() -> void:
 	var _connect_error := Network.player_connected.connect(func(peer_id: int, _player_info: Dictionary) -> void:
 		if peer_id == 1:
 			spawn_moon()
+			if not is_multiplayer_authority():
+				var host_nick: String = Network.players[1]["nick"]
+				level_name.text = tr(&"%s's Moon") % host_nick
 	)
 
 
@@ -403,7 +406,11 @@ func go_to_moon() -> void:
 	enter_play_mode()
 	new_level()
 	await get_tree().process_frame
-	level_name.text = tr(&"Your Moon") # TODO: Rename based on host name
+	if is_multiplayer_authority():
+		level_name.text = tr(&"Your Moon")
+	else:
+		var host_nick: String = Network.players[1]["nick"]
+		level_name.text = tr(&"%s's Moon") % host_nick
 	spawn_moon()
 	respawn_player()
 	if is_multiplayer_authority():
