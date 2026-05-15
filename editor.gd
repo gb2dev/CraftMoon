@@ -9,6 +9,8 @@ const CURSOR_MIN := -10.5
 const CURSOR_MAX := -0.5
 const LINE_LENGTH := 1000
 const SHAPE_COUNT := 6
+const PREVIEW_LINE_WIDTH := 0.016
+const CURSOR_LINE_WIDTH := 0.015
 
 @export var cursor: Node3D
 @export var player: Character
@@ -24,7 +26,7 @@ var highlighted_geometry: GeometryInstance3D:
 			highlighted_geometry = value
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
-var _selected_shape: int
+var _selected_shape := -1
 var selected_shape: int:
 	get:
 		return _selected_shape
@@ -55,24 +57,23 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if Menu.shown:
-		return
+	if not Menu.shown:
+		if Input.is_action_just_pressed(&"object_builder"):
+			if object_properties.visible:
+				object_properties.close()
+			else:
+				set_object_builder_active(not object_builder_active)
 
-	if Input.is_action_just_pressed(&"object_builder"):
-		if object_properties.visible:
-			object_properties.close()
-		else:
-			set_object_builder_active(not object_builder_active)
+		if not object_builder_active:
+			_handle_editor_input()
+			return
 
-	if not object_builder_active:
-		_handle_editor_input()
-		return
+		if Input.is_action_just_pressed(&"properties"):
+			object_properties.toggle(null)
 
-	if Input.is_action_just_pressed(&"properties"):
-		object_properties.toggle(null)
-
-	_update_cursor()
-	_handle_construction()
+	if object_builder_active:
+		_update_cursor()
+		_handle_construction()
 
 
 func _handle_editor_input() -> void:
@@ -115,7 +116,7 @@ func _update_cursor() -> void:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
-	var _cursor_line := await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1)
+	_draw_line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1, CURSOR_LINE_WIDTH, 0)
 
 
 func _handle_construction() -> void:
@@ -156,14 +157,16 @@ func _handle_shape_selection() -> void:
 		selected_shape = 5
 
 
-static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int) -> void:
+static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int, thickness := 0.0, render_priority := 0) -> void:
 	@warning_ignore("return_value_discarded")
-	Draw3D.line(from, to, color, persist_ms)
+	Draw3D.line(from, to, color, persist_ms, thickness, render_priority)
 
 
 func _draw_preview_box() -> void:
 	var a := vertices[-1]
 	var c := cursor.global_position
+	var degenerate := _is_degenerate(a - c)
+	var color := Color.RED if degenerate else Color.WHITE
 
 	var p1 := Vector3(c.x, a.y, a.z)
 	var p2 := Vector3(a.x, c.y, a.z)
@@ -172,21 +175,29 @@ func _draw_preview_box() -> void:
 	var p5 := Vector3(a.x, c.y, c.z)
 	var p6 := Vector3(c.x, a.y, c.z)
 
-	_draw_line(a, p1, Color.WHITE, 1)
-	_draw_line(a, p2, Color.WHITE, 1)
-	_draw_line(a, p3, Color.WHITE, 1)
-	_draw_line(p1, p4, Color.WHITE, 1)
-	_draw_line(p2, p5, Color.WHITE, 1)
-	_draw_line(p3, p6, Color.WHITE, 1)
-	_draw_line(p1, p6, Color.WHITE, 1)
-	_draw_line(p2, p4, Color.WHITE, 1)
-	_draw_line(p3, p5, Color.WHITE, 1)
-	_draw_line(p4, c, Color.WHITE, 1)
-	_draw_line(p5, c, Color.WHITE, 1)
-	_draw_line(p6, c, Color.WHITE, 1)
+	var e := PREVIEW_LINE_WIDTH * 0.5
+	var dx: float = sign(c.x - a.x) * e
+	var dy: float = sign(c.y - a.y) * e
+	var dz: float = sign(c.z - a.z) * e
 
-	_ensure_ghost()
-	_update_ghost(a, c)
+	_draw_line(Vector3(a.x - dx, a.y, a.z), Vector3(p1.x + dx, p1.y, p1.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(a.x, a.y - dy, a.z), Vector3(p2.x, p2.y + dy, p2.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(a.x, a.y, a.z - dz), Vector3(p3.x, p3.y, p3.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p1.x, p1.y - dy, p1.z), Vector3(p4.x, p4.y + dy, p4.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p1.x, p1.y, p1.z - dz), Vector3(p6.x, p6.y, p6.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p2.x - dx, p2.y, p2.z), Vector3(p4.x + dx, p4.y, p4.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p2.x, p2.y, p2.z - dz), Vector3(p5.x, p5.y, p5.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p3.x - dx, p3.y, p3.z), Vector3(p6.x + dx, p6.y, p6.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p3.x, p3.y - dy, p3.z), Vector3(p5.x, p5.y + dy, p5.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p4.x, p4.y, p4.z - dz), Vector3(c.x, c.y, c.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p5.x - dx, p5.y, p5.z), Vector3(c.x + dx, c.y, c.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	_draw_line(Vector3(p6.x, p6.y - dy, p6.z), Vector3(c.x, c.y + dy, c.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+
+	if degenerate:
+		_hide_ghost()
+	else:
+		_ensure_ghost()
+		_update_ghost(a, c)
 
 
 func _ensure_ghost() -> void:
@@ -257,9 +268,7 @@ func _try_finish_shape() -> void:
 
 
 static func _is_degenerate(size: Vector3) -> bool:
-	return (is_zero_approx(size.x) and is_zero_approx(size.y)) \
-		or (is_zero_approx(size.y) and is_zero_approx(size.z)) \
-		or (is_zero_approx(size.x) and is_zero_approx(size.z))
+	return is_zero_approx(size.x) or is_zero_approx(size.y) or is_zero_approx(size.z)
 
 
 func _shape_name() -> String:

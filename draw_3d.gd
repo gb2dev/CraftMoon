@@ -1,20 +1,36 @@
 extends Node
 
-func line(pos1: Vector3, pos2: Vector3, color := Color.WHITE_SMOKE, persist_ms := 0) -> MeshInstance3D:
+func line(pos1: Vector3, pos2: Vector3, color := Color.WHITE_SMOKE, persist_ms := 0, thickness := 0.0, render_priority := 0) -> MeshInstance3D:
 	var mesh_instance := MeshInstance3D.new()
-	var immediate_mesh := ImmediateMesh.new()
-	var material := ORMMaterial3D.new()
-
-	mesh_instance.mesh = immediate_mesh
 	mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
-	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
-	immediate_mesh.surface_add_vertex(pos1)
-	immediate_mesh.surface_add_vertex(pos2)
-	immediate_mesh.surface_end()
-
+	var material := ORMMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.albedo_color = color
+	material.render_priority = render_priority
+
+	if thickness <= 0.0:
+		var immediate_mesh := ImmediateMesh.new()
+		mesh_instance.mesh = immediate_mesh
+		immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
+		immediate_mesh.surface_add_vertex(pos1)
+		immediate_mesh.surface_add_vertex(pos2)
+		immediate_mesh.surface_end()
+	else:
+		var dir := pos2 - pos1
+		var dist := dir.length()
+		if dist < 0.001:
+			return await final_cleanup(mesh_instance, persist_ms)
+		var mid := (pos1 + pos2) * 0.5
+
+		var box_mesh := BoxMesh.new()
+		box_mesh.size = Vector3(thickness, 1.0, thickness)
+		box_mesh.material = material
+
+		mesh_instance.mesh = box_mesh
+		mesh_instance.position = mid
+		mesh_instance.quaternion = Quaternion(Vector3.UP, dir / dist)
+		mesh_instance.scale = Vector3(1, dist, 1)
 
 	return await final_cleanup(mesh_instance, persist_ms)
 
