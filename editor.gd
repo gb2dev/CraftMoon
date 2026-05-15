@@ -24,18 +24,22 @@ var highlighted_geometry: GeometryInstance3D:
 			highlighted_geometry = value
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
-var _construction_mode_backing: int
-var construction_mode: int:
+var _selected_shape: int
+var selected_shape: int:
 	get:
-		return _construction_mode_backing
+		return _selected_shape
 	set(value):
-		if _construction_mode_backing == value:
+		if _selected_shape == value:
 			return
-		_construction_mode_backing = value
+		_selected_shape = value
 		for shape_item: ShapeItem in shape_items.get_children():
 			shape_item.set_selected(value == shape_item.get_index())
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
+
+var _ghost: CSGShape3D
+var _ghost_cached_shape := -1
+var _ghost_material: Material
 
 @onready var object_properties := get_tree().current_scene.get_node("%ObjectProperties") as ObjectProperties
 @onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
@@ -47,7 +51,7 @@ var construction_collision := true
 
 func _ready() -> void:
 	set_object_builder_active(false)
-	construction_mode = 0
+	selected_shape = 0
 
 
 func _process(_delta: float) -> void:
@@ -135,21 +139,21 @@ func _handle_construction() -> void:
 
 func _handle_shape_selection() -> void:
 	if Input.is_action_just_pressed(&"previous", true):
-		construction_mode = wrapi(construction_mode - 1, 0, SHAPE_COUNT)
+		selected_shape = wrapi(selected_shape - 1, 0, SHAPE_COUNT)
 	elif Input.is_action_just_pressed(&"next", true):
-		construction_mode = wrapi(construction_mode + 1, 0, SHAPE_COUNT)
+		selected_shape = wrapi(selected_shape + 1, 0, SHAPE_COUNT)
 	elif Input.is_action_just_pressed(&"1"):
-		construction_mode = 0
+		selected_shape = 0
 	elif Input.is_action_just_pressed(&"2"):
-		construction_mode = 1
+		selected_shape = 1
 	elif Input.is_action_just_pressed(&"3"):
-		construction_mode = 2
+		selected_shape = 2
 	elif Input.is_action_just_pressed(&"4"):
-		construction_mode = 3
+		selected_shape = 3
 	elif Input.is_action_just_pressed(&"5"):
-		construction_mode = 4
+		selected_shape = 4
 	elif Input.is_action_just_pressed(&"6"):
-		construction_mode = 5
+		selected_shape = 5
 
 
 static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int) -> void:
@@ -181,8 +185,68 @@ func _draw_preview_box() -> void:
 	_draw_line(p5, c, Color.WHITE, 1)
 	_draw_line(p6, c, Color.WHITE, 1)
 
+	_ensure_ghost()
+	_update_ghost(a, c)
+
+
+func _ensure_ghost() -> void:
+	var shape_name := _shape_name()
+	if shape_name.is_empty():
+		return
+	if selected_shape == _ghost_cached_shape and _ghost:
+		_ghost.visible = true
+		return
+	if _ghost:
+		_ghost.queue_free()
+	_ghost = _create_shape(shape_name, Vector3.ONE)
+	if not _ghost:
+		return
+	if not _ghost_material:
+		_ghost_material = ORMMaterial3D.new()
+		_ghost_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_ghost_material.albedo_color = Color(1, 1, 1, 0.3)
+		_ghost_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_ghost.material = _ghost_material
+	_ghost.use_collision = false
+	_ghost_cached_shape = selected_shape
+	geometry_root.add_child(_ghost)
+
+
+func _update_ghost(a: Vector3, c: Vector3) -> void:
+	if not _ghost:
+		return
+	var size := a - c
+	var center := a - size / 2
+	var abs_size := size.abs()
+	_ghost.position = center
+	_ghost.rotation = Vector3.ZERO
+	if _shape_name() == &"Polygon":
+		_ghost.position.z += abs_size.z / 2
+	_apply_shape_size(_ghost, _shape_name(), abs_size)
+
+
+func _apply_shape_size(shape: CSGShape3D, type: String, size: Vector3) -> void:
+	match type:
+		"Cuboid":
+			var s := shape as CSGBox3D
+			if s: s.size = size
+		"Ellipsoid":
+			shape.scale = size
+		"Cylinder", "Cone":
+			shape.scale = size / 2
+		"Torus":
+			shape.scale = size / 2
+		"Polygon":
+			shape.scale = size
+
+
+func _hide_ghost() -> void:
+	if _ghost:
+		_ghost.visible = false
+
 
 func _try_finish_shape() -> void:
+	_hide_ghost()
 	var size := vertices[-2] - vertices[-1]
 	if _is_degenerate(size):
 		vertices.clear()
@@ -199,7 +263,7 @@ static func _is_degenerate(size: Vector3) -> bool:
 
 
 func _shape_name() -> String:
-	match construction_mode:
+	match selected_shape:
 		0: return &"Cuboid"
 		1: return &"Ellipsoid"
 		2: return &"Cylinder"
@@ -290,6 +354,7 @@ func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:
 
 
 func set_object_builder_active(value: bool) -> void:
+	_hide_ghost()
 	vertices.clear()
 	object_properties.close()
 	object_builder_active = value
