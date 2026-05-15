@@ -76,14 +76,14 @@ func _handle_editor_input() -> void:
 		if control.visible:
 			return
 
+	var collider := get_collider()
+
 	if Input.is_action_just_pressed(&"properties"):
-		var collider := get_collider()
 		if collider is CSGShape3D:
 			object_properties.toggle(collider)
 	elif Input.is_action_just_pressed(&"customize_player"):
 		object_properties.toggle(player)
 
-	var collider := get_collider()
 	if collider:
 		if collider is CSGShape3D:
 			highlighted_geometry = collider
@@ -111,7 +111,7 @@ func _update_cursor() -> void:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
-	await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1)
+	var _cursor_line := await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1)
 
 
 func _handle_construction() -> void:
@@ -152,6 +152,11 @@ func _handle_shape_selection() -> void:
 		construction_mode = 5
 
 
+static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int) -> void:
+	@warning_ignore("return_value_discarded")
+	Draw3D.line(from, to, color, persist_ms)
+
+
 func _draw_preview_box() -> void:
 	var a := vertices[-1]
 	var c := cursor.global_position
@@ -163,18 +168,18 @@ func _draw_preview_box() -> void:
 	var p5 := Vector3(a.x, c.y, c.z)
 	var p6 := Vector3(c.x, a.y, c.z)
 
-	Draw3D.line(a, p1, Color.WHITE, 1)
-	Draw3D.line(a, p2, Color.WHITE, 1)
-	Draw3D.line(a, p3, Color.WHITE, 1)
-	Draw3D.line(p1, p4, Color.WHITE, 1)
-	Draw3D.line(p2, p5, Color.WHITE, 1)
-	Draw3D.line(p3, p6, Color.WHITE, 1)
-	Draw3D.line(p1, p6, Color.WHITE, 1)
-	Draw3D.line(p2, p4, Color.WHITE, 1)
-	Draw3D.line(p3, p5, Color.WHITE, 1)
-	Draw3D.line(p4, c, Color.WHITE, 1)
-	Draw3D.line(p5, c, Color.WHITE, 1)
-	Draw3D.line(p6, c, Color.WHITE, 1)
+	_draw_line(a, p1, Color.WHITE, 1)
+	_draw_line(a, p2, Color.WHITE, 1)
+	_draw_line(a, p3, Color.WHITE, 1)
+	_draw_line(p1, p4, Color.WHITE, 1)
+	_draw_line(p2, p5, Color.WHITE, 1)
+	_draw_line(p3, p6, Color.WHITE, 1)
+	_draw_line(p1, p6, Color.WHITE, 1)
+	_draw_line(p2, p4, Color.WHITE, 1)
+	_draw_line(p3, p5, Color.WHITE, 1)
+	_draw_line(p4, c, Color.WHITE, 1)
+	_draw_line(p5, c, Color.WHITE, 1)
+	_draw_line(p6, c, Color.WHITE, 1)
 
 
 func _try_finish_shape() -> void:
