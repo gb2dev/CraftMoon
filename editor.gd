@@ -4,6 +4,12 @@ extends RayCast3D
 
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
+const CURSOR_STEP := 0.5
+const CURSOR_MIN := -10.5
+const CURSOR_MAX := -0.5
+const LINE_LENGTH := 1000
+const SHAPE_COUNT := 6
+
 @export var cursor: Node3D
 @export var player: Character
 
@@ -18,11 +24,16 @@ var highlighted_geometry: GeometryInstance3D:
 			highlighted_geometry = value
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
+var _construction_mode_backing: int
 var construction_mode: int:
+	get:
+		return _construction_mode_backing
 	set(value):
-		construction_mode = value
+		if _construction_mode_backing == value:
+			return
+		_construction_mode_backing = value
 		for shape_item: ShapeItem in shape_items.get_children():
-			shape_item.set_selected(construction_mode == shape_item.get_index())
+			shape_item.set_selected(value == shape_item.get_index())
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
 
@@ -30,6 +41,8 @@ var construction_collision := true
 @onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
 @onready var shape_select := get_tree().current_scene.get_node("%ShapeSelect") as Control
 @onready var shape_items := get_tree().current_scene.get_node("%ShapeItems") as Control
+@onready var geometry_root := get_tree().current_scene.get_node(^"Geometry")
+@onready var tree := get_tree()
 
 
 func _ready() -> void:
@@ -41,8 +54,6 @@ func _process(_delta: float) -> void:
 	if Menu.shown:
 		return
 
-	# Object Builder Toggle
-
 	if Input.is_action_just_pressed(&"object_builder"):
 		if object_properties.visible:
 			object_properties.close()
@@ -50,42 +61,49 @@ func _process(_delta: float) -> void:
 			set_object_builder_active(not object_builder_active)
 
 	if not object_builder_active:
-		for control: Control in get_tree().get_nodes_in_group(&"UI"):
-			if control.visible:
-				return
-
-		if Input.is_action_just_pressed(&"properties"):
-			if get_collider() is CSGShape3D:
-				object_properties.toggle(get_collider())
-		elif Input.is_action_just_pressed(&"customize_player"):
-			object_properties.toggle(player)
-
-		if get_collider():
-			if get_collider() is CSGShape3D:
-				highlighted_geometry = get_collider()
-				if Input.is_action_just_pressed(&"destroy"):
-					if not highlighted_geometry.is_in_group(&"Undeletable"):
-						Audio.play_sound("destroy")
-						destroy.rpc(highlighted_geometry.get_path())
-				return
-		highlighted_geometry = null
-
+		_handle_editor_input()
 		return
 
 	if Input.is_action_just_pressed(&"properties"):
 		object_properties.toggle(null)
 
+	_update_cursor()
+	_handle_construction()
 
-	# Cursor
 
+func _handle_editor_input() -> void:
+	for control: Control in tree.get_nodes_in_group(&"UI"):
+		if control.visible:
+			return
+
+	if Input.is_action_just_pressed(&"properties"):
+		var collider := get_collider()
+		if collider is CSGShape3D:
+			object_properties.toggle(collider)
+	elif Input.is_action_just_pressed(&"customize_player"):
+		object_properties.toggle(player)
+
+	var collider := get_collider()
+	if collider:
+		if collider is CSGShape3D:
+			highlighted_geometry = collider
+			if Input.is_action_just_pressed(&"destroy"):
+				if not highlighted_geometry.is_in_group(&"Undeletable"):
+					Audio.play_sound("destroy")
+					destroy.rpc(highlighted_geometry.get_path())
+			return
+	highlighted_geometry = null
+
+
+func _update_cursor() -> void:
 	if Input.is_action_just_pressed(&"cursor_forward"):
-		cursor_distance -= 0.5
-		target_position.z -= 0.5
+		cursor_distance -= CURSOR_STEP
+		target_position.z -= CURSOR_STEP
 	elif Input.is_action_just_pressed(&"cursor_back"):
-		cursor_distance += 0.5
-		target_position.z += 0.5
-	cursor_distance = clampf(cursor_distance, -10.5, -0.5)
-	target_position.z = clampf(target_position.z, -10.5, -0.5)
+		cursor_distance += CURSOR_STEP
+		target_position.z += CURSOR_STEP
+	cursor_distance = clampf(cursor_distance, CURSOR_MIN, CURSOR_MAX)
+	target_position.z = clampf(target_position.z, CURSOR_MIN, CURSOR_MAX)
 
 	if is_colliding():
 		cursor.global_position = get_collision_point()
@@ -93,20 +111,33 @@ func _process(_delta: float) -> void:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
+	await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1)
 
-	var _mesh_instance := await Draw3D.line(cursor.global_position, cursor.global_position + Vector3.DOWN * 1000, Color(0, 0.85, 0.85), 1)
 
+func _handle_construction() -> void:
+	_handle_shape_selection()
 
-	# Object Construction
+	var has_first_vertex := not vertices.is_empty()
+	if has_first_vertex:
+		_draw_preview_box()
 
-	for control: Control in get_tree().get_nodes_in_group(&"UI"):
+	for control: Control in tree.get_nodes_in_group(&"UI"):
 		if control.visible:
 			return
 
+	if Input.is_action_just_pressed(&"action"):
+		vertices.append(cursor.global_position)
+		if has_first_vertex:
+			_try_finish_shape()
+		else:
+			Audio.play_sound("click")
+
+
+func _handle_shape_selection() -> void:
 	if Input.is_action_just_pressed(&"previous", true):
-		construction_mode = wrapi(construction_mode - 1, 0, 6)
+		construction_mode = wrapi(construction_mode - 1, 0, SHAPE_COUNT)
 	elif Input.is_action_just_pressed(&"next", true):
-		construction_mode = wrapi(construction_mode + 1, 0, 6)
+		construction_mode = wrapi(construction_mode + 1, 0, SHAPE_COUNT)
 	elif Input.is_action_just_pressed(&"1"):
 		construction_mode = 0
 	elif Input.is_action_just_pressed(&"2"):
@@ -120,314 +151,57 @@ func _process(_delta: float) -> void:
 	elif Input.is_action_just_pressed(&"6"):
 		construction_mode = 5
 
+
+func _draw_preview_box() -> void:
+	var a := vertices[-1]
+	var c := cursor.global_position
+
+	var p1 := Vector3(c.x, a.y, a.z)
+	var p2 := Vector3(a.x, c.y, a.z)
+	var p3 := Vector3(a.x, a.y, c.z)
+	var p4 := Vector3(c.x, c.y, a.z)
+	var p5 := Vector3(a.x, c.y, c.z)
+	var p6 := Vector3(c.x, a.y, c.z)
+
+	Draw3D.line(a, p1, Color.WHITE, 1)
+	Draw3D.line(a, p2, Color.WHITE, 1)
+	Draw3D.line(a, p3, Color.WHITE, 1)
+	Draw3D.line(p1, p4, Color.WHITE, 1)
+	Draw3D.line(p2, p5, Color.WHITE, 1)
+	Draw3D.line(p3, p6, Color.WHITE, 1)
+	Draw3D.line(p1, p6, Color.WHITE, 1)
+	Draw3D.line(p2, p4, Color.WHITE, 1)
+	Draw3D.line(p3, p5, Color.WHITE, 1)
+	Draw3D.line(p4, c, Color.WHITE, 1)
+	Draw3D.line(p5, c, Color.WHITE, 1)
+	Draw3D.line(p6, c, Color.WHITE, 1)
+
+
+func _try_finish_shape() -> void:
+	var size := vertices[-2] - vertices[-1]
+	if _is_degenerate(size):
+		vertices.clear()
+		return
+	Audio.play_sound("place")
+	construct_shape.rpc(_shape_name(), vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
+	vertices.clear()
+
+
+static func _is_degenerate(size: Vector3) -> bool:
+	return (is_zero_approx(size.x) and is_zero_approx(size.y)) \
+		or (is_zero_approx(size.y) and is_zero_approx(size.z)) \
+		or (is_zero_approx(size.x) and is_zero_approx(size.z))
+
+
+func _shape_name() -> String:
 	match construction_mode:
-		# Cuboid Construction
-		0:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-			var pos_3: Vector3
-			var pos_4: Vector3
-			var pos_5: Vector3
-			var pos_6: Vector3
-
-			if construction_stage == 1:
-				pos_1 = cursor.global_position
-				pos_1.x = vertices[-1].x
-				pos_1.z = vertices[-1].z
-				pos_2 = cursor.global_position
-				pos_2.x = vertices[-1].x
-				pos_2.y = vertices[-1].y
-				pos_3 = cursor.global_position
-				pos_3.y = vertices[-1].y
-				pos_3.z = vertices[-1].z
-				pos_4 = cursor.global_position
-				pos_4.x = vertices[-1].x
-				pos_5 = cursor.global_position
-				pos_5.y = vertices[-1].y
-				pos_6 = cursor.global_position
-				pos_6.z = vertices[-1].z
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
-
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				if construction_stage == 1:
-					var size := vertices[-2] - vertices[-1]
-					if not (
-						is_zero_approx(size.x) and is_zero_approx(size.y)
-						or
-						is_zero_approx(size.y) and is_zero_approx(size.z)
-						or
-						is_zero_approx(size.x) and is_zero_approx(size.z)
-					):
-						Audio.play_sound("place")
-						construct_shape.rpc("Cuboid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
-					vertices.clear()
-				else:
-					Audio.play_sound("click")
-		# Ellipsoid Construction
-		1:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-			var pos_3: Vector3
-			var pos_4: Vector3
-			var pos_5: Vector3
-			var pos_6: Vector3
-
-			if construction_stage == 1:
-				pos_1 = cursor.global_position
-				pos_1.x = vertices[-1].x
-				pos_1.z = vertices[-1].z
-				pos_2 = cursor.global_position
-				pos_2.x = vertices[-1].x
-				pos_2.y = vertices[-1].y
-				pos_3 = cursor.global_position
-				pos_3.y = vertices[-1].y
-				pos_3.z = vertices[-1].z
-				pos_4 = cursor.global_position
-				pos_4.x = vertices[-1].x
-				pos_5 = cursor.global_position
-				pos_5.y = vertices[-1].y
-				pos_6 = cursor.global_position
-				pos_6.z = vertices[-1].z
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
-
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				if construction_stage == 1:
-					var size := vertices[-2] - vertices[-1]
-					if not (
-						is_zero_approx(size.x) and is_zero_approx(size.y)
-						or
-						is_zero_approx(size.y) and is_zero_approx(size.z)
-						or
-						is_zero_approx(size.x) and is_zero_approx(size.z)
-					):
-						Audio.play_sound("place")
-						construct_shape.rpc("Ellipsoid", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
-					vertices.clear()
-				else:
-					Audio.play_sound("click")
-		# Cylinder/Cone Construction
-		2, 3:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-			var pos_3: Vector3
-			var pos_4: Vector3
-			var pos_5: Vector3
-			var pos_6: Vector3
-
-			if construction_stage == 1:
-				pos_1 = cursor.global_position
-				pos_1.x = vertices[-1].x
-				pos_1.z = vertices[-1].z
-				pos_2 = cursor.global_position
-				pos_2.x = vertices[-1].x
-				pos_2.y = vertices[-1].y
-				pos_3 = cursor.global_position
-				pos_3.y = vertices[-1].y
-				pos_3.z = vertices[-1].z
-				pos_4 = cursor.global_position
-				pos_4.x = vertices[-1].x
-				pos_5 = cursor.global_position
-				pos_5.y = vertices[-1].y
-				pos_6 = cursor.global_position
-				pos_6.z = vertices[-1].z
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
-
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				if construction_stage == 1:
-					var size := vertices[-2] - vertices[-1]
-					if not (
-						is_zero_approx(size.x) and is_zero_approx(size.y)
-						or
-						is_zero_approx(size.y) and is_zero_approx(size.z)
-						or
-						is_zero_approx(size.x) and is_zero_approx(size.z)
-					):
-						Audio.play_sound("place")
-						construct_shape.rpc("Cylinder" if construction_mode == 2 else "Cone", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
-
-					vertices.clear()
-				else:
-					Audio.play_sound("click")
-		# Torus Construction
-		4:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-			var pos_3: Vector3
-			var pos_4: Vector3
-			var pos_5: Vector3
-			var pos_6: Vector3
-
-			if construction_stage == 1:
-				pos_1 = cursor.global_position
-				pos_1.x = vertices[-1].x
-				pos_1.z = vertices[-1].z
-				pos_2 = cursor.global_position
-				pos_2.x = vertices[-1].x
-				pos_2.y = vertices[-1].y
-				pos_3 = cursor.global_position
-				pos_3.y = vertices[-1].y
-				pos_3.z = vertices[-1].z
-				pos_4 = cursor.global_position
-				pos_4.x = vertices[-1].x
-				pos_5 = cursor.global_position
-				pos_5.y = vertices[-1].y
-				pos_6 = cursor.global_position
-				pos_6.z = vertices[-1].z
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
-
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				if construction_stage == 1:
-					var size := vertices[-2] - vertices[-1]
-					if not (
-						is_zero_approx(size.x) and is_zero_approx(size.y)
-						or
-						is_zero_approx(size.y) and is_zero_approx(size.z)
-						or
-						is_zero_approx(size.x) and is_zero_approx(size.z)
-					):
-						Audio.play_sound("place")
-						construct_shape.rpc("Torus", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
-
-					vertices.clear()
-				else:
-					Audio.play_sound("click")
-		# Polygon Construction
-		5:
-			var construction_stage := vertices.size() % 3
-
-			var pos_1: Vector3
-			var pos_2: Vector3
-			var pos_3: Vector3
-			var pos_4: Vector3
-			var pos_5: Vector3
-			var pos_6: Vector3
-
-			if construction_stage == 1:
-				pos_1 = cursor.global_position
-				pos_1.x = vertices[-1].x
-				pos_1.z = vertices[-1].z
-				pos_2 = cursor.global_position
-				pos_2.x = vertices[-1].x
-				pos_2.y = vertices[-1].y
-				pos_3 = cursor.global_position
-				pos_3.y = vertices[-1].y
-				pos_3.z = vertices[-1].z
-				pos_4 = cursor.global_position
-				pos_4.x = vertices[-1].x
-				pos_5 = cursor.global_position
-				pos_5.y = vertices[-1].y
-				pos_6 = cursor.global_position
-				pos_6.z = vertices[-1].z
-
-				Draw3D.line(vertices[-1], pos_1, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_2, Color.WHITE, 1)
-				Draw3D.line(vertices[-1], pos_3, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_1, pos_6, Color.WHITE, 1)
-				Draw3D.line(pos_2, pos_4, Color.WHITE, 1)
-				Draw3D.line(pos_3, pos_5, Color.WHITE, 1)
-				Draw3D.line(pos_4, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_5, cursor.global_position, Color.WHITE, 1)
-				Draw3D.line(pos_6, cursor.global_position, Color.WHITE, 1)
-
-			for control: Control in get_tree().get_nodes_in_group(&"UI"):
-				if control.visible:
-					return
-
-			if Input.is_action_just_pressed(&"action"):
-				vertices.append(cursor.global_position)
-				if construction_stage == 1:
-					var size := vertices[-2] - vertices[-1]
-					if not (
-						is_zero_approx(size.x) and is_zero_approx(size.y)
-						or
-						is_zero_approx(size.y) and is_zero_approx(size.z)
-						or
-						is_zero_approx(size.x) and is_zero_approx(size.z)
-					):
-						Audio.play_sound("place")
-						construct_shape.rpc("Polygon", vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
-					vertices.clear()
-				else:
-					Audio.play_sound("click")
+		0: return &"Cuboid"
+		1: return &"Ellipsoid"
+		2: return &"Cylinder"
+		3: return &"Cone"
+		4: return &"Torus"
+		5: return &"Polygon"
+	return &""
 
 
 @rpc("any_peer", "call_local")
@@ -446,110 +220,62 @@ func construct_shape(
 	material: String,
 	use_collision: bool
 ) -> CSGShape3D:
+	var shape := _create_shape(type, size)
+	if not shape:
+		return null
+	geometry_root.add_child(shape)
+	shape.owner = geometry_root
+	shape.add_to_group(&"Persist")
+	shape.position = pos
+	shape.rotation = rot
+	shape.material = load(material)
+	shape.use_collision = use_collision
+	if type == &"Polygon":
+		shape.position.z += size.z / 2
+	if shape.get_index() == 0:
+		shape.add_to_group(&"Undeletable")
+	shape.name = str(shape.get_index())
+	return shape
+
+
+func _create_shape(type: String, size: Vector3) -> CSGShape3D:
 	match type:
 		"Cuboid":
-			var cuboid := CSGBox3D.new()
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(cuboid)
-			cuboid.owner = geometry
-			cuboid.add_to_group(&"Persist")
-			cuboid.position = pos
-			cuboid.rotation = rot
-			cuboid.size = size
-			cuboid.material = load(material)
-			cuboid.use_collision = use_collision
-			if cuboid.get_index() == 0:
-				cuboid.add_to_group(&"Undeletable")
-			cuboid.name = str(cuboid.get_index())
-			return cuboid
+			var s := CSGBox3D.new()
+			s.size = size
+			return s
 		"Ellipsoid":
-			var ellipsoid := CSGSphere3D.new()
-			ellipsoid.radial_segments = 24
-			ellipsoid.rings = 12
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(ellipsoid)
-			ellipsoid.owner = geometry
-			ellipsoid.add_to_group(&"Persist")
-			ellipsoid.position = pos
-			ellipsoid.rotation = rot
-			ellipsoid.scale = size
-			ellipsoid.material = load(material)
-			ellipsoid.use_collision = use_collision
-			if ellipsoid.get_index() == 0:
-				ellipsoid.add_to_group(&"Undeletable")
-			ellipsoid.name = str(ellipsoid.get_index())
-			return ellipsoid
+			var s := CSGSphere3D.new()
+			s.radial_segments = 24
+			s.rings = 12
+			s.scale = size
+			return s
 		"Cylinder":
-			var cylinder := CSGCylinder3D.new()
-			cylinder.sides = 16
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(cylinder)
-			cylinder.owner = geometry
-			cylinder.add_to_group(&"Persist")
-			cylinder.position = pos
-			cylinder.rotation = rot
-			cylinder.radius = 1
-			cylinder.height = 2
-			cylinder.scale = size / 2
-			cylinder.material = load(material)
-			cylinder.use_collision = use_collision
-			if cylinder.get_index() == 0:
-				cylinder.add_to_group(&"Undeletable")
-			cylinder.name = str(cylinder.get_index())
-			return cylinder
+			var s := CSGCylinder3D.new()
+			s.sides = 16
+			s.radius = 1.0
+			s.height = 2.0
+			s.scale = size / 2
+			return s
 		"Cone":
-			var cone := CSGCylinder3D.new()
-			cone.cone = true
-			cone.sides = 16
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(cone)
-			cone.owner = geometry
-			cone.add_to_group(&"Persist")
-			cone.position = pos
-			cone.rotation = rot
-			cone.radius = 1
-			cone.height = 2
-			cone.scale = size / 2
-			cone.material = load(material)
-			cone.use_collision = use_collision
-			if cone.get_index() == 0:
-				cone.add_to_group(&"Undeletable")
-			cone.name = str(cone.get_index())
-			return cone
+			var s := CSGCylinder3D.new()
+			s.cone = true
+			s.sides = 16
+			s.radius = 1.0
+			s.height = 2.0
+			s.scale = size / 2
+			return s
 		"Torus":
-			var torus := CSGTorus3D.new()
-			torus.ring_sides = 12
-			torus.sides = 16
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(torus)
-			torus.owner = geometry
-			torus.add_to_group(&"Persist")
-			torus.position = pos
-			torus.rotation = rot
-			torus.scale = size / 2
-			torus.material = load(material)
-			torus.use_collision = use_collision
-			if torus.get_index() == 0:
-				torus.add_to_group(&"Undeletable")
-			torus.name = str(torus.get_index())
-			return torus
+			var s := CSGTorus3D.new()
+			s.ring_sides = 12
+			s.sides = 16
+			s.scale = size / 2
+			return s
 		"Polygon":
-			var polygon := CSGPolygon3D.new()
-			polygon.polygon = PackedVector2Array([Vector2(-0.5, -0.5), Vector2(-0.5, 0.5), Vector2(0.5, -0.5)])
-			var geometry := get_tree().current_scene.get_node(^"Geometry")
-			geometry.add_child(polygon)
-			polygon.owner = geometry
-			polygon.add_to_group(&"Persist")
-			polygon.position = pos
-			polygon.position.z += size.z / 2
-			polygon.rotation = rot
-			polygon.scale = size
-			polygon.material = load(material)
-			polygon.use_collision = use_collision
-			if polygon.get_index() == 0:
-				polygon.add_to_group(&"Undeletable")
-			polygon.name = str(polygon.get_index())
-			return polygon
+			var s := CSGPolygon3D.new()
+			s.polygon = PackedVector2Array([Vector2(-0.5, -0.5), Vector2(-0.5, 0.5), Vector2(0.5, -0.5)])
+			s.scale = size
+			return s
 	return null
 
 
