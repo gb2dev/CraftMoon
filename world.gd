@@ -48,6 +48,9 @@ func _ready() -> void:
 	main_menu.show()
 	multiplayer_chat.set_process_input(true)
 	Menu.shown = false
+	nick_input.text = OptionsConfig.get_config_value("player", "nick", "")
+	skin_color_picker.color = OptionsConfig.get_config_value("player", "skin_color", Color.WHITE)
+	address_input.text = OptionsConfig.get_config_value("network", "last_address", "")
 	if not multiplayer.is_server():
 		return
 
@@ -67,6 +70,12 @@ func _ready() -> void:
 		modio_token = arguments["modio-token"]
 		login_container.hide()
 		main_container.show()
+	else:
+		var saved_token: String = OptionsConfig.get_config_value("modio", "token", "")
+		if not saved_token.is_empty():
+			modio_token = saved_token
+			login_container.hide()
+			main_container.show()
 
 
 func _process(_delta: float) -> void:
@@ -216,6 +225,25 @@ func sync_player_skin(id: int, skin_color: Color) -> void:
 		player.set_player_skin(skin_color)
 
 
+func _on_nick_input_text_changed(new_text: String) -> void:
+	OptionsConfig.set_config_value(new_text, "player", "nick")
+
+
+func _on_skin_color_picker_color_changed(color: Color) -> void:
+	OptionsConfig.set_config_value(color, "player", "skin_color")
+
+
+func _on_address_input_text_changed(new_text: String) -> void:
+	OptionsConfig.set_config_value(new_text, "network", "last_address")
+
+
+func _on_sign_out_pressed() -> void:
+	OptionsConfig.set_config_value("", "modio", "token")
+	modio_token = ""
+	main_container.hide()
+	login_container.show()
+
+
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 
@@ -288,6 +316,7 @@ func _on_login_pressed() -> void:
 		status_label.text = tr("Error: Invalid Security Code")
 	else:
 		modio_token = response
+		OptionsConfig.set_config_value(response, "modio", "token")
 		login_container.hide()
 		main_container.show()
 

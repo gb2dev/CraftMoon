@@ -510,6 +510,20 @@ theme_override_font_sizes/font_size = 35
 text = "CREDITS"
 flat = true
 
+[node name="Option6" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165170]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="SignOut" type="Button" parent="MainMenu/MainContainer/Option6" unique_id=1343435431]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0.858824, 0.52549, 0, 0.862745)
+theme_override_colors/font_hover_color = Color(0.858824, 0.52549, 0, 0.862745)
+theme_override_font_sizes/font_size = 35
+text = "SIGN OUT"
+flat = true
+
 [node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165169]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -1259,9 +1273,13 @@ mouse_filter = 2
 [connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
 [connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
+[connection signal="text_changed" from="MainMenu/MainContainer/Option1/NickInput" to="." method="_on_nick_input_text_changed"]
+[connection signal="color_changed" from="MainMenu/MainContainer/Option2/SkinColorPicker" to="." method="_on_skin_color_picker_color_changed"]
+[connection signal="text_changed" from="MainMenu/MainContainer/Option3/AddressInput" to="." method="_on_address_input_text_changed"]
 [connection signal="pressed" from="MainMenu/MainContainer/Buttons/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/Buttons/Join" to="." method="_on_join_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/Option4/Credits" to="." method="_on_credits_pressed"]
+[connection signal="pressed" from="MainMenu/MainContainer/Option6/SignOut" to="." method="_on_sign_out_pressed"]
 [connection signal="pressed" from="MainMenu/MainContainer/Option5/Quit" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="MainMenu/LoginContainer/Option2/GetSecurityCode" to="." method="_on_get_security_code_pressed"]
 [connection signal="pressed" from="MainMenu/LoginContainer/Option4/Login" to="." method="_on_login_pressed"]
