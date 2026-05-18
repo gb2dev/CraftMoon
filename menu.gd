@@ -125,40 +125,15 @@ func save_level() -> void:
 		elif node is CSGShape3D:
 			geometry_nodes.append(node)
 	for geometry in geometry_nodes:
-		var type: String
-		var node_size: Vector3
-		var node_pos: Vector3 = geometry.position
-		match geometry.get_class():
-			"CSGBox3D":
-				type = "Cuboid"
-				node_size = geometry.size
-			"CSGSphere3D":
-				type = "Ellipsoid"
-				node_size = geometry.scale
-			"CSGCylinder3D":
-				if geometry.cone:
-					type = "Cone"
-				else:
-					type = "Cylinder"
-				node_size = Vector3(
-					geometry.scale.x * 2,
-					geometry.height * geometry.scale.y,
-					geometry.scale.z * 2
-				)
-			"CSGTorus3D":
-				type = "Torus"
-				node_size = geometry.scale * 2
-			"CSGPolygon3D":
-				type = "Polygon"
-				node_size = geometry.scale
-				node_pos.z -= geometry.scale.z / 2
+		var type: String = geometry.get_meta(&"shape_type", "")
 		save_data.append({
 			"type": type,
-			"position": node_pos,
-			"rotation": geometry.rotation,
-			"size": node_size,
+			"position": geometry.get_meta(&"box_center", geometry.position),
+			"rotation": geometry.get_meta(&"rotation", Vector3.ZERO),
+			"size": geometry.get_meta(&"box_size", Vector3.ONE),
 			"material": geometry.material.resource_path,
 			"collision": geometry.use_collision,
+			"uniform": geometry.get_meta(&"uniform", false),
 			"gadgets": [],
 		})
 	for gadget: Gadget in gadget_nodes:
@@ -268,13 +243,15 @@ func load_level(save_file_path := "") -> void:
 				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
 					player.editor.construction_material = load(object_properties.material)
 					player.editor.construction_collision = object_properties.collision
+					var uniform_mode: bool = object_properties.get("uniform", false)
 					object = player.editor.construct_shape(
 						object_properties.type,
 						object_properties.position,
 						object_properties.rotation,
 						object_properties.size,
 						player.editor.construction_material.resource_path,
-						player.editor.construction_collision
+						player.editor.construction_collision,
+						uniform_mode
 					)
 			for gadget_properties: Dictionary in object_properties.gadgets:
 				player.editor.object_properties.object = object

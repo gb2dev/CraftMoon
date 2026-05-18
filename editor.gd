@@ -34,14 +34,23 @@ var selected_shape: int:
 		if _selected_shape == value:
 			return
 		_selected_shape = value
+		rotation_angles = Vector3.ZERO
 		for shape_item: ShapeItem in shape_items.get_children():
 			shape_item.set_selected(value == shape_item.get_index())
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
 
+var rotation_angles := Vector3.ZERO
+var uniform_scale_mode := false
+
 var _ghost: CSGShape3D
 var _ghost_cached_shape := -1
 var _ghost_material: Material
+var _angle_label_y: Label3D = null
+var _angle_label_x: Label3D = null
+var _dim_label_x: Label3D = null
+var _dim_label_y: Label3D = null
+var _dim_label_z: Label3D = null
 
 @onready var object_properties := get_tree().current_scene.get_node("%ObjectProperties") as ObjectProperties
 @onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
@@ -50,10 +59,18 @@ var _ghost_material: Material
 @onready var geometry_root := get_tree().current_scene.get_node(^"Geometry")
 @onready var tree := get_tree()
 
-
 func _ready() -> void:
 	set_object_builder_active(false)
 	selected_shape = 0
+
+	if cursor:
+		var mesh_instance := cursor as MeshInstance3D
+		if mesh_instance:
+			var mat := mesh_instance.get_active_material(0) as StandardMaterial3D
+			if mat:
+				mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+				mat.albedo_color.a = 0.99
+				mat.render_priority = 127
 
 
 func _process(_delta: float) -> void:
@@ -71,9 +88,9 @@ func _process(_delta: float) -> void:
 		if Input.is_action_just_pressed(&"properties"):
 			object_properties.toggle(null)
 
-	if object_builder_active:
-		_update_cursor()
-		_handle_construction()
+		if object_builder_active:
+			_update_cursor()
+			_handle_construction()
 
 
 func _handle_editor_input() -> void:
@@ -101,10 +118,10 @@ func _handle_editor_input() -> void:
 
 
 func _update_cursor() -> void:
-	if Input.is_action_just_pressed(&"cursor_forward"):
+	if Input.is_action_just_pressed(&"cursor_forward") and not Input.is_key_pressed(KEY_ALT):
 		cursor_distance -= CURSOR_STEP
 		target_position.z -= CURSOR_STEP
-	elif Input.is_action_just_pressed(&"cursor_back"):
+	elif Input.is_action_just_pressed(&"cursor_back") and not Input.is_key_pressed(KEY_ALT):
 		cursor_distance += CURSOR_STEP
 		target_position.z += CURSOR_STEP
 	cursor_distance = clampf(cursor_distance, CURSOR_MIN, CURSOR_MAX)
@@ -116,11 +133,33 @@ func _update_cursor() -> void:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
-	_draw_line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, Color(0, 0.85, 0.85), 1, CURSOR_LINE_WIDTH, 0)
+	var cursor_line_color := Color(0, 0.85, 0.85, 0.99)
+	_draw_line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, cursor_line_color, 1, CURSOR_LINE_WIDTH, 1, false, BaseMaterial3D.DEPTH_DRAW_ALWAYS, 0.0)
 
 
 func _handle_construction() -> void:
 	_handle_shape_selection()
+
+	if Input.is_action_just_pressed(&"rotate_up"):
+		rotation_angles.x += deg_to_rad(45)
+	elif Input.is_action_just_pressed(&"rotate_down"):
+		rotation_angles.x -= deg_to_rad(45)
+	elif Input.is_action_just_pressed(&"rotate_cw"):
+		rotation_angles.y -= deg_to_rad(45)
+	elif Input.is_action_just_pressed(&"rotate_ccw"):
+		rotation_angles.y += deg_to_rad(45)
+	elif Input.is_action_just_pressed(&"flip_h"):
+		rotation_angles.y = fmod(rotation_angles.y + PI, 2.0 * PI)
+	elif Input.is_action_just_pressed(&"flip_v"):
+		rotation_angles.x = fmod(rotation_angles.x + PI, 2.0 * PI)
+
+	if absf(rotation_angles.y) >= 2.0 * PI - 0.01:
+		rotation_angles.y = 0.0
+	if absf(rotation_angles.x) >= 2.0 * PI - 0.01:
+		rotation_angles.x = 0.0
+
+	if Input.is_action_just_pressed(&"toggle_uniform"):
+		uniform_scale_mode = not uniform_scale_mode
 
 	var has_first_vertex := not vertices.is_empty()
 	if has_first_vertex:
@@ -157,9 +196,29 @@ func _handle_shape_selection() -> void:
 		selected_shape = 5
 
 
-static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int, thickness := 0.0, render_priority := 0) -> void:
+static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int, thickness := 0.0, render_priority := 0, no_depth_test := false, depth_draw := BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, sorting_offset := 0.0) -> void:
 	@warning_ignore("return_value_discarded")
-	Draw3D.line(from, to, color, persist_ms, thickness, render_priority)
+	Draw3D.line(from, to, color, persist_ms, thickness, render_priority, no_depth_test, depth_draw, sorting_offset)
+
+
+static func _draw_cone(tip_pos: Vector3, direction: Vector3, radius: float, height: float, color: Color, persist_ms: int, render_priority := 0, no_depth_test := false, shaded := false, sorting_offset := 0.0, depth_draw := BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY) -> void:
+	@warning_ignore("return_value_discarded")
+	Draw3D.cone(tip_pos, direction, radius, height, color, persist_ms, render_priority, no_depth_test, shaded, sorting_offset, depth_draw)
+
+
+static func _draw_dashed_line(from: Vector3, to: Vector3, color: Color, persist_ms: int, thickness := 0.0, render_priority := 0, segment_length := 0.15, gap_length := 0.1, no_depth_test := false, depth_draw := BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, sorting_offset := 0.0) -> void:
+	var dir := to - from
+	var total_len := dir.length()
+	if total_len < 0.001:
+		return
+	dir = dir.normalized()
+	var step := segment_length + gap_length
+	var current := 0.0
+	while current < total_len:
+		var start := from + dir * current
+		var end := from + dir * minf(current + segment_length, total_len)
+		_draw_line(start, end, color, persist_ms, thickness, render_priority, no_depth_test, depth_draw, sorting_offset)
+		current += step
 
 
 func _draw_preview_box() -> void:
@@ -180,36 +239,82 @@ func _draw_preview_box() -> void:
 	var dy: float = sign(c.y - a.y) * e
 	var dz: float = sign(c.z - a.z) * e
 
-	_draw_line(Vector3(a.x - dx, a.y, a.z), Vector3(p1.x + dx, p1.y, p1.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(a.x, a.y - dy, a.z), Vector3(p2.x, p2.y + dy, p2.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(a.x, a.y, a.z - dz), Vector3(p3.x, p3.y, p3.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p1.x, p1.y - dy, p1.z), Vector3(p4.x, p4.y + dy, p4.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p1.x, p1.y, p1.z - dz), Vector3(p6.x, p6.y, p6.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p2.x - dx, p2.y, p2.z), Vector3(p4.x + dx, p4.y, p4.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p2.x, p2.y, p2.z - dz), Vector3(p5.x, p5.y, p5.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p3.x - dx, p3.y, p3.z), Vector3(p6.x + dx, p6.y, p6.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p3.x, p3.y - dy, p3.z), Vector3(p5.x, p5.y + dy, p5.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p4.x, p4.y, p4.z - dz), Vector3(c.x, c.y, c.z + dz), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p5.x - dx, p5.y, p5.z), Vector3(c.x + dx, c.y, c.z), color, 1, PREVIEW_LINE_WIDTH, 1)
-	_draw_line(Vector3(p6.x, p6.y - dy, p6.z), Vector3(c.x, c.y + dy, c.z), color, 1, PREVIEW_LINE_WIDTH, 1)
+	var c_alpha := color
+	c_alpha.a = 0.99
+	var d_draw := BaseMaterial3D.DEPTH_DRAW_DISABLED
+	var p_line := 10
+	var s_off := 5.0
+
+	_draw_line(Vector3(a.x - dx, a.y, a.z), Vector3(p1.x + dx, p1.y, p1.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(a.x, a.y - dy, a.z), Vector3(p2.x, p2.y + dy, p2.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(a.x, a.y, a.z - dz), Vector3(p3.x, p3.y, p3.z + dz), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p1.x, p1.y - dy, p1.z), Vector3(p4.x, p4.y + dy, p4.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p1.x, p1.y, p1.z - dz), Vector3(p6.x, p6.y, p6.z + dz), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p2.x - dx, p2.y, p2.z), Vector3(p4.x + dx, p4.y, p4.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p2.x, p2.y, p2.z - dz), Vector3(p5.x, p5.y, p5.z + dz), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p3.x - dx, p3.y, p3.z), Vector3(p6.x + dx, p6.y, p6.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p3.x, p3.y - dy, p3.z), Vector3(p5.x, p5.y + dy, p5.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p4.x, p4.y, p4.z - dz), Vector3(c.x, c.y, c.z + dz), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p5.x - dx, p5.y, p5.z), Vector3(c.x + dx, c.y, c.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
+	_draw_line(Vector3(p6.x, p6.y - dy, p6.z), Vector3(c.x, c.y + dy, c.z), c_alpha, 1, PREVIEW_LINE_WIDTH, p_line, false, d_draw, s_off)
 
 	if degenerate:
 		_hide_ghost()
 	else:
 		_ensure_ghost()
+
+		var diff := c - a
+		var abs_diff := diff.abs()
+		var sb := _get_snapped_label_basis(c)
+
+		_dim_label_x.visible = abs_diff.x > 0.01
+		_dim_label_x.text = _format_dim(abs_diff.x)
+		_dim_label_x.global_position = c - Vector3(signf(diff.x) * 0.5, 0, 0)
+		_dim_label_x.global_transform.basis = sb
+		_dim_label_x.pixel_size = 0.0013
+
+		_dim_label_y.visible = abs_diff.y > 0.01
+		_dim_label_y.text = _format_dim(abs_diff.y)
+		_dim_label_y.global_position = c - Vector3(0, signf(diff.y) * 0.5, 0)
+		_dim_label_y.global_transform.basis = sb
+		_dim_label_y.pixel_size = 0.0013
+
+		_dim_label_z.visible = abs_diff.z > 0.01
+		_dim_label_z.text = _format_dim(abs_diff.z)
+		_dim_label_z.global_position = c - Vector3(0, 0, signf(diff.z) * 0.5)
+		_dim_label_z.global_transform.basis = sb
+		_dim_label_z.pixel_size = 0.0013
+
 		_update_ghost(a, c)
+
+
+func _format_dim(val: float) -> String:
+	var s := "%.1f" % val
+	return s.left(-2) if s.ends_with(".0") else s
 
 
 func _ensure_ghost() -> void:
 	var shape_name := _shape_name()
 	if shape_name.is_empty():
 		return
+
+	if not _angle_label_y:
+		_angle_label_y = _create_label(true, 120)
+	if not _angle_label_x:
+		_angle_label_x = _create_label(true, 120)
+	if not _dim_label_x:
+		_dim_label_x = _create_label(true, 120)
+	if not _dim_label_y:
+		_dim_label_y = _create_label(true, 120)
+	if not _dim_label_z:
+		_dim_label_z = _create_label(true, 120)
+
 	if selected_shape == _ghost_cached_shape and _ghost:
 		_ghost.visible = true
 		return
 	if _ghost:
 		_ghost.queue_free()
-	_ghost = _create_shape(shape_name, Vector3.ONE)
+	_ghost = _create_shape(shape_name)
 	if not _ghost:
 		return
 	if not _ghost_material:
@@ -229,31 +334,260 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 	var size := a - c
 	var center := a - size / 2
 	var abs_size := size.abs()
-	_ghost.position = center
-	_ghost.rotation = Vector3.ZERO
-	if _shape_name() == &"Polygon":
-		_ghost.position.z += abs_size.z / 2
-	_apply_shape_size(_ghost, _shape_name(), abs_size)
+	var type := _shape_name()
+	var tf := _compute_fit_transform(type, abs_size, rotation_angles)
+	if type == "Cuboid":
+		var sx := tf.basis.x.length()
+		var sy := tf.basis.y.length()
+		var sz := tf.basis.z.length()
+		_ghost.size = Vector3(sx, sy, sz)
+		tf.basis.x /= sx
+		tf.basis.y /= sy
+		tf.basis.z /= sz
+	_ghost.transform = Transform3D(tf.basis, center + tf.origin)
+
+	var camera := get_viewport().get_camera_3d()
+	var dist := 5.0
+	if camera:
+		dist = maxf(1.0, camera.global_position.distance_to(center))
+	var scale_factor := dist * 0.2
+
+	var radius := 0.6 * scale_factor
+	var forward_len := radius * 2.0
+	var cone_height := 0.2 * scale_factor
+	var cone_radius := 0.08 * scale_factor
+
+	var axis_len_y := abs_size.y * 0.5
+	var axis_len_x := abs_size.x * 0.5
+	var axis_len_z := abs_size.z * 0.5
+
+	var d_draw := BaseMaterial3D.DEPTH_DRAW_DISABLED
+	var p_axis := 10
+	var s_off := 5.0
+
+	# Y Axis (Green)
+	_draw_dashed_line(center + Vector3.UP * axis_len_y, center + Vector3.DOWN * axis_len_y, Color(0.3, 1.0, 0.0, 0.75), 1, 0, p_axis, 0.2, 0.1, false, d_draw, s_off)
+
+	# X Axis (Red)
+	_draw_dashed_line(center - Vector3.RIGHT * axis_len_x, center + Vector3.RIGHT * axis_len_x, Color(1.0, 0.2, 0.3, 0.75), 1, 0, p_axis, 0.2, 0.1, false, d_draw, s_off)
+
+	# Z Axis (Blue)
+	_draw_dashed_line(center - Vector3.FORWARD * axis_len_z, center + Vector3.FORWARD * axis_len_z, Color(0.2, 0.4, 1.0, 0.75), 1, 0, p_axis, 0.2, 0.1, false, d_draw, s_off)
+
+	var pointer_basis := Basis.from_euler(rotation_angles, EULER_ORDER_YXZ)
+	var forward_dir := pointer_basis.z.normalized()
+
+	var p_gizmo := 5
+	var s_gizmo := 0.0
+
+	if rotation_angles.length_squared() > 0.001:
+		_draw_line(center, center + Vector3.BACK * radius, Color(0, 0, 0, 0.8), 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, p_gizmo, true, BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, s_gizmo)
+		_draw_line(center, center + forward_dir * (forward_len - cone_height), Color(0.9, 0.9, 0.9, 0.95), 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, p_gizmo + 1, true, BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, s_gizmo)
+	else:
+		_draw_line(center, center + forward_dir * (forward_len - cone_height), Color(0.9, 0.9, 0.9, 0.95), 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, p_gizmo + 1, true, BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, s_gizmo)
+
+	_draw_cone(center + forward_dir * forward_len, forward_dir, cone_radius, cone_height, Color(0.9, 0.9, 0.9, 0.95), 1, p_gizmo + 2, true, false, s_gizmo)
+
+	var shared_label_basis := _get_snapped_label_basis(center)
+
+	# Horizontal dial (Y rotation)
+	var ry := rotation_angles.y
+	var ry_deg := roundi(rad_to_deg(ry))
+	if ry_deg != 0 and ry_deg != 360 and ry_deg != -360:
+		var start_dir := Vector3.BACK
+		var y_color := Color(0.3, 1.0, 0.0) # Vibrant green
+		_draw_gizmo_arc(center, Vector3.UP, start_dir, ry, radius, y_color, true, scale_factor, p_gizmo)
+
+		_angle_label_y.visible = true
+		_angle_label_y.modulate = y_color
+		_angle_label_y.text = "%d°" % ry_deg
+		_angle_label_y.pixel_size = 0.0013 * scale_factor
+		_angle_label_y.global_position = center + start_dir.rotated(Vector3.UP, signf(ry) * PI / 8.0).normalized() * (radius * 1.6)
+		_angle_label_y.global_transform.basis = shared_label_basis
+	else:
+		_angle_label_y.visible = false
+
+	# Vertical dial (X rotation)
+	var rx := rotation_angles.x
+	var rx_deg := roundi(rad_to_deg(rx))
+	if rx_deg != 0 and rx_deg != 360 and rx_deg != -360:
+		var start_dir := Vector3.BACK.rotated(Vector3.UP, ry).normalized()
+		var v_normal := Vector3.RIGHT.rotated(Vector3.UP, ry).normalized()
+		var x_color := Color(1.0, 0.2, 0.3) # Vibrant red
+
+		_draw_gizmo_arc(center, v_normal, start_dir, rx, radius, x_color, true, scale_factor, p_gizmo)
+
+		_angle_label_x.visible = true
+		_angle_label_x.modulate = x_color
+		_angle_label_x.text = "%d°" % rx_deg
+		_angle_label_x.pixel_size = 0.0013 * scale_factor
+		_angle_label_x.global_position = center + start_dir.rotated(v_normal, signf(rx) * PI / 8.0).normalized() * (radius * 1.6)
+		_angle_label_x.global_transform.basis = shared_label_basis
+	else:
+		_angle_label_x.visible = false
+
+	# Sort labels by distance to camera
+	if camera:
+		var cam_pos := camera.global_position
+		var labels: Array[Label3D] = []
+		for l: Label3D in [_dim_label_x, _dim_label_y, _dim_label_z, _angle_label_x, _angle_label_y]:
+			if l and l.visible:
+				labels.append(l)
+
+		labels.sort_custom(func(a_label: Label3D, b_label: Label3D) -> bool:
+			return a_label.global_position.distance_to(cam_pos) > b_label.global_position.distance_to(cam_pos)
+		)
+
+		var base_p := 110
+		for i in range(labels.size()):
+			var p := base_p + i * 2
+			labels[i].render_priority = p
+			labels[i].outline_render_priority = p - 1
 
 
-func _apply_shape_size(shape: CSGShape3D, type: String, size: Vector3) -> void:
+func _draw_gizmo_arc(c: Vector3, normal: Vector3, start_dir: Vector3, angle_rad: float, radius: float, color: Color, no_depth_test := false, scale_factor := 1.0, priority := 0) -> void:
+	var segments := 12
+	var prev := c + start_dir * radius
+	for i in range(1, segments + 1):
+		var t := float(i) / segments
+		var curr := c + start_dir.rotated(normal, angle_rad * t) * radius
+		_draw_line(prev, curr, color, 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, priority, no_depth_test)
+		prev = curr
+
+
+func _get_snapped_label_basis(_label_pos: Vector3) -> Basis:
+	var camera := get_viewport().get_camera_3d()
+	if not camera:
+		return Basis()
+
+	var euler := camera.global_transform.basis.get_euler(EULER_ORDER_YXZ)
+
+	var snap := PI / 4.0
+	euler.x = roundf(euler.x / snap) * snap
+	euler.y = roundf(euler.y / snap) * snap
+	euler.z = 0
+
+	return Basis.from_euler(euler, EULER_ORDER_YXZ)
+
+
+func _get_base_scale(type: String) -> Vector3:
+	match type:
+		"Torus":
+			if uniform_scale_mode:
+				return Vector3(0.5, 0.5, 0.5)
+			else:
+				return Vector3(0.5, 2.0, 0.5)
+		_:
+			return Vector3.ONE
+
+
+func _get_local_offset(type: String) -> Vector3:
+	match type:
+		"Polygon":
+			return Vector3(0, 0, 0.5)
+		_:
+			return Vector3.ZERO
+
+
+func _compute_rotated_aabb(type: String, R: Basis) -> Dictionary:
+	var lo := Vector3(INF, INF, INF)
+	var hi := Vector3(-INF, -INF, -INF)
+
 	match type:
 		"Cuboid":
-			var s := shape as CSGBox3D
-			if s: s.size = size
+			for sx: float in [-0.5, 0.5]:
+				for sy: float in [-0.5, 0.5]:
+					for sz: float in [-0.5, 0.5]:
+						var p := R * Vector3(sx, sy, sz)
+						lo = lo.min(p)
+						hi = hi.max(p)
+
 		"Ellipsoid":
-			shape.scale = size
-		"Cylinder", "Cone":
-			shape.scale = size / 2
+			lo = Vector3(-0.5, -0.5, -0.5)
+			hi = Vector3(0.5, 0.5, 0.5)
+
+		"Cylinder":
+			for i: int in 3:
+				var row := Vector3(R.x[i], R.y[i], R.z[i])
+				var alpha := sqrt(row.x * row.x + row.z * row.z)
+				var half := 0.5 * alpha + 0.5 * absf(row.y)
+				lo[i] = -half
+				hi[i] = half
+
+		"Cone":
+			for i: int in 3:
+				var row := Vector3(R.x[i], R.y[i], R.z[i])
+				var alpha := sqrt(row.x * row.x + row.z * row.z)
+				var beta := row.y
+				var base_max := 0.5 * alpha - 0.5 * beta
+				var base_min := -0.5 * alpha - 0.5 * beta
+				var apex := 0.5 * beta
+				hi[i] = maxf(base_max, apex)
+				lo[i] = minf(base_min, apex)
+
 		"Torus":
-			shape.scale = size / 2
+			for i: int in 3:
+				var row := Vector3(R.x[i], R.y[i], R.z[i])
+				var alpha := sqrt(row.x * row.x + row.z * row.z)
+				var beta := row.y
+				var half: float
+				if uniform_scale_mode:
+					half = 0.375 * alpha + 0.125
+				else:
+					half = 0.375 * alpha + sqrt(0.015625 * alpha * alpha + 0.25 * beta * beta)
+				lo[i] = -half
+				hi[i] = half
+
 		"Polygon":
-			shape.scale = size
+			var verts: Array[Vector3] = [
+				Vector3(-0.5, -0.5, 0.5), Vector3(-0.5, 0.5, 0.5), Vector3(0.5, -0.5, 0.5),
+				Vector3(-0.5, -0.5, -0.5), Vector3(-0.5, 0.5, -0.5), Vector3(0.5, -0.5, -0.5),
+			]
+			for v: Vector3 in verts:
+				var p := R * v
+				lo = lo.min(p)
+				hi = hi.max(p)
+
+	return {"min": lo, "max": hi}
+
+
+func _compute_fit_transform(type: String, box_size: Vector3, rot: Vector3) -> Transform3D:
+	var R := Basis.from_euler(rot, EULER_ORDER_YXZ)
+	var aabb := _compute_rotated_aabb(type, R)
+	var aabb_size: Vector3 = aabb["max"] - aabb["min"]
+	var aabb_center: Vector3 = (aabb["max"] + aabb["min"]) * 0.5
+
+	var fit_scale := Vector3(
+		box_size.x / aabb_size.x if aabb_size.x > 0.0001 else 1.0,
+		box_size.y / aabb_size.y if aabb_size.y > 0.0001 else 1.0,
+		box_size.z / aabb_size.z if aabb_size.z > 0.0001 else 1.0,
+	)
+
+	if not type.is_empty() and uniform_scale_mode:
+		var u := minf(fit_scale.x, minf(fit_scale.y, fit_scale.z))
+		fit_scale = Vector3(u, u, u)
+
+	var base_scale := _get_base_scale(type)
+	var local_offset := _get_local_offset(type)
+
+	var fit_basis := Basis(
+		R.x * fit_scale * base_scale.x,
+		R.y * fit_scale * base_scale.y,
+		R.z * fit_scale * base_scale.z
+	)
+
+	var rotated_offset := R * local_offset
+	var origin := (rotated_offset - aabb_center) * fit_scale
+
+	return Transform3D(fit_basis, origin)
 
 
 func _hide_ghost() -> void:
 	if _ghost:
 		_ghost.visible = false
+	for l: Label3D in [_angle_label_y, _angle_label_x, _dim_label_x, _dim_label_y, _dim_label_z]:
+		if l:
+			l.visible = false
 
 
 func _try_finish_shape() -> void:
@@ -263,7 +597,15 @@ func _try_finish_shape() -> void:
 		vertices.clear()
 		return
 	Audio.play_sound("place")
-	construct_shape.rpc(_shape_name(), vertices[-2] - size / 2, Vector3.ZERO, size.abs(), construction_material.resource_path, construction_collision)
+	construct_shape.rpc(
+		_shape_name(),
+		vertices[-2] - size / 2,
+		rotation_angles,
+		size.abs(),
+		construction_material.resource_path,
+		construction_collision,
+		uniform_scale_mode
+	)
 	vertices.clear()
 
 
@@ -282,6 +624,23 @@ func _shape_name() -> String:
 	return &""
 
 
+func _create_label(no_depth: bool, priority: int) -> Label3D:
+	var l := Label3D.new()
+	l.billboard = StandardMaterial3D.BILLBOARD_DISABLED
+	l.no_depth_test = no_depth
+	l.render_priority = priority
+	l.sorting_offset = 50.0
+	l.pixel_size = 0.0013
+	l.font_size = 160
+	l.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
+	l.modulate = Color.WHITE
+	l.outline_size = 48
+	l.outline_modulate = Color(0, 0, 0, 1.0)
+	l.outline_render_priority = priority - 1
+	geometry_root.add_child(l)
+	return l
+
+
 @rpc("any_peer", "call_local")
 func destroy(node_path: NodePath) -> void:
 	var node := get_node_or_null(node_path)
@@ -296,63 +655,77 @@ func construct_shape(
 	rot: Vector3,
 	size: Vector3,
 	material: String,
-	use_collision: bool
+	use_collision: bool,
+	uniform := false
 ) -> CSGShape3D:
-	var shape := _create_shape(type, size)
+	var shape := _create_shape(type)
 	if not shape:
 		return null
 	geometry_root.add_child(shape)
 	shape.owner = geometry_root
 	shape.add_to_group(&"Persist")
-	shape.position = pos
-	shape.rotation = rot
+
+	var prev_uniform := uniform_scale_mode
+	uniform_scale_mode = uniform
+	var tf := _compute_fit_transform(type, size, rot)
+	uniform_scale_mode = prev_uniform
+
+	if type == "Cuboid":
+		var sx := tf.basis.x.length()
+		var sy := tf.basis.y.length()
+		var sz := tf.basis.z.length()
+		shape.size = Vector3(sx, sy, sz)
+		tf.basis.x /= sx
+		tf.basis.y /= sy
+		tf.basis.z /= sz
+	shape.transform = Transform3D(tf.basis, pos + tf.origin)
 	shape.material = load(material)
 	shape.use_collision = use_collision
-	if type == &"Polygon":
-		shape.position.z += size.z / 2
+
+	shape.set_meta(&"shape_type", type)
+	shape.set_meta(&"rotation", rot)
+	shape.set_meta(&"box_size", size)
+	shape.set_meta(&"box_center", pos)
+	shape.set_meta(&"uniform", uniform)
+
 	if shape.get_index() == 0:
 		shape.add_to_group(&"Undeletable")
 	shape.name = str(shape.get_index())
 	return shape
 
 
-func _create_shape(type: String, size: Vector3) -> CSGShape3D:
+func _create_shape(type: String) -> CSGShape3D:
 	match type:
 		"Cuboid":
 			var s := CSGBox3D.new()
-			s.size = size
+			s.size = Vector3.ONE
 			return s
 		"Ellipsoid":
 			var s := CSGSphere3D.new()
 			s.radial_segments = 24
 			s.rings = 12
-			s.scale = size
 			return s
 		"Cylinder":
 			var s := CSGCylinder3D.new()
 			s.sides = 16
-			s.radius = 1.0
-			s.height = 2.0
-			s.scale = size / 2
+			s.radius = 0.5
+			s.height = 1.0
 			return s
 		"Cone":
 			var s := CSGCylinder3D.new()
 			s.cone = true
 			s.sides = 16
-			s.radius = 1.0
-			s.height = 2.0
-			s.scale = size / 2
+			s.radius = 0.5
+			s.height = 1.0
 			return s
 		"Torus":
 			var s := CSGTorus3D.new()
 			s.ring_sides = 12
 			s.sides = 16
-			s.scale = size / 2
 			return s
 		"Polygon":
 			var s := CSGPolygon3D.new()
 			s.polygon = PackedVector2Array([Vector2(-0.5, -0.5), Vector2(-0.5, 0.5), Vector2(0.5, -0.5)])
-			s.scale = size
 			return s
 	return null
 
@@ -365,6 +738,7 @@ func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:
 func set_object_builder_active(value: bool) -> void:
 	_hide_ghost()
 	vertices.clear()
+	rotation_angles = Vector3.ZERO
 	object_properties.close()
 	object_builder_active = value
 	shape_select.visible = object_builder_active
@@ -383,6 +757,14 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"action", tr(&"Place Shape Point"))
 		input_display.add_input_prompt(&"previous", tr(&"Previous Shape"))
 		input_display.add_input_prompt(&"next", tr(&"Next Shape"))
+		input_display.add_input_prompt(&"1", tr(&"Quick Select Shape (1-6)"))
+		input_display.add_input_prompt(&"toggle_uniform", tr(&"Toggle Uniform Scale"))
+		input_display.add_input_prompt(&"cursor_forward", tr(&"Cursor Distance"))
+		input_display.add_input_prompt(&"rotate_cw", tr(&"Rotate Horizontally (Y)"))
+		input_display.add_input_prompt(&"rotate_up", tr(&"Rotate Vertically (X)"))
+		input_display.add_input_prompt(&"flip_h", tr(&"Flip Horizontally"))
+		input_display.add_input_prompt(&"flip_v", tr(&"Flip Vertically"))
+		input_display.add_input_prompt(&"toggle_chat", tr(&"Global Chat"))
 	else:
 		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
 		input_display.add_input_prompt(&"customize_player")
@@ -392,3 +774,4 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"jump", tr(&"(Double Tap) Fly"))
 		input_display.add_input_prompt(&"time_play_pause", tr(&"Play/Pause"))
 		input_display.add_input_prompt(&"time_rewind", tr(&"Rewind"))
+		input_display.add_input_prompt(&"toggle_chat", tr(&"Global Chat"))
