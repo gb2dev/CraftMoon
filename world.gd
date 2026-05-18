@@ -31,6 +31,7 @@ static var destroyed_nodes: Dictionary[Node, Node]
 @onready var chat: TextEdit = $MultiplayerChat/VBoxContainer/Chat
 @onready var multiplayer_chat: Control = $MultiplayerChat
 @onready var object_properties := %"ObjectProperties" as ObjectProperties
+@onready var options_menu: OptionsMenu = $OptionsMenu
 
 var chat_visible := false
 var time_elapsed := 0
@@ -186,6 +187,7 @@ func _add_player(id: int, player_info : Dictionary) -> void:
 	if id == 1:
 		object_properties.editor = player.editor
 		menu.player = player
+		options_menu.set_player(player)
 		var _error := skin_changed.connect(_on_player_skin_changed.bind(id))
 
 	var nick: String = Network.players[id]["nick"]
@@ -293,6 +295,7 @@ func _on_multiplayer_spawner_spawned(node: Node) -> void:
 		if player:
 			object_properties.editor = player.editor
 			menu.player = player
+			options_menu.set_player(player)
 			var _error := skin_changed.connect(_on_player_skin_changed.bind(id))
 
 

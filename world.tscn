@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dds2uohrmsp7l" path="res://menu.gd" id="5_r4y2q"]
 [ext_resource type="Texture2D" uid="uid://c2pgu83telacu" path="res://textures/moon.png" id="5_xpg20"]
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="5_yl342"]
+[ext_resource type="PackedScene" uid="uid://ccjijngfwurb6" path="res://options_menu/options_menu.tscn" id="6_b7btk"]
 [ext_resource type="Script" uid="uid://cbo6lw4nt2wwq" path="res://object_properties.gd" id="6_k3lar"]
 [ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="7_olr1q"]
 [ext_resource type="PackedScene" uid="uid://r57cg16q4rki" path="res://material_item.tscn" id="8_q42o5"]
@@ -376,6 +377,10 @@ visible = false
 layout_mode = 2
 text = "Return to Moon"
 
+[node name="OptionsButton" type="Button" parent="Menu" unique_id=200002341]
+layout_mode = 2
+text = "Options"
+
 [node name="MainMenuButton" type="Button" parent="Menu" unique_id=1923944406]
 layout_mode = 2
 text = "Main Menu"
@@ -383,6 +388,8 @@ text = "Main Menu"
 [node name="QuitButton" type="Button" parent="Menu" unique_id=1923014059]
 layout_mode = 2
 text = "Quit"
+
+[node name="OptionsMenu" parent="." unique_id=1973502199 instance=ExtResource("6_b7btk")]
 
 [node name="MainMenu" type="Control" parent="." unique_id=683887848]
 layout_mode = 3
@@ -1270,6 +1277,7 @@ mouse_filter = 2
 [connection signal="pressed" from="Menu/UploadButton" to="." method="_on_upload_button_pressed"]
 [connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
 [connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
+[connection signal="pressed" from="Menu/OptionsButton" to="Menu" method="_on_options_button_pressed"]
 [connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
 [connection signal="text_changed" from="MainMenu/MainContainer/Option1/NickInput" to="." method="_on_nick_input_text_changed"]

@@ -1,0 +1,780 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpvlofe3gn5pr"]
+
+[ext_resource type="Script" path="res://options_menu/input_mapping/input_mapping.gd" id="1_g1fu5"]
+
+[node name="InputMapping" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( "1_g1fu5" )
+
+[node name="Header" type="Control" parent="."]
+custom_minimum_size = Vector2(0, 30)
+offset_right = 800.0
+offset_bottom = 30.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Header"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Spacer" type="Control" parent="Header/HBoxContainer"]
+offset_right = 261.0
+offset_bottom = 30.0
+size_flags_horizontal = 3
+
+[node name="MouseKeyboard" type="Label" parent="Header/HBoxContainer"]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 265.0
+offset_top = 2.0
+offset_right = 526.0
+offset_bottom = 28.0
+size_flags_horizontal = 3
+text = "Mouse / Keyboard"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Controller" type="Label" parent="Header/HBoxContainer"]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 530.0
+offset_top = 2.0
+offset_right = 792.0
+offset_bottom = 28.0
+size_flags_horizontal = 3
+text = "Controller"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_top = 34.0
+offset_right = 800.0
+offset_bottom = 720.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+offset_right = 792.0
+offset_bottom = 880.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="move_forward" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_right = 792.0
+offset_bottom = 48.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/move_forward"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/move_forward/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_forward/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_forward/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="move_back" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 52.0
+offset_right = 792.0
+offset_bottom = 100.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/move_back"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/move_back/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_back/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_back/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="move_left" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 104.0
+offset_right = 792.0
+offset_bottom = 152.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/move_left"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/move_left/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_left/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_left/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="move_right" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 156.0
+offset_right = 792.0
+offset_bottom = 204.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/move_right"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/move_right/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_right/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/move_right/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="look_up" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 208.0
+offset_right = 792.0
+offset_bottom = 256.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/look_up"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/look_up/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_up/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_up/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="look_down" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 260.0
+offset_right = 792.0
+offset_bottom = 308.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/look_down"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/look_down/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_down/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_down/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="look_left" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 312.0
+offset_right = 792.0
+offset_bottom = 360.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/look_left"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/look_left/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_left/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_left/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="look_right" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 364.0
+offset_right = 792.0
+offset_bottom = 412.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/look_right"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/look_right/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_right/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/look_right/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="jump" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 416.0
+offset_right = 792.0
+offset_bottom = 464.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/jump"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/jump/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/jump/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/jump/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="sprint" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 468.0
+offset_right = 792.0
+offset_bottom = 516.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/sprint"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/sprint/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/sprint/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/sprint/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="crouch" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 520.0
+offset_right = 792.0
+offset_bottom = 568.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/crouch"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/crouch/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/crouch/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/crouch/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="action" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 572.0
+offset_right = 792.0
+offset_bottom = 620.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/action"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/action/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/action/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/action/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="destroy" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 624.0
+offset_right = 792.0
+offset_bottom = 672.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/destroy"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/destroy/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/destroy/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/destroy/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="interact" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 676.0
+offset_right = 792.0
+offset_bottom = 724.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/interact"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/interact/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/interact/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/interact/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="object_builder" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 728.0
+offset_right = 792.0
+offset_bottom = 776.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/object_builder"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/object_builder/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/object_builder/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/object_builder/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="properties" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 780.0
+offset_right = 792.0
+offset_bottom = 828.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/properties"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/properties/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/properties/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/properties/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="toggle_chat" type="Panel" parent="ScrollContainer/VBoxContainer" groups=["Action"]]
+custom_minimum_size = Vector2(0, 48)
+offset_top = 832.0
+offset_right = 792.0
+offset_bottom = 880.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer/toggle_chat"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="Action" type="Label" parent="ScrollContainer/VBoxContainer/toggle_chat/HBoxContainer"]
+offset_top = 11.0
+offset_right = 258.0
+offset_bottom = 37.0
+size_flags_horizontal = 3
+text = "action"
+vertical_alignment = 1
+
+[node name="KBMMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/toggle_chat/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 262.0
+offset_right = 521.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ControllerMappingButton" type="Button" parent="ScrollContainer/VBoxContainer/toggle_chat/HBoxContainer" groups=["MappingButton"]]
+custom_minimum_size = Vector2(48, 0)
+offset_left = 525.0
+offset_right = 784.0
+offset_bottom = 48.0
+size_flags_horizontal = 3
+toggle_mode = true
+icon_alignment = 1
+expand_icon = true

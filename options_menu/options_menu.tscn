@@ -1,0 +1,760 @@
+[gd_scene format=3 uid="uid://ccjijngfwurb6"]
+
+[ext_resource type="Script" uid="uid://daa3ph4oatxem" path="res://options_menu/options_menu.gd" id="1_b2bsq"]
+[ext_resource type="PackedScene" uid="uid://bpvlofe3gn5pr" path="res://options_menu/input_mapping/input_mapping.tscn" id="2_owuij"]
+[ext_resource type="AudioStream" uid="uid://b8075wv34urd4" path="res://sounds/editor_only/menu.wav" id="3_lbhr5"]
+[ext_resource type="AudioStream" uid="uid://cwvfyilqc14pi" path="res://sounds/editor_only/click.wav" id="4_o2cmd"]
+
+[node name="OptionsMenu" type="ColorRect" unique_id=1296993923]
+process_mode = 3
+process_priority = -1
+visible = false
+z_index = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.588235)
+script = ExtResource("1_b2bsq")
+metadata/_edit_vertical_guides_ = []
+
+[node name="Options" type="VBoxContainer" parent="." unique_id=499637898]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="TabBar" type="TabBar" parent="Options" unique_id=1194512789]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+current_tab = 0
+tab_alignment = 1
+tab_count = 4
+tab_0/title = "Controls"
+tab_1/title = "InputMapping"
+tab_2/title = "Video"
+tab_3/title = "Audio"
+
+[node name="Tabs" type="Control" parent="Options" unique_id=1693718240]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Controls" type="VBoxContainer" parent="Options/Tabs" unique_id=966551793]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 3
+
+[node name="Mouse" type="Label" parent="Options/Tabs/Controls" unique_id=508927485]
+layout_mode = 2
+text = "Mouse"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="MouseSensitivity" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=37705309 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/MouseSensitivity" unique_id=1295998856]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/MouseSensitivity" unique_id=469563336]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 2.0
+step = 0.01
+value = 0.1
+allow_greater = true
+allow_lesser = true
+tick_count = 20
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/MouseSensitivity" unique_id=1653694269]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="MouseHorizontalInverted" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=28774299 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/MouseHorizontalInverted" unique_id=809436933]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Controls/MouseHorizontalInverted" unique_id=191365600]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Controls/MouseHorizontalInverted" unique_id=1030758617]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MouseVerticalInverted" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=1302412505 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/MouseVerticalInverted" unique_id=72420614]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Controls/MouseVerticalInverted" unique_id=1925816734]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Controls/MouseVerticalInverted" unique_id=2138552339]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Controller" type="Label" parent="Options/Tabs/Controls" unique_id=1797435489]
+layout_mode = 2
+text = "Controller"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ControllerHorizontalSensitivity" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=1986273417 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerHorizontalSensitivity" unique_id=1930400764]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/ControllerHorizontalSensitivity" unique_id=1751185557]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 2.0
+step = 0.01
+value = 0.1
+allow_greater = true
+allow_lesser = true
+tick_count = 20
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/ControllerHorizontalSensitivity" unique_id=1348185827]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="ControllerVerticalSensitivity" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=534890470 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerVerticalSensitivity" unique_id=1788523064]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/ControllerVerticalSensitivity" unique_id=499540835]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 2.0
+step = 0.01
+value = 0.1
+allow_greater = true
+allow_lesser = true
+tick_count = 20
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/ControllerVerticalSensitivity" unique_id=1086544871]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="ControllerHorizontalInverted" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=820511397 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerHorizontalInverted" unique_id=827371275]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Controls/ControllerHorizontalInverted" unique_id=1137127168]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Controls/ControllerHorizontalInverted" unique_id=922930151]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControllerVerticalInverted" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=1257427071 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerVerticalInverted" unique_id=1200753346]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Controls/ControllerVerticalInverted" unique_id=1957228907]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Controls/ControllerVerticalInverted" unique_id=1054081563]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControllerResponseCurve" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=940825096 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerResponseCurve" unique_id=1744045485]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/ControllerResponseCurve" unique_id=2104955074]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 1.0
+max_value = 4.0
+step = 0.1
+value = 1.0
+tick_count = 4
+ticks_on_borders = true
+metadata/default_value = 2.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/ControllerResponseCurve" unique_id=1420940237]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="ControllerDeadzone" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=790623860 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerDeadzone" unique_id=221426172]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/ControllerDeadzone" unique_id=1418120037]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 0.5
+step = 0.01
+tick_count = 6
+ticks_on_borders = true
+metadata/default_value = 0.1
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/ControllerDeadzone" unique_id=253470877]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="ControllerOuterThreshold" type="HBoxContainer" parent="Options/Tabs/Controls" unique_id=1651616651 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Controls/ControllerOuterThreshold" unique_id=490289817]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Controls/ControllerOuterThreshold" unique_id=2032257040]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 0.5
+step = 0.01
+tick_count = 6
+ticks_on_borders = true
+metadata/default_value = 0.01
+
+[node name="Value" type="Label" parent="Options/Tabs/Controls/ControllerOuterThreshold" unique_id=1871104856]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="InputMapping" parent="Options/Tabs" unique_id=1027733832 instance=ExtResource("2_owuij")]
+visible = false
+layout_mode = 0
+anchor_left = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_right = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Video" type="VBoxContainer" parent="Options/Tabs" unique_id=966864339]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 3
+
+[node name="3DScale" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=1420030032 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/3DScale" unique_id=1811421938]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Video/3DScale" unique_id=1187510713]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 2.0
+step = 0.01
+value = 1.0
+allow_greater = true
+allow_lesser = true
+tick_count = 7
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Video/3DScale" unique_id=1194102532]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="AntiAliasing" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=232191586 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/AntiAliasing" unique_id=1089737258]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="OptionButton" parent="Options/Tabs/Video/AntiAliasing" unique_id=2013976111]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+item_count = 3
+popup/item_0/text = "Disabled"
+popup/item_0/id = 0
+popup/item_1/text = "FXAA"
+popup/item_1/id = 1
+popup/item_2/text = "MSAA"
+popup/item_2/id = 2
+metadata/default_value = 1
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/AntiAliasing" unique_id=13459047]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Bloom" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=1568939580 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/Bloom" unique_id=247741333]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Video/Bloom" unique_id=1139907173]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = true
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/Bloom" unique_id=1793383316]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Brightness" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=1374255737 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/Brightness" unique_id=252273346]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Video/Brightness" unique_id=725974468]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 2.0
+step = 0.01
+value = 1.0
+allow_greater = true
+allow_lesser = true
+tick_count = 7
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Video/Brightness" unique_id=1158815778]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="FOV" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=1666579001 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/FOV" unique_id=1237759040]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Video/FOV" unique_id=352647548]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 60.0
+max_value = 120.0
+value = 60.0
+allow_greater = true
+allow_lesser = true
+tick_count = 7
+ticks_on_borders = true
+metadata/default_value = 90.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Video/FOV" unique_id=575124901]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="FSR" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=318849826 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/FSR" unique_id=1749737100]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="OptionButton" parent="Options/Tabs/Video/FSR" unique_id=1737790238]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+item_count = 5
+popup/item_0/text = "Disabled"
+popup/item_0/id = 0
+popup/item_1/text = "Ultra Quality"
+popup/item_1/id = 1
+popup/item_2/text = "Quality"
+popup/item_2/id = 2
+popup/item_3/text = "Balanced"
+popup/item_3/id = 3
+popup/item_4/text = "Performance"
+popup/item_4/id = 4
+metadata/default_value = 0
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/FSR" unique_id=1431097579]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Fullscreen" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=1496100689 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/Fullscreen" unique_id=1208530509]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Video/Fullscreen" unique_id=1619154647]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/Fullscreen" unique_id=1998175889]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MaxFPS" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=933262318 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/MaxFPS" unique_id=36443086]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Video/MaxFPS" unique_id=1829009449]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 10.0
+max_value = 240.0
+value = 10.0
+allow_greater = true
+allow_lesser = true
+ticks_on_borders = true
+metadata/default_value = 240.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Video/MaxFPS" unique_id=1147822438]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="ShowFPS" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=373917757 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/ShowFPS" unique_id=816277748]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Video/ShowFPS" unique_id=1855804716]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/ShowFPS" unique_id=595032039]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VSync" type="HBoxContainer" parent="Options/Tabs/Video" unique_id=337700853 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Video/VSync" unique_id=1336416542]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="CheckBox" parent="Options/Tabs/Video/VSync" unique_id=780798339]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Value"
+metadata/default_value = false
+
+[node name="Spacer" type="Control" parent="Options/Tabs/Video/VSync" unique_id=1182559918]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Audio" type="VBoxContainer" parent="Options/Tabs" unique_id=1396670115]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_vertical = 3
+
+[node name="Volume" type="Label" parent="Options/Tabs/Audio" unique_id=1614204744]
+layout_mode = 2
+text = "Volume"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="VolumeMaster" type="HBoxContainer" parent="Options/Tabs/Audio" unique_id=97828765 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Audio/VolumeMaster" unique_id=340441704]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Audio/VolumeMaster" unique_id=1284631701]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Audio/VolumeMaster" unique_id=977718036]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="VolumeSFX" type="HBoxContainer" parent="Options/Tabs/Audio" unique_id=288654162 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Audio/VolumeSFX" unique_id=490309730]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Audio/VolumeSFX" unique_id=1232405905]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Audio/VolumeSFX" unique_id=1558406638]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="VolumeMusic" type="HBoxContainer" parent="Options/Tabs/Audio" unique_id=153683159 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Audio/VolumeMusic" unique_id=1203768027]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Audio/VolumeMusic" unique_id=2027475625]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Audio/VolumeMusic" unique_id=1653263266]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="VolumeDialog" type="HBoxContainer" parent="Options/Tabs/Audio" unique_id=24617197 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Audio/VolumeDialog" unique_id=1596289968]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Audio/VolumeDialog" unique_id=1011482240]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Audio/VolumeDialog" unique_id=16948543]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="VolumeFVOX" type="HBoxContainer" parent="Options/Tabs/Audio" unique_id=106972111 groups=["Option"]]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="Options/Tabs/Audio/VolumeFVOX" unique_id=1237085069]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+horizontal_alignment = 2
+
+[node name="Setter" type="HSlider" parent="Options/Tabs/Audio/VolumeFVOX" unique_id=3653120]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+metadata/default_value = 1.0
+
+[node name="Value" type="Label" parent="Options/Tabs/Audio/VolumeFVOX" unique_id=1479652684]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Value"
+
+[node name="RestoreDefaultsButton" type="Button" parent="Options" unique_id=1786001976]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+text = "Restore Defaults"
+
+[node name="PauseControls" type="VBoxContainer" parent="." unique_id=405063004]
+visible = false
+layout_mode = 0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 32.0
+offset_top = -100.0
+offset_right = 532.0
+offset_bottom = 100.0
+grow_vertical = 2
+metadata/_edit_layout_mode = 1
+
+[node name="GameTitle" type="Label" parent="PauseControls" unique_id=1537036217]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.262745, 0.627451, 0.278431, 1)
+theme_override_font_sizes/font_size = 48
+text = "CraftMoon"
+vertical_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseControls" unique_id=157543489]
+layout_mode = 2
+text = "Resume"
+flat = true
+alignment = 0
+
+[node name="OptionsButton" type="Button" parent="PauseControls" unique_id=10971977]
+layout_mode = 2
+text = "Options"
+flat = true
+alignment = 0
+
+[node name="QuitButton" type="Button" parent="PauseControls" unique_id=693488710]
+layout_mode = 2
+text = "Quit"
+flat = true
+alignment = 0
+
+[node name="SoundHover" type="AudioStreamPlayer" parent="." unique_id=371744957]
+unique_name_in_owner = true
+stream = ExtResource("3_lbhr5")
+
+[node name="SoundClick" type="AudioStreamPlayer" parent="." unique_id=1023921662]
+unique_name_in_owner = true
+stream = ExtResource("4_o2cmd")
+
+[connection signal="tab_changed" from="Options/TabBar" to="." method="_on_tab_bar_tab_changed"]
+[connection signal="pressed" from="Options/RestoreDefaultsButton" to="." method="_on_restore_defaults_button_pressed"]
+[connection signal="mouse_entered" from="PauseControls/ResumeButton" to="." method="_on_button_mouse_entered"]
+[connection signal="pressed" from="PauseControls/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="mouse_entered" from="PauseControls/OptionsButton" to="." method="_on_button_mouse_entered"]
+[connection signal="pressed" from="PauseControls/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="mouse_entered" from="PauseControls/QuitButton" to="." method="_on_button_mouse_entered"]
+[connection signal="pressed" from="PauseControls/QuitButton" to="." method="_on_quit_button_pressed"]

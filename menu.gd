@@ -31,6 +31,7 @@ static var slot := 0
 var player: Character
 
 @onready var world := get_tree().current_scene as World
+@onready var options_menu: OptionsMenu = $"../OptionsMenu"
 
 
 func _ready() -> void:
@@ -52,6 +53,9 @@ func _process(_delta: float) -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 	if Input.is_action_just_pressed(&"ui_cancel"):
+		if options_menu.visible:
+			options_menu.close()
+			return
 		toggle()
 
 
@@ -69,6 +73,8 @@ func toggle() -> void:
 
 	visible = not visible
 	background_dim.visible = visible
+	if not visible:
+		options_menu.close()
 	if visible:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		Audio.play_sound("menu")
@@ -441,6 +447,13 @@ func _on_load_button_pressed() -> void:
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_options_button_pressed() -> void:
+	if options_menu.visible:
+		options_menu.close()
+	else:
+		options_menu.open()
 
 
 func _on_new_level_button_pressed() -> void:
