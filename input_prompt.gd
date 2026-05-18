@@ -57,14 +57,14 @@ func _on_device_changed(next_device: String, _index: int) -> void:
 
 		for i in range(texture_paths.size()):
 			var path := texture_paths[i]
-			var tr := TextureRect.new()
-			tr.custom_minimum_size = Vector2(34, 34)
-			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-			tr.texture = load(path)
-			add_child(tr)
-			move_child(tr, get_child_count() - 2)
+			var texture_rect := TextureRect.new()
+			texture_rect.custom_minimum_size = Vector2(34, 34)
+			texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			texture_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			texture_rect.texture = load(path)
+			add_child(texture_rect)
+			move_child(texture_rect, get_child_count() - 2)
 	else:
 		var fallback_str := ""
 		for i in range(parts.size()):
