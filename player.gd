@@ -21,8 +21,17 @@ var first_person: bool:
 		crosshair.visible = value
 		meshes.visible = not value
 		_set_current_camera()
+		_update_thought_bubble()
 var fly := false
 var doubletap_time := DOUBLETAP_DELAY
+
+var thought_bubble: ThoughtBubble
+@export var thought_bubble_base_frames: SpriteFrames
+@export var thought_bubble_content_frames: SpriteFrames
+@export var synced_thought: String = "":
+	set(value):
+		synced_thought = value
+		_update_thought_bubble()
 
 @onready var nickname: Label3D = $PlayerNick/Nickname
 @onready var body: MeshInstance3D = $"3DGodotRobot/RobotArmature/Skeleton3D/Llimbs and head"
@@ -40,6 +49,15 @@ func _enter_tree() -> void:
 	_set_current_camera()
 	var _error := Signals.level_select_closed.connect(_set_current_camera)
 	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+
+
+func _ready() -> void:
+	thought_bubble = preload("res://thought_bubble.gd").new()
+	thought_bubble.bubble_frames = thought_bubble_base_frames
+	thought_bubble.content_frames = thought_bubble_content_frames
+	add_child(thought_bubble)
+	thought_bubble.position = Vector3(0, 2.0, 0)
+	_update_thought_bubble()
 
 
 func _physics_process(delta: float) -> void:
@@ -161,3 +179,15 @@ func set_player_skin(color: Color) -> void:
 	var material := body.get_surface_override_material(0) as ShaderMaterial
 	if material:
 		material.set_shader_parameter("tint_color", color)
+
+
+func _update_thought_bubble() -> void:
+	if not thought_bubble:
+		return
+	if synced_thought.is_empty():
+		thought_bubble.hide_thought()
+	else:
+		if is_multiplayer_authority() and first_person:
+			thought_bubble.hide_thought()
+		else:
+			thought_bubble.show_thought(synced_thought)

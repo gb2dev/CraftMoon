@@ -82,9 +82,11 @@ func close_gadget_properties() -> bool:
 
 @rpc("any_peer")
 func sync_object_material(material_path: String, object_path: NodePath) -> void:
-	get_node(object_path).material = load(material_path)
-	if object and object.get_path() == object_path:
-		selected_material_changed.emit()
+	var target_node := get_node_or_null(object_path)
+	if target_node:
+		target_node.material = load(material_path)
+		if object and object.get_path() == object_path:
+			selected_material_changed.emit()
 
 
 func change_object_material(material_resource: BaseMaterial3D) -> void:

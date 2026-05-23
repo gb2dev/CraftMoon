@@ -37,6 +37,7 @@ var selected_shape: int:
 		rotation_angles = Vector3.ZERO
 		for shape_item: ShapeItem in shape_items.get_children():
 			shape_item.set_selected(value == shape_item.get_index())
+		_update_player_thought()
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
 
@@ -597,6 +598,7 @@ func _try_finish_shape() -> void:
 		vertices.clear()
 		return
 	Audio.play_sound("place")
+	var unique_node_name := str(multiplayer.get_unique_id()) + "_" + str(Time.get_ticks_usec()) + "_" + str(randi() % 1000)
 	construct_shape.rpc(
 		_shape_name(),
 		vertices[-2] - size / 2,
@@ -604,7 +606,8 @@ func _try_finish_shape() -> void:
 		size.abs(),
 		construction_material.resource_path,
 		construction_collision,
-		uniform_scale_mode
+		uniform_scale_mode,
+		unique_node_name
 	)
 	vertices.clear()
 
@@ -656,7 +659,8 @@ func construct_shape(
 	size: Vector3,
 	material: String,
 	use_collision: bool,
-	uniform := false
+	uniform := false,
+	node_name := ""
 ) -> CSGShape3D:
 	var shape := _create_shape(type)
 	if not shape:
@@ -690,7 +694,12 @@ func construct_shape(
 
 	if shape.get_index() == 0:
 		shape.add_to_group(&"Undeletable")
-	shape.name = str(shape.get_index())
+	
+	if node_name.is_empty():
+		shape.name = str(shape.get_index())
+	else:
+		shape.name = node_name
+	
 	return shape
 
 
@@ -745,6 +754,8 @@ func set_object_builder_active(value: bool) -> void:
 	cursor.visible = object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
 	highlighted_geometry = null
+	
+	_update_player_thought()
 
 	if not player.first_person:
 		return
@@ -775,3 +786,12 @@ func set_object_builder_active(value: bool) -> void:
 		input_display.add_input_prompt(&"time_play_pause", tr(&"Play/Pause"))
 		input_display.add_input_prompt(&"time_rewind", tr(&"Rewind"))
 		input_display.add_input_prompt(&"toggle_chat", tr(&"Global Chat"))
+
+
+func _update_player_thought() -> void:
+	if not player:
+		return
+	if object_builder_active:
+		player.synced_thought = _shape_name()
+	else:
+		player.synced_thought = ""

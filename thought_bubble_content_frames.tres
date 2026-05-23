@@ -1,0 +1,119 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bvmb0vwohpv5a"]
+
+[ext_resource type="Texture2D" uid="uid://bp8wl32jw0m7m" path="res://icons/thought_bubble/cuboid.svg" id="4_cuboid"]
+[ext_resource type="Texture2D" uid="uid://ds6fugwjtyc1u" path="res://icons/thought_bubble/ellipsoid.svg" id="5_ellipsoid"]
+[ext_resource type="Texture2D" uid="uid://bqsnc756xlepo" path="res://icons/thought_bubble/cylinder.svg" id="6_cylinder"]
+[ext_resource type="Texture2D" uid="uid://b1es73r4ptlqx" path="res://icons/thought_bubble/cone.svg" id="7_cone"]
+[ext_resource type="Texture2D" uid="uid://dcri8mupq6gxg" path="res://icons/thought_bubble/torus.svg" id="8_torus"]
+[ext_resource type="Texture2D" uid="uid://biuejdalxihsk" path="res://icons/thought_bubble/polygon.svg" id="9_polygon"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_cone")
+}],
+"loop": true,
+"name": &"Cone",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cone_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cone_show",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_cuboid")
+}],
+"loop": true,
+"name": &"Cuboid",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cuboid_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cuboid_show",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_cylinder")
+}],
+"loop": true,
+"name": &"Cylinder",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cylinder_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Cylinder_show",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_ellipsoid")
+}],
+"loop": true,
+"name": &"Ellipsoid",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Ellipsoid_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Ellipsoid_show",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_polygon")
+}],
+"loop": true,
+"name": &"Polygon",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Polygon_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Polygon_show",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_torus")
+}],
+"loop": true,
+"name": &"Torus",
+"speed": 6.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Torus_hide",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Torus_show",
+"speed": 12.0
+}]

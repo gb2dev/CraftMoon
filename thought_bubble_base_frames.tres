@@ -1,0 +1,45 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://ch1iopbae1el6"]
+
+[ext_resource type="Texture2D" uid="uid://cyam2v5fisx5e" path="res://icons/thought_bubble/bubble_show_frame_0.svg" id="1_f0show"]
+[ext_resource type="Texture2D" uid="uid://dornsjwcxwgi8" path="res://icons/thought_bubble/bubble_show_frame_1.svg" id="2_f1show"]
+[ext_resource type="Texture2D" uid="uid://cq4o1byeh6rdf" path="res://icons/thought_bubble/bubble_show_frame_2.svg" id="3_f2show"]
+[ext_resource type="Texture2D" uid="uid://dqonqp0im2ceo" path="res://icons/thought_bubble/bubble_show_frame_3.svg" id="4_f3show"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_f3show")
+}],
+"loop": true,
+"name": &"default",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_f2show")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_f1show")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_f0show")
+}],
+"loop": false,
+"name": &"hide",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_f0show")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_f1show")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_f2show")
+}],
+"loop": false,
+"name": &"show",
+"speed": 12.0
+}]
