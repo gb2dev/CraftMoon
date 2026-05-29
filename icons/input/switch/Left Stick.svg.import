@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ch7hlagrl2kph"
-path="res://.godot/imported/Menu Button.svg-e926cac1a276da91959304f2fa0e55f0.ctex"
+uid="uid://cdu0p72b58xvi"
+path="res://.godot/imported/Left Stick.svg-8e660a7924e3096fb3053575c82f2b66.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/input/xbox/Menu Button.svg"
-dest_files=["res://.godot/imported/Menu Button.svg-e926cac1a276da91959304f2fa0e55f0.ctex"]
+source_file="res://icons/input/switch/Left Stick.svg"
+dest_files=["res://.godot/imported/Left Stick.svg-8e660a7924e3096fb3053575c82f2b66.ctex"]
 
 [params]
 

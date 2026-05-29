@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2ct7g7ktfp37"
-path="res://.godot/imported/Right Shoulder Button.svg-70a57c598f676bddfd65dc697a328076.ctex"
+uid="uid://ddo685o0m3dow"
+path="res://.godot/imported/Left Stick Vertical.svg-7a1e0dd15acc5f572645481e0ea3ac60.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/input/xbox/Right Shoulder Button.svg"
-dest_files=["res://.godot/imported/Right Shoulder Button.svg-70a57c598f676bddfd65dc697a328076.ctex"]
+source_file="res://icons/input/playstation/Left Stick Vertical.svg"
+dest_files=["res://.godot/imported/Left Stick Vertical.svg-7a1e0dd15acc5f572645481e0ea3ac60.ctex"]
 
 [params]
 

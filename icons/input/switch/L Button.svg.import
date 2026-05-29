@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://blfhofajabmxk"
-path="res://.godot/imported/Left Shoulder Button.svg-8e35013eacdae0251504297403757163.ctex"
+uid="uid://cybmdg0hcr5xx"
+path="res://.godot/imported/L Button.svg-391549a845ebb0cd44d03a5f3762100e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/input/xbox/Left Shoulder Button.svg"
-dest_files=["res://.godot/imported/Left Shoulder Button.svg-8e35013eacdae0251504297403757163.ctex"]
+source_file="res://icons/input/switch/L Button.svg"
+dest_files=["res://.godot/imported/L Button.svg-391549a845ebb0cd44d03a5f3762100e.ctex"]
 
 [params]
 

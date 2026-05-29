@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfik5ngkxnj7u"
-path="res://.godot/imported/- Button.svg-ce8244dd6688d83cc440e1a8d37e5ae9.ctex"
+uid="uid://bt5hgx8gtiksi"
+path="res://.godot/imported/LS Button.svg-9f472bdadeb70a0bfc0ad1ee40c9c17a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/input/switch/- Button.svg"
-dest_files=["res://.godot/imported/- Button.svg-ce8244dd6688d83cc440e1a8d37e5ae9.ctex"]
+source_file="res://icons/input/switch/LS Button.svg"
+dest_files=["res://.godot/imported/LS Button.svg-9f472bdadeb70a0bfc0ad1ee40c9c17a.ctex"]
 
 [params]
 

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c2si8gkbnde0c" path="res://player.gd" id="1_tdh26"]
 [ext_resource type="Script" uid="uid://v8j54rbc0ik" path="res://3d_godot_robot.gd" id="2_mexc5"]
-[ext_resource type="SpriteFrames" path="res://thought_bubble_base_frames.tres" id="2_urp6f"]
+[ext_resource type="SpriteFrames" uid="uid://ch1iopbae1el6" path="res://thought_bubble_base_frames.tres" id="2_urp6f"]
 [ext_resource type="SpriteFrames" uid="uid://bvmb0vwohpv5a" path="res://thought_bubble_content_frames.tres" id="3_bwjto"]
 [ext_resource type="Material" uid="uid://ctfsad07a8lm4" path="res://materials/robot.tres" id="3_hqtel"]
 [ext_resource type="Script" uid="uid://bj7yrijm7bppq" path="res://spring_arm_offset.gd" id="4_ygggd"]

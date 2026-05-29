@@ -14,6 +14,7 @@ var joypad_look_sensitivity_y: float = 0.7
 var mouse_look_inverted_x: bool = false
 var mouse_look_inverted_y: bool = false
 var mouse_look_sensitivity: float = 1.0
+var _look_stick_blocked: bool = false
 
 @onready var camera := $Camera3D as Camera3D
 @onready var player := get_parent() as Character
@@ -22,6 +23,13 @@ var mouse_look_sensitivity: float = 1.0
 func _process(_delta: float) -> void:
 	if not player.first_person: return
 	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
+	if player.editor.is_joypad_modifier_pressed():
+		_look_stick_blocked = true
+	elif _look_stick_blocked:
+		if look_input == Vector2.ZERO:
+			_look_stick_blocked = false
+	if player.editor.is_joypad_modifier_pressed() or _look_stick_blocked:
+		look_input = Vector2.ZERO
 
 	if joypad_look_inverted_x:
 		look_input.x *= -1

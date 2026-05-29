@@ -24,6 +24,8 @@ var highlighted_geometry: GeometryInstance3D:
 			if value:
 				value.material_overlay = HIGHLIGHT_MATERIAL
 			highlighted_geometry = value
+			if not object_builder_active:
+				_update_input_display()
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
 var _selected_shape := -1
@@ -76,7 +78,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if not Menu.shown:
-		if Input.is_action_just_pressed(&"object_builder"):
+		if _is_action_just_pressed(&"object_builder"):
 			if object_properties.visible:
 				object_properties.close()
 			else:
@@ -86,7 +88,7 @@ func _process(_delta: float) -> void:
 			_handle_editor_input()
 			return
 
-		if Input.is_action_just_pressed(&"properties"):
+		if _is_action_just_pressed(&"object_properties", true):
 			object_properties.toggle(null)
 
 		if object_builder_active:
@@ -101,16 +103,16 @@ func _handle_editor_input() -> void:
 
 	var collider := get_collider()
 
-	if Input.is_action_just_pressed(&"properties"):
+	if _is_action_just_pressed(&"object_properties", true):
 		if collider is CSGShape3D:
 			object_properties.toggle(collider)
-	elif Input.is_action_just_pressed(&"customize_player"):
+	elif _is_action_just_pressed(&"customize_player"):
 		object_properties.toggle(player)
 
 	if collider:
 		if collider is CSGShape3D:
 			highlighted_geometry = collider
-			if Input.is_action_just_pressed(&"destroy"):
+			if _is_action_just_pressed(&"destroy"):
 				if not highlighted_geometry.is_in_group(&"Undeletable"):
 					Audio.play_sound("destroy")
 					destroy.rpc(highlighted_geometry.get_path())
@@ -118,11 +120,26 @@ func _handle_editor_input() -> void:
 	highlighted_geometry = null
 
 
+func is_joypad_modifier_pressed() -> bool:
+	if InputHelper.device == "keyboard":
+		return false
+	var joy_idx: int = InputHelper.device_index if InputHelper.device_index >= 0 else 0
+	return Input.is_joy_button_pressed(joy_idx, JOY_BUTTON_LEFT_SHOULDER)
+
+
+func _is_action_just_pressed(action: StringName, require_joypad_modifier: bool = false, exact_match: bool = false) -> bool:
+	if not Input.is_action_just_pressed(action, exact_match):
+		return false
+	if InputHelper.device == "keyboard":
+		return true
+	return is_joypad_modifier_pressed() == require_joypad_modifier
+
+
 func _update_cursor() -> void:
-	if Input.is_action_just_pressed(&"cursor_forward") and not Input.is_key_pressed(KEY_ALT):
+	if _is_action_just_pressed(&"cursor_forward") and not Input.is_key_pressed(KEY_ALT):
 		cursor_distance -= CURSOR_STEP
 		target_position.z -= CURSOR_STEP
-	elif Input.is_action_just_pressed(&"cursor_back") and not Input.is_key_pressed(KEY_ALT):
+	elif _is_action_just_pressed(&"cursor_back") and not Input.is_key_pressed(KEY_ALT):
 		cursor_distance += CURSOR_STEP
 		target_position.z += CURSOR_STEP
 	cursor_distance = clampf(cursor_distance, CURSOR_MIN, CURSOR_MAX)
@@ -141,17 +158,17 @@ func _update_cursor() -> void:
 func _handle_construction() -> void:
 	_handle_shape_selection()
 
-	if Input.is_action_just_pressed(&"rotate_up"):
+	if _is_action_just_pressed(&"rotate_up", true):
 		rotation_angles.x += deg_to_rad(45)
-	elif Input.is_action_just_pressed(&"rotate_down"):
+	elif _is_action_just_pressed(&"rotate_down", true):
 		rotation_angles.x -= deg_to_rad(45)
-	elif Input.is_action_just_pressed(&"rotate_cw"):
+	elif _is_action_just_pressed(&"rotate_cw", true):
 		rotation_angles.y -= deg_to_rad(45)
-	elif Input.is_action_just_pressed(&"rotate_ccw"):
+	elif _is_action_just_pressed(&"rotate_ccw", true):
 		rotation_angles.y += deg_to_rad(45)
-	elif Input.is_action_just_pressed(&"flip_h"):
+	elif _is_action_just_pressed(&"flip_h", true):
 		rotation_angles.y = fmod(rotation_angles.y + PI, 2.0 * PI)
-	elif Input.is_action_just_pressed(&"flip_v"):
+	elif _is_action_just_pressed(&"flip_v", true):
 		rotation_angles.x = fmod(rotation_angles.x + PI, 2.0 * PI)
 
 	if absf(rotation_angles.y) >= 2.0 * PI - 0.01:
@@ -159,7 +176,7 @@ func _handle_construction() -> void:
 	if absf(rotation_angles.x) >= 2.0 * PI - 0.01:
 		rotation_angles.x = 0.0
 
-	if Input.is_action_just_pressed(&"toggle_uniform"):
+	if _is_action_just_pressed(&"toggle_uniform", true):
 		uniform_scale_mode = not uniform_scale_mode
 
 	var has_first_vertex := not vertices.is_empty()
@@ -170,7 +187,7 @@ func _handle_construction() -> void:
 		if control.visible:
 			return
 
-	if Input.is_action_just_pressed(&"action"):
+	if _is_action_just_pressed(&"action"):
 		vertices.append(cursor.global_position)
 		if has_first_vertex:
 			_try_finish_shape()
@@ -179,21 +196,21 @@ func _handle_construction() -> void:
 
 
 func _handle_shape_selection() -> void:
-	if Input.is_action_just_pressed(&"previous", true):
+	if _is_action_just_pressed(&"previous", false, true):
 		selected_shape = wrapi(selected_shape - 1, 0, SHAPE_COUNT)
-	elif Input.is_action_just_pressed(&"next", true):
+	elif _is_action_just_pressed(&"next", false, true):
 		selected_shape = wrapi(selected_shape + 1, 0, SHAPE_COUNT)
-	elif Input.is_action_just_pressed(&"1"):
+	elif _is_action_just_pressed(&"1"):
 		selected_shape = 0
-	elif Input.is_action_just_pressed(&"2"):
+	elif _is_action_just_pressed(&"2"):
 		selected_shape = 1
-	elif Input.is_action_just_pressed(&"3"):
+	elif _is_action_just_pressed(&"3"):
 		selected_shape = 2
-	elif Input.is_action_just_pressed(&"4"):
+	elif _is_action_just_pressed(&"4"):
 		selected_shape = 3
-	elif Input.is_action_just_pressed(&"5"):
+	elif _is_action_just_pressed(&"5"):
 		selected_shape = 4
-	elif Input.is_action_just_pressed(&"6"):
+	elif _is_action_just_pressed(&"6"):
 		selected_shape = 5
 
 
@@ -694,12 +711,12 @@ func construct_shape(
 
 	if shape.get_index() == 0:
 		shape.add_to_group(&"Undeletable")
-	
+
 	if node_name.is_empty():
 		shape.name = str(shape.get_index())
 	else:
 		shape.name = node_name
-	
+
 	return shape
 
 
@@ -754,38 +771,84 @@ func set_object_builder_active(value: bool) -> void:
 	cursor.visible = object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
 	highlighted_geometry = null
-	
-	_update_player_thought()
 
-	if not player.first_person:
+	_update_player_thought()
+	_update_input_display()
+
+
+func _update_input_display() -> void:
+	if not player or not player.first_person or not input_display:
 		return
 
 	input_display.clear_input_prompts()
+
+	# TODO show common inputs in play mode too
+	# TODO make input display category visibility customizable
+	# TODO binding ctrl+... key combinations and L1+... button combinations
+	# TODO Resolve conflicts (R3 : Fly Down and R3 : Play/Pause, L1 Left Stick : Sprint+Move and L1 Left Stick Up/Down : Scale Up/Down)
+
+	# Common
+	# # Basic Movement
+	input_display.add_input_prompt([&"move_forward", &"move_back", &"move_left", &"move_right"], &"Basic Movement", "Move")
+	input_display.add_input_prompt([&"look_up", &"look_down", &"look_left", &"look_right"], &"Basic Movement", "Look")
+	input_display.add_input_prompt([&"jump"], &"Basic Movement")
+	input_display.add_input_prompt([&"sprint"], &"Basic Movement")
+
+	# # UI
+	if not object_builder_active: input_display.add_input_prompt([&"customize_player"], &"UI") # TODO Allow in object builder
+	input_display.add_input_prompt([&"ui_cancel"], &"UI", "Pause Menu")
+	# TODO [COND MENU OPEN] Escape | O : Back
+
+	# Editor
+	# # All Tools
+	# # # Editor Movement
+	input_display.add_input_prompt([&"jump"], &"Editor Movement", "(Double Tap) Fly") # TODO adjust label when flying
+	# TODO [COND FLYING] CTRL | R3 : Fly Down
+	# TODO [COND FLYING] Space | X : Fly Up
+
+	# # # Time Control
+	input_display.add_input_prompt([&"time_play_pause"], &"Time Control") # TODO adjust label when playing/pausing
+	input_display.add_input_prompt([&"time_rewind"], &"Time Control") # TODO hide if rewound
+
+	# # # Tools
+	# TODO input_display.add_input_prompt([&"undo"], &"Tools") # TODO [COND UNDO >0]
+	# TODO input_display.add_input_prompt([&"redo"], &"Tools") # TODO [COND REDO >0]
+
 	if object_builder_active:
-		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
-		input_display.add_input_prompt(&"object_builder", tr(&"Exit Object Builder"))
-		input_display.add_input_prompt(&"properties")
-		input_display.add_input_prompt(&"action", tr(&"Place Shape Point"))
-		input_display.add_input_prompt(&"previous", tr(&"Previous Shape"))
-		input_display.add_input_prompt(&"next", tr(&"Next Shape"))
-		input_display.add_input_prompt(&"1", tr(&"Quick Select Shape (1-6)"))
-		input_display.add_input_prompt(&"toggle_uniform", tr(&"Toggle Uniform Scale"))
-		input_display.add_input_prompt(&"cursor_forward", tr(&"Cursor Distance"))
-		input_display.add_input_prompt(&"rotate_cw", tr(&"Rotate Horizontally (Y)"))
-		input_display.add_input_prompt(&"rotate_up", tr(&"Rotate Vertically (X)"))
-		input_display.add_input_prompt(&"flip_h", tr(&"Flip Horizontally"))
-		input_display.add_input_prompt(&"flip_v", tr(&"Flip Vertically"))
-		input_display.add_input_prompt(&"toggle_chat", tr(&"Global Chat"))
+		input_display.add_input_prompt([&"object_builder"], &"Tools", "Exit Object Builder")
+
+		# # Object Builder
+		input_display.add_input_prompt([&"object_properties"], &"Object Builder", "", true, true)
+		input_display.add_input_prompt([&"action"], &"Object Builder", "Place Shape Point", true)
+		# TODO input_display.add_input_prompt([&"choose_shape"], &"Object Builder", "", true)
+		input_display.add_input_prompt([&"toggle_uniform"], &"Object Builder", "", true, true)
+		input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Object Builder", "Rotate Horizontally (Y)", true, true)
+		input_display.add_input_prompt([&"rotate_up", &"rotate_down"], &"Object Builder", "Rotate Vertically (X)", true, true)
+		input_display.add_input_prompt([&"flip_h"], &"Object Builder", "", true, true)
+		input_display.add_input_prompt([&"flip_v"], &"Object Builder", "", true, true)
 	else:
-		input_display.add_input_prompt(&"ui_cancel", tr(&"Pause Menu"))
-		input_display.add_input_prompt(&"customize_player")
-		input_display.add_input_prompt(&"object_builder")
-		input_display.add_input_prompt(&"properties")
-		input_display.add_input_prompt(&"destroy")
-		input_display.add_input_prompt(&"jump", tr(&"(Double Tap) Fly"))
-		input_display.add_input_prompt(&"time_play_pause", tr(&"Play/Pause"))
-		input_display.add_input_prompt(&"time_rewind", tr(&"Rewind"))
-		input_display.add_input_prompt(&"toggle_chat", tr(&"Global Chat"))
+		input_display.add_input_prompt([&"object_builder"], &"Tools", "Enter Object Builder")
+
+		# # Default
+		if highlighted_geometry:
+			# # # Highlighted Object TODO or Selected Object(s) TODO Quantify
+			# TODO input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "", true)
+			input_display.add_input_prompt([&"object_properties"], &"Highlighted Object", "", true, true)
+			input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true) # TODO hide on undeletable objects
+			# TODO input_display.add_input_prompt([&"action"], &"Highlighted Object", "Select Object", true)
+
+		## TODO Grouping & Selecting Objects TODO Quantify
+		#input_display.add_input_prompt([&"group_objects"], &"Selected Objects", "", true, true) # TODO make gamepad modifier button customizable
+		#input_display.add_input_prompt([&"ungroup_objects"], &"Selected Objects", "", true, true)
+		#input_display.add_input_prompt([&"scope_in"], &"Selected Objects", "", true, true)
+		#input_display.add_input_prompt([&"scope_out"], &"Selected Objects", "", true, true)
+
+		## TODO Transform Objects TODO Quantify
+		#input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Transform Objects", "Rotate Horizontally (Y)", true, true)
+		#input_display.add_input_prompt([&"rotate_up", &"rotate_down"], &"Transform Objects", "Rotate Vertically (X)", true, true)
+		#input_display.add_input_prompt([&"flip_h"], &"Transform Objects", "", true, true)
+		#input_display.add_input_prompt([&"flip_v"], &"Transform Objects", "", true, true)
+		#input_display.add_input_prompt([&"scale_up", &"scale_down"], &"Transform Objects", "", true, true)
 
 
 func _update_player_thought() -> void:

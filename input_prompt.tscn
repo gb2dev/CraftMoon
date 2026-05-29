@@ -1,13 +1,11 @@
-[gd_scene load_steps=2 format=4 uid="uid://nvpidlfc70k1"]
+[gd_scene format=3 uid="uid://nvpidlfc70k1"]
 
-[ext_resource type="Script" path="res://input_prompt.gd" id="1_wyslp"]
+[ext_resource type="Script" uid="uid://xanpvkrakkka" path="res://input_prompt.gd" id="1_wyslp"]
 
-[node name="InputPrompt" type="HBoxContainer" groups=["InputPrompt"]]
-theme_override_constants/separation = 8
+[node name="InputPrompt" type="HBoxContainer" unique_id=2130661288 groups=["InputPrompt"]]
+theme_override_constants/separation = 2
 script = ExtResource("1_wyslp")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1563329540]
 layout_mode = 2
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 18
 vertical_alignment = 1

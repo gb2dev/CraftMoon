@@ -21,7 +21,7 @@ const ACTION_LABELS := {
 	&"destroy": "Destroy",
 	&"interact": "Interact",
 	&"object_builder": "Object Builder",
-	&"properties": "Properties",
+	&"object_properties": "Object Properties & Guides",
 	&"toggle_chat": "Open Chat",
 }
 
