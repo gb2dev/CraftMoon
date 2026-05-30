@@ -14,3 +14,11 @@ sound_category_user_interface,User Interface,Benutzeroberfäche
 Movement direction X: ,,Bewegungsrichtung X: 
 Movement direction Y: ,,Bewegungsrichtung Y: 
 Movement direction Z: ,,Bewegungsrichtung Z: 
+time_play_pause,Play/Pause Time,Zeit Abspielen/Pausieren
+time_rewind,Rewind Time,Zeit Zurückspulen
+jump,Jump,Springen
+sprint,Sprint,Sprinten
+object_properties,Object Properties & Guides,Objekteigenschaften und Hilfen
+toggle_uniform,Toggle Uniform Scale,Uniforme Skalierung Umschalten
+flip_h,Flip Horizontally,Horizontal Spiegeln
+flip_v,Flip Vertically,Vertikal Spiegeln
