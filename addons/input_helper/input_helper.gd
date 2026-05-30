@@ -57,6 +57,8 @@ var _last_known_granular_joypad_device: String = get_simplified_device_name(Inpu
 @onready var device: String = guess_device_name()
 @onready var device_index: int = 0 if has_joypad() else -1
 
+var last_event_is_joypad: bool = false
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -77,6 +79,7 @@ func _input(event: InputEvent) -> void:
 		or (event is InputEventMouseMotion and (event as InputEventMouseMotion).relative.length_squared() > mouse_motion_threshold):
 		next_device = DEVICE_KEYBOARD
 		next_device_index = -1
+		last_event_is_joypad = false
 
 	# Did we just use a joypad?
 	elif event is InputEventJoypadButton \
@@ -87,6 +90,7 @@ func _input(event: InputEvent) -> void:
 		last_known_joypad_index = next_device_index
 
 		_last_known_granular_joypad_device = get_simplified_device_name(get_joy_name(event.device), true)
+		last_event_is_joypad = true
 
 	# Debounce changes for 1 second because some joypads register twice in Windows for some reason
 	var not_changed_in_last_second = Engine.get_frames_drawn() - device_last_changed_at > Engine.get_frames_per_second()

@@ -62,6 +62,12 @@ namespace NathanHoad
     }
 
 
+    public static bool LastEventIsJoypad
+    {
+      get => (bool)Instance.Get("last_event_is_joypad");
+    }
+
+
     public static string LastKnownJoypadDevice
     {
       get => (string)Instance.Get("last_known_joypad_device");

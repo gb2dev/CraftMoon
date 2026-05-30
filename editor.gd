@@ -121,18 +121,21 @@ func _handle_editor_input() -> void:
 
 
 func is_joypad_modifier_pressed() -> bool:
-	if InputHelper.device == "keyboard":
-		return false
 	var joy_idx: int = InputHelper.device_index if InputHelper.device_index >= 0 else 0
-	return Input.is_joy_button_pressed(joy_idx, JOY_BUTTON_LEFT_SHOULDER)
+	if Input.is_joy_button_pressed(joy_idx, JOY_BUTTON_LEFT_SHOULDER):
+		return true
+	for id in Input.get_connected_joypads():
+		if Input.is_joy_button_pressed(id, JOY_BUTTON_LEFT_SHOULDER):
+			return true
+	return false
 
 
 func _is_action_just_pressed(action: StringName, require_joypad_modifier: bool = false, exact_match: bool = false) -> bool:
 	if not Input.is_action_just_pressed(action, exact_match):
 		return false
-	if InputHelper.device == "keyboard":
-		return true
-	return is_joypad_modifier_pressed() == require_joypad_modifier
+	if InputHelper.last_event_is_joypad:
+		return is_joypad_modifier_pressed() == require_joypad_modifier
+	return true
 
 
 func _update_cursor() -> void:
