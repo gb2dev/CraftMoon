@@ -167,12 +167,9 @@ func _on_device_changed(next_device: String, _index: int) -> void:
 			var main_input: String = item["label"]
 			
 			if next_device != "keyboard" and has_joypad_modifier:
-				if next_device == "playstation":
-					parts.append("L1 Button")
-				elif next_device == "xbox":
-					parts.append("LB Button")
-				elif next_device == "switch":
-					parts.append("L Button")
+				var shoulder := InputEventJoypadButton.new()
+				shoulder.button_index = JOY_BUTTON_LEFT_SHOULDER
+				parts.append(InputHelper.get_label_for_input(shoulder))
 
 			if input_event and input_event is InputEventWithModifiers:
 				if input_event.ctrl_pressed:
