@@ -15,6 +15,10 @@ var mouse_look_inverted_x: bool = false
 var mouse_look_inverted_y: bool = false
 var mouse_look_sensitivity: float = 1.0
 var _look_stick_blocked: bool = false
+var _ignore_look_until_slow: bool = false
+var _settle_frames_left: int = -1
+var _mouse_motion_this_frame: Vector2 = Vector2.ZERO
+const MOUSE_SETTLE_THRESHOLD: float = 1.5
 
 @onready var camera := $Camera3D as Camera3D
 @onready var player := get_parent() as Character
@@ -22,7 +26,28 @@ var _look_stick_blocked: bool = false
 
 func _process(_delta: float) -> void:
 	if not player.first_person: return
+	if player.editor.pie_menu.visible:
+		return
+
 	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
+
+	if _ignore_look_until_slow:
+		var mouse_speed := _mouse_motion_this_frame.length()
+		var stick_released := look_input.length() < 0.1
+		var mouse_slow := mouse_speed < MOUSE_SETTLE_THRESHOLD
+		
+		if stick_released and mouse_slow:
+			if _settle_frames_left <= 0:
+				_settle_frames_left = 3
+			_settle_frames_left -= 1
+			if _settle_frames_left == 0:
+				_ignore_look_until_slow = false
+		else:
+			_settle_frames_left = -1
+		
+		_mouse_motion_this_frame = Vector2.ZERO
+		return
+
 	if player.editor.is_joypad_modifier_pressed():
 		_look_stick_blocked = true
 	elif _look_stick_blocked:
@@ -61,8 +86,18 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
 		return
 
+	if player.editor.pie_menu.visible:
+		return
+
 	var mouse_motion := event as InputEventMouseMotion
-	if mouse_motion and DisplayServer.mouse_get_mode() == DisplayServer.MOUSE_MODE_CAPTURED:
+	if mouse_motion:
+		if _ignore_look_until_slow:
+			_mouse_motion_this_frame += mouse_motion.relative
+			return
+		
+		if DisplayServer.mouse_get_mode() != DisplayServer.MOUSE_MODE_CAPTURED:
+			return
+		
 		var input := mouse_motion.relative
 		if mouse_look_inverted_x:
 			input.x *= -1

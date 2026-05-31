@@ -63,6 +63,10 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority(): return
 
+	if editor and editor.pie_menu.visible:
+		freeze()
+		return
+
 	var world := get_tree().get_current_scene() as World
 	if world and world.is_chat_visible() and is_on_floor():
 		freeze()
@@ -112,7 +116,7 @@ func freeze() -> void:
 
 func _move() -> void:
 	var _input_direction: Vector2 = Vector2.ZERO
-	if is_multiplayer_authority() and not Menu.shown:
+	if is_multiplayer_authority() and not Menu.shown and not (editor and editor.pie_menu.visible):
 		_input_direction = Input.get_vector(
 			"move_left", "move_right",
 			"move_forward", "move_back"

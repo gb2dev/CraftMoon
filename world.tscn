@@ -46,15 +46,9 @@
 [ext_resource type="Script" uid="uid://bwmi4472ufa3v" path="res://logic_panel.gd" id="43_vf1x1"]
 [ext_resource type="Texture2D" uid="uid://bcecjuq6wyu7b" path="res://icons/close.svg" id="44_vsnf8"]
 [ext_resource type="Script" uid="uid://bggvxmq2odrhu" path="res://input_display.gd" id="45_afx2c"]
-[ext_resource type="PackedScene" uid="uid://nbcq2r8ym45k" path="res://shape_item.tscn" id="46_xkj61"]
-[ext_resource type="Texture2D" uid="uid://7m6wltf8artx" path="res://icons/cube.svg" id="47_ednsc"]
-[ext_resource type="Texture2D" uid="uid://bo1uj0brx3u66" path="res://icons/ellipsoid.svg" id="48_su0yx"]
-[ext_resource type="Texture2D" uid="uid://buok2hkbo3446" path="res://icons/cylinder.svg" id="49_3o3pd"]
-[ext_resource type="Texture2D" uid="uid://bgtj3jvxd7312" path="res://icons/cone.svg" id="50_1hr04"]
-[ext_resource type="Texture2D" uid="uid://d0h0uapcmm6p2" path="res://icons/torus.svg" id="51_remcq"]
-[ext_resource type="Texture2D" uid="uid://c4p713sqj44q0" path="res://icons/triangle.svg" id="52_kcilg"]
 [ext_resource type="FontFile" uid="uid://dw7nr4o2ayj6a" path="res://fonts/dinish-black.otf" id="53_olr1q"]
 [ext_resource type="PackedScene" uid="uid://ph1cgojjyex" path="res://ui/notifications.tscn" id="54_q42o5"]
+[ext_resource type="PackedScene" uid="uid://do7f2bdni14ro" path="res://ui/pie_menu.tscn" id="56_iett8"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fj7yv"]
 sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
@@ -1144,76 +1138,6 @@ offset_bottom = 32.0
 tooltip_text = "Close (Escape)"
 icon = ExtResource("44_vsnf8")
 
-[node name="ShapeSelect" type="PanelContainer" parent="." unique_id=1786910694]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -214.0
-offset_top = 20.0
-offset_right = 214.0
-offset_bottom = 88.0
-grow_horizontal = 2
-
-[node name="ShapeItems" type="HBoxContainer" parent="ShapeSelect" unique_id=229352879]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Cuboid" parent="ShapeSelect/ShapeItems" unique_id=1197525686 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cuboid" index="0"]
-texture = ExtResource("47_ednsc")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Cuboid" index="1"]
-anchors_preset = -1
-
-[node name="Ellipsoid" parent="ShapeSelect/ShapeItems" unique_id=1633833575 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Ellipsoid" index="0"]
-texture = ExtResource("48_su0yx")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Ellipsoid" index="1"]
-anchors_preset = -1
-
-[node name="Cylinder" parent="ShapeSelect/ShapeItems" unique_id=1360861703 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cylinder" index="0"]
-texture = ExtResource("49_3o3pd")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Cylinder" index="1"]
-anchors_preset = -1
-
-[node name="Cone" parent="ShapeSelect/ShapeItems" unique_id=1007328544 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Cone" index="0"]
-texture = ExtResource("50_1hr04")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Cone" index="1"]
-anchors_preset = -1
-
-[node name="Torus" parent="ShapeSelect/ShapeItems" unique_id=172720688 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Torus" index="0"]
-texture = ExtResource("51_remcq")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Torus" index="1"]
-anchors_preset = -1
-
-[node name="Polygon" parent="ShapeSelect/ShapeItems" unique_id=1745663202 instance=ExtResource("46_xkj61")]
-layout_mode = 2
-
-[node name="TextureRect" parent="ShapeSelect/ShapeItems/Polygon" index="0"]
-texture = ExtResource("52_kcilg")
-
-[node name="Label" parent="ShapeSelect/ShapeItems/Polygon" index="1"]
-anchors_preset = -1
-
 [node name="Credits" type="Popup" parent="." unique_id=1991210054]
 transparent_bg = true
 oversampling_override = 1.0
@@ -1252,6 +1176,9 @@ offset_bottom = 21.0
 [node name="Notifications" parent="." unique_id=159077098 instance=ExtResource("54_q42o5")]
 mouse_filter = 2
 
+[node name="PieMenu" parent="." unique_id=1766704397 instance=ExtResource("56_iett8")]
+unique_name_in_owner = true
+
 [connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
@@ -1287,10 +1214,3 @@ mouse_filter = 2
 [connection signal="mouse_exited" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_exited"]
 [connection signal="visibility_changed" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_visibility_changed"]
 [connection signal="pressed" from="ObjectProperties/CloseButton" to="ObjectProperties" method="close"]
-
-[editable path="ShapeSelect/ShapeItems/Cuboid"]
-[editable path="ShapeSelect/ShapeItems/Ellipsoid"]
-[editable path="ShapeSelect/ShapeItems/Cylinder"]
-[editable path="ShapeSelect/ShapeItems/Cone"]
-[editable path="ShapeSelect/ShapeItems/Torus"]
-[editable path="ShapeSelect/ShapeItems/Polygon"]

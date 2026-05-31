@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://do7f2bdni14ro"]
+
+[ext_resource type="Script" uid="uid://cbdco5lgwwnts" path="res://ui/pie_menu.gd" id="1_vrncd"]
+
+[node name="pie_menu" type="Control" unique_id=1766704397]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vrncd")

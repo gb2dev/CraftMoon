@@ -102,6 +102,5 @@ func _register(node: Node, persist_ms: float) -> MeshInstance3D:
 	if persist_ms == 1:
 		_to_free.append(node)
 	elif persist_ms > 0:
-		@warning_ignore("return_value_discarded")
-		get_tree().create_timer(persist_ms).timeout.connect(node.queue_free)
+		var _error := get_tree().create_timer(persist_ms).timeout.connect(node.queue_free)
 	return node as MeshInstance3D

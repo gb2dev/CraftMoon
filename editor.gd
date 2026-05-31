@@ -4,6 +4,13 @@ extends RayCast3D
 
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
+const ICON_CUBOID := preload("res://icons/cube.svg")
+const ICON_ELLIPSOID := preload("res://icons/ellipsoid.svg")
+const ICON_CYLINDER := preload("res://icons/cylinder.svg")
+const ICON_CONE := preload("res://icons/cone.svg")
+const ICON_TORUS := preload("res://icons/torus.svg")
+const ICON_TRIANGLE := preload("res://icons/triangle.svg")
+
 const CURSOR_STEP := 0.5
 const CURSOR_MIN := -10.5
 const CURSOR_MAX := -0.5
@@ -37,8 +44,6 @@ var selected_shape: int:
 			return
 		_selected_shape = value
 		rotation_angles = Vector3.ZERO
-		for shape_item: ShapeItem in shape_items.get_children():
-			shape_item.set_selected(value == shape_item.get_index())
 		_update_player_thought()
 var construction_material := preload("res://materials/bricks/bricks.tres") as BaseMaterial3D
 var construction_collision := true
@@ -54,12 +59,12 @@ var _angle_label_x: Label3D = null
 var _dim_label_x: Label3D = null
 var _dim_label_y: Label3D = null
 var _dim_label_z: Label3D = null
+var _block_action_from_pie_menu := false
 
 @onready var object_properties := get_tree().current_scene.get_node("%ObjectProperties") as ObjectProperties
 @onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
-@onready var shape_select := get_tree().current_scene.get_node("%ShapeSelect") as Control
-@onready var shape_items := get_tree().current_scene.get_node("%ShapeItems") as Control
 @onready var geometry_root := get_tree().current_scene.get_node(^"Geometry")
+@onready var pie_menu: PieMenu = get_tree().current_scene.get_node("%PieMenu")
 @onready var tree := get_tree()
 
 func _ready() -> void:
@@ -74,6 +79,18 @@ func _ready() -> void:
 				mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 				mat.albedo_color.a = 0.99
 				mat.render_priority = 127
+
+	pie_menu.set_items([
+		{"label": "Cuboid", "icon": ICON_CUBOID},
+		{"label": "Ellipsoid", "icon": ICON_ELLIPSOID},
+		{"label": "Cylinder", "icon": ICON_CYLINDER},
+		{"label": "Cone", "icon": ICON_CONE},
+		{"label": "Torus", "icon": ICON_TORUS},
+		{"label": "Polygon", "icon": ICON_TRIANGLE},
+	])
+	var _error := pie_menu.item_selected.connect(_on_pie_menu_item_selected)
+	_error = pie_menu.cancelled.connect(_on_pie_menu_cancelled)
+	pie_menu.add_to_group(&"UI")
 
 
 func _process(_delta: float) -> void:
@@ -159,7 +176,11 @@ func _update_cursor() -> void:
 
 
 func _handle_construction() -> void:
-	_handle_shape_selection()
+	var block_action := _block_action_from_pie_menu
+	_block_action_from_pie_menu = false
+
+	if _is_action_just_pressed(&"choose_shape") and not pie_menu.visible:
+		pie_menu.open()
 
 	if _is_action_just_pressed(&"rotate_up", true):
 		rotation_angles.x += deg_to_rad(45)
@@ -190,7 +211,7 @@ func _handle_construction() -> void:
 		if control.visible:
 			return
 
-	if _is_action_just_pressed(&"action"):
+	if not block_action and _is_action_just_pressed(&"action"):
 		vertices.append(cursor.global_position)
 		if has_first_vertex:
 			_try_finish_shape()
@@ -198,23 +219,22 @@ func _handle_construction() -> void:
 			Audio.play_sound("click")
 
 
-func _handle_shape_selection() -> void:
-	if _is_action_just_pressed(&"previous", false, true):
-		selected_shape = wrapi(selected_shape - 1, 0, SHAPE_COUNT)
-	elif _is_action_just_pressed(&"next", false, true):
-		selected_shape = wrapi(selected_shape + 1, 0, SHAPE_COUNT)
-	elif _is_action_just_pressed(&"1"):
-		selected_shape = 0
-	elif _is_action_just_pressed(&"2"):
-		selected_shape = 1
-	elif _is_action_just_pressed(&"3"):
-		selected_shape = 2
-	elif _is_action_just_pressed(&"4"):
-		selected_shape = 3
-	elif _is_action_just_pressed(&"5"):
-		selected_shape = 4
-	elif _is_action_just_pressed(&"6"):
-		selected_shape = 5
+func _on_pie_menu_item_selected(index: int) -> void:
+	selected_shape = index
+	_block_action_from_pie_menu = true
+	_recapture_mouse()
+
+
+func _on_pie_menu_cancelled() -> void:
+	_block_action_from_pie_menu = true
+	_recapture_mouse()
+
+
+func _recapture_mouse() -> void:
+	DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+	if player and player.pivot:
+		player.pivot._ignore_look_until_slow = true
+		player.pivot._settle_frames_left = -1
 
 
 static func _draw_line(from: Vector3, to: Vector3, color: Color, persist_ms: int, thickness := 0.0, render_priority := 0, no_depth_test := false, depth_draw := BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, sorting_offset := 0.0) -> void:
@@ -770,7 +790,6 @@ func set_object_builder_active(value: bool) -> void:
 	rotation_angles = Vector3.ZERO
 	object_properties.close()
 	object_builder_active = value
-	shape_select.visible = object_builder_active
 	cursor.visible = object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
 	highlighted_geometry = null
@@ -823,7 +842,7 @@ func _update_input_display() -> void:
 		# # Object Builder
 		input_display.add_input_prompt([&"object_properties"], &"Object Builder", "", true, true)
 		input_display.add_input_prompt([&"action"], &"Object Builder", "Place Shape Point", true)
-		# TODO input_display.add_input_prompt([&"choose_shape"], &"Object Builder", "", true)
+		input_display.add_input_prompt([&"choose_shape"], &"Object Builder", "", true)
 		input_display.add_input_prompt([&"toggle_uniform"], &"Object Builder", "", true, true)
 		input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Object Builder", "Rotate Horizontally (Y)", true, true)
 		input_display.add_input_prompt([&"rotate_up", &"rotate_down"], &"Object Builder", "Rotate Vertically (X)", true, true)
