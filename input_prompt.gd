@@ -15,6 +15,7 @@ enum SupportedInputs {ALL, KBM_ONLY, JOYPAD_ONLY}
 		text = new_text
 @export var text: String
 @export var has_joypad_modifier: bool = false
+@export var separate_actions: bool = false
 
 var supported_inputs: SupportedInputs = SupportedInputs.ALL
 
@@ -125,27 +126,43 @@ func _on_device_changed(next_device: String, _index: int) -> void:
 	elif use_consolidated_scroll:
 		groups.append([{"label": "Mouse Wheel Vertical", "event": null, "modifiers": scroll_modifiers}])
 	else:
-		var max_bindings := 0
-		var actions_bindings: Array[Array] = []
-		for action: StringName in actions:
-			var bindings := InputHelper.get_keyboard_or_joypad_inputs_for_action(action)
-			actions_bindings.append(bindings)
-			if bindings.size() > max_bindings:
-				max_bindings = bindings.size()
-		
-		for i in range(max_bindings):
-			var group: Array[Dictionary] = []
-			var added_keys := []
-			for j: int in range(actions.size()):
-				var bindings: Array = actions_bindings[j]
-				if i < bindings.size():
-					var input_event: InputEvent = bindings[i] as InputEvent
-					var label_str := InputHelper.get_label_for_input(input_event)
-					if not label_str in added_keys:
-						added_keys.append(label_str)
-						group.append({"label": label_str, "event": input_event})
-			if not group.is_empty():
-				groups.append(group)
+		if separate_actions:
+			var overall_added_keys := []
+			for action: StringName in actions:
+				var bindings := InputHelper.get_keyboard_or_joypad_inputs_for_action(action)
+				if not bindings.is_empty():
+					var group: Array[Dictionary] = []
+					var added_keys := []
+					for input_event: InputEvent in bindings:
+						var label_str := InputHelper.get_label_for_input(input_event)
+						if not label_str in added_keys and not label_str in overall_added_keys:
+							added_keys.append(label_str)
+							overall_added_keys.append(label_str)
+							group.append({"label": label_str, "event": input_event})
+					if not group.is_empty():
+						groups.append(group)
+		else:
+			var max_bindings := 0
+			var actions_bindings: Array[Array] = []
+			for action: StringName in actions:
+				var bindings := InputHelper.get_keyboard_or_joypad_inputs_for_action(action)
+				actions_bindings.append(bindings)
+				if bindings.size() > max_bindings:
+					max_bindings = bindings.size()
+			
+			for i in range(max_bindings):
+				var group: Array[Dictionary] = []
+				var added_keys := []
+				for j: int in range(actions.size()):
+					var bindings: Array = actions_bindings[j]
+					if i < bindings.size():
+						var input_event: InputEvent = bindings[i] as InputEvent
+						var label_str := InputHelper.get_label_for_input(input_event)
+						if not label_str in added_keys:
+							added_keys.append(label_str)
+							group.append({"label": label_str, "event": input_event})
+				if not group.is_empty():
+					groups.append(group)
 
 	if groups.is_empty():
 		label.text = text

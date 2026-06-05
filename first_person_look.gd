@@ -24,7 +24,7 @@ const MOUSE_SETTLE_THRESHOLD: float = 1.5
 
 func _process(_delta: float) -> void:
 	if not player.first_person: return
-	if player.editor.pie_menu.visible:
+	if player.is_look_blocked():
 		return
 
 	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
@@ -69,7 +69,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
 		return
 
-	if player.editor.pie_menu.visible:
+	if player.is_look_blocked():
 		return
 
 	var mouse_motion := event as InputEventMouseMotion

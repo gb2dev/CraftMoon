@@ -177,8 +177,11 @@ func _handle_construction() -> void:
 	var block_action := _block_action_from_pie_menu
 	_block_action_from_pie_menu = false
 
-	if _is_action_just_pressed(&"choose_shape") and not pie_menu.visible:
-		pie_menu.open()
+	if _is_action_just_pressed(&"choose_shape"):
+		if pie_menu.visible:
+			pie_menu.close()
+		else:
+			pie_menu.open()
 
 	if _is_action_just_pressed(&"rotate_up", true):
 		rotation_angles.x += deg_to_rad(45)
@@ -808,7 +811,6 @@ func _update_input_display() -> void:
 
 	# Common (shown in play and edit mode)
 	input_display._add_common_prompts(not object_builder_active) # TODO Allow in object builder
-	# TODO [COND MENU OPEN] Escape | O : Back
 
 	if not player.first_person:
 		return

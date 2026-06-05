@@ -122,7 +122,7 @@ func _move() -> void:
 			"move_forward", "move_back"
 			)
 
-	var _direction: Vector3 = transform.basis * Vector3(_input_direction.x, 0, _input_direction.y).normalized()
+	var _direction: Vector3 = transform.basis * Vector3(_input_direction.x, 0, _input_direction.y)
 
 	var _is_running := is_running()
 	if first_person:
@@ -195,3 +195,14 @@ func _update_thought_bubble() -> void:
 			thought_bubble.hide_thought()
 		else:
 			thought_bubble.show_thought(synced_thought)
+
+
+func is_look_blocked() -> bool:
+	if Menu.shown:
+		return true
+	if editor and editor.pie_menu and editor.pie_menu.visible:
+		return true
+	for control: Control in get_tree().get_nodes_in_group(&"UI"):
+		if control.visible:
+			return true
+	return false

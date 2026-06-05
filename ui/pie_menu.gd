@@ -124,16 +124,14 @@ func _input(event: InputEvent) -> void:
 					_trigger_selected()
 				_joypad_slot = -1
 
-	elif event is InputEventJoypadButton and event.pressed:
-		if event.button_index == JOY_BUTTON_A:
-			if _hovered_slot >= 0 and _slot_map[_hovered_slot] >= 0:
-				_trigger_selected()
-			else:
-				close()
-		elif event.button_index == JOY_BUTTON_B:
+	elif event.is_action_pressed(&"ui_accept"):
+		if _hovered_slot >= 0 and _slot_map[_hovered_slot] >= 0:
+			_trigger_selected()
+		else:
 			close()
-		elif event.button_index == JOY_BUTTON_Y:
-			close()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed(&"ui_cancel"):
+		close()
 		get_viewport().set_input_as_handled()
 
 
@@ -143,12 +141,9 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_on_mouse_moved(event.position)
 	elif event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if event.is_action_pressed(&"action") or (event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
 			_try_select()
 			accept_event()
-	elif event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
-			close()
 
 
 func _on_mouse_moved(mouse_pos: Vector2) -> void:

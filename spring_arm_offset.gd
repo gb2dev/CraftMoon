@@ -22,6 +22,8 @@ var mouse_look_inverted_y: bool = false
 func _process(_delta: float) -> void:
 	if not is_multiplayer_authority():
 		return
+	if player.is_look_blocked():
+		return
 
 	var look_input := Input.get_vector(&"look_left", &"look_right", &"look_up", &"look_down")
 
@@ -41,12 +43,8 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if Menu.shown:
+	if player.is_look_blocked():
 		return
-
-	for control: Control in get_tree().get_nodes_in_group(&"UI"):
-		if control.visible:
-			return
 
 	var event_mouse_motion := event as InputEventMouseMotion
 	if event_mouse_motion and is_multiplayer_authority():

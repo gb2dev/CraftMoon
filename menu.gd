@@ -56,20 +56,29 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed(&"ui_cancel"):
-		return
 	if event is InputEventKey and event.echo:
 		return
-	if pie_menu and pie_menu.visible:
-		pie_menu.close()
+
+	if event.is_action_pressed(&"ui_cancel"):
+		if pie_menu and pie_menu.visible:
+			pie_menu.close()
+			get_viewport().set_input_as_handled()
+			return
+		if options_menu.visible:
+			options_menu.close()
+			get_viewport().set_input_as_handled()
+			return
+		if visible:
+			toggle()
+			get_viewport().set_input_as_handled()
+			return
+
+	if event.is_action_pressed(&"pause_menu"):
+		for control: Control in get_tree().get_nodes_in_group(&"UI"):
+			if control.visible:
+				return
+		toggle()
 		get_viewport().set_input_as_handled()
-		return
-	if options_menu.visible:
-		options_menu.close()
-		get_viewport().set_input_as_handled()
-		return
-	toggle()
-	get_viewport().set_input_as_handled()
 
 
 func toggle() -> void:
