@@ -6,6 +6,13 @@ signal enter_level(path: String, level_slot: int, blank_level: bool)
 
 static var is_using_computer: bool
 
+
+func _ready() -> void:
+	var mesh_instance: MeshInstance3D = interaction_hint.get_node("MeshInstance3D")
+	var quad_mesh: QuadMesh = mesh_instance.mesh
+	quad_mesh.material.albedo_texture = interaction_hint.get_node("SubViewport").get_texture()
+	quad_mesh.material.billboard_mode = BaseMaterial3D.BILLBOARD_DISABLED
+
 const MAX_COMMUNITY_LEVEL_PAGE_BUTTONS = 9
 const MAX_COMMUNITY_LEVELS_PER_PAGE = 10
 const LEVEL_PORTAL = preload("res://level_portal.tscn")
@@ -44,6 +51,11 @@ var current_community_levels_page := 1
 
 
 func _process(_delta: float) -> void:
+	var world := get_tree().current_scene as World
+	var can_interact := world and not (world.menu.visible or world.object_properties.visible)
+	interaction_hint.visible = can_interact and is_host_in_computer_area() and not is_using_computer
+	if not can_interact:
+		return
 	if Input.is_action_just_pressed(&"interact") or (is_using_computer and Input.is_action_just_pressed(&"ui_cancel")):
 		if interaction_hint.visible:
 			use_computer()

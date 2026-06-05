@@ -1,27 +1,50 @@
-[gd_scene load_steps=13 format=3 uid="uid://dgiept873jjr6"]
+[gd_scene format=3 uid="uid://dgiept873jjr6"]
 
 [ext_resource type="Material" uid="uid://25dx04mlssu2" path="res://materials/concrete/concrete.tres" id="1_3tcni"]
 [ext_resource type="Script" uid="uid://bvj10krgfa2o3" path="res://moon.gd" id="1_rjvio"]
 [ext_resource type="Material" uid="uid://bpbbnj2btwymp" path="res://materials/stone_tiles/stone_tiles.tres" id="3_2g4ib"]
-[ext_resource type="Material" uid="uid://cbwolwwwgyoxw" path="res://materials/wooden_planks/wooden_planks.tres" id="4_e0epg"]
+[ext_resource type="Material" uid="uid://utki041m26jo" path="res://materials/glass.tres" id="4_tdk27"]
 [ext_resource type="Material" uid="uid://g64wnw5cof7n" path="res://materials/metal_tiles/metal_tiles.tres" id="5_bq21b"]
 [ext_resource type="Material" uid="uid://cifbee8llneyb" path="res://materials/checkerboard_dark.tres" id="6_1r202"]
-[ext_resource type="Texture2D" uid="uid://cgiumkr7mo0s5" path="res://icons/input/keyboard/E.svg" id="7_5nvcs"]
 [ext_resource type="LabelSettings" uid="uid://bkk646gysglt6" path="res://title_label_settings.tres" id="7_tdk27"]
+[ext_resource type="Texture2D" uid="uid://d2riwvyule72o" path="res://textures/skybox/panorama_image.png" id="10_tdk27"]
 [ext_resource type="PackedScene" uid="uid://c5vh7p3xg8d4" path="res://ui/level_tooltip.tscn" id="13_abc"]
+[ext_resource type="PackedScene" uid="uid://nvpidlfc70k1" path="res://input_prompt.tscn" id="14_input_prompt"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tdk27"]
+shading_mode = 0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bq21b"]
 size = Vector3(2, 1, 3)
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_hint"]
+viewport_path = NodePath("../SubViewport")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8li54"]
 transparency = 1
 shading_mode = 0
-albedo_texture = ExtResource("7_5nvcs")
+albedo_texture = SubResource("ViewportTexture_hint")
 
 [sub_resource type="QuadMesh" id="QuadMesh_tdk27"]
 material = SubResource("StandardMaterial3D_8li54")
+size = Vector2(3, 0.75)
 
-[node name="Moon" type="Node3D" node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area", "community_levels", "community_levels_layout", "page_buttons_layout", "http_request", "tooltip") groups=["Moon"]]
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_33kca"]
+panorama = ExtResource("10_tdk27")
+
+[sub_resource type="Sky" id="Sky_yqenp"]
+sky_material = SubResource("PanoramaSkyMaterial_33kca")
+
+[sub_resource type="Environment" id="Environment_ck035"]
+background_mode = 2
+sky = SubResource("Sky_yqenp")
+tonemap_mode = 2
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+
+[node name="Moon" type="Node3D" unique_id=1465453788 node_paths=PackedStringArray("level_portals", "level_select_camera", "computer_screen", "interaction_hint", "computer_area", "community_levels", "community_levels_layout", "page_buttons_layout", "http_request", "tooltip") groups=["Moon"]]
 script = ExtResource("1_rjvio")
 level_portals = NodePath("LevelPortals")
 level_select_camera = NodePath("LevelSelectCamera")
@@ -34,93 +57,174 @@ page_buttons_layout = NodePath("ComputerScreen/CommunityLevels/MarginContainer/V
 http_request = NodePath("HTTPRequest")
 tooltip = NodePath("LevelTooltip")
 
-[node name="Floor" type="CSGBox3D" parent="." groups=["Undeletable"]]
+[node name="Floor" type="CSGBox3D" parent="." unique_id=752093256 groups=["Undeletable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 use_collision = true
 size = Vector3(200, 1, 200)
 material = ExtResource("1_3tcni")
 
-[node name="CSGCombiner3D" type="CSGCombiner3D" parent="."]
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="." unique_id=394668864]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 use_collision = true
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="CSGCombiner3D" groups=["Undeletable"]]
+[node name="CSGSphere3D" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1618331299 groups=["Undeletable"]]
 use_collision = true
-radius = 16.0
+size = Vector3(12, 1, 14)
 material = ExtResource("3_2g4ib")
 
-[node name="CSGSphere3D2" type="CSGSphere3D" parent="CSGCombiner3D" groups=["Undeletable"]]
-operation = 2
+[node name="CSGSphere3D2" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1132155892 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1, 0)
 use_collision = true
-radius = 15.0
+size = Vector3(1, 1, 14)
 material = ExtResource("3_2g4ib")
 
-[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+[node name="CSGSphere3D12" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1169997377 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6.5)
 use_collision = true
+size = Vector3(10, 1, 1)
+material = ExtResource("3_2g4ib")
 
-[node name="CSGSphere3D" type="CSGSphere3D" parent="CSGCombiner3D2" groups=["Undeletable"]]
+[node name="CSGSphere3D13" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1003700709 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7, -6.5)
 use_collision = true
-radius = 15.0
-material = ExtResource("4_e0epg")
+size = Vector3(10, 1, 1)
+material = ExtResource("3_2g4ib")
 
-[node name="CSGSphere3D2" type="CSGBox3D" parent="CSGCombiner3D2" groups=["Undeletable"]]
-operation = 1
+[node name="CSGSphere3D3" type="CSGBox3D" parent="CSGCombiner3D" unique_id=2063078417 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 4, 6)
 use_collision = true
-size = Vector3(32, 1, 32)
-material = ExtResource("4_e0epg")
+size = Vector3(1, 5, 2)
+material = ExtResource("3_2g4ib")
 
-[node name="Computer" type="CSGCombiner3D" parent="."]
+[node name="CSGSphere3D4" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1189757126 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 4, -6)
+use_collision = true
+size = Vector3(1, 5, 2)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D14" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1686449890 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 4, -6.5)
+use_collision = true
+size = Vector3(1, 5, 1)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D5" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1299420836 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 7, 0)
+use_collision = true
+size = Vector3(1, 1, 14)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D6" type="CSGBox3D" parent="CSGCombiner3D" unique_id=2007842047 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1, 0)
+use_collision = true
+size = Vector3(1, 1, 14)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D7" type="CSGBox3D" parent="CSGCombiner3D" unique_id=15185456 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 4, 6)
+use_collision = true
+size = Vector3(1, 5, 2)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D8" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1945507188 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 4, -6)
+use_collision = true
+size = Vector3(1, 5, 2)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D15" type="CSGBox3D" parent="CSGCombiner3D" unique_id=629662103 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4, -6.5)
+use_collision = true
+size = Vector3(1, 5, 1)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D9" type="CSGBox3D" parent="CSGCombiner3D" unique_id=950889925 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 7, 0)
+use_collision = true
+size = Vector3(1, 1, 14)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D10" type="CSGBox3D" parent="CSGCombiner3D" unique_id=267812464 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 6.5)
+use_collision = true
+size = Vector3(10, 7, 1)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D11" type="CSGBox3D" parent="CSGCombiner3D" unique_id=1970280705 groups=["Undeletable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.9999995, 0)
+use_collision = true
+size = Vector3(12, 1, 14)
+material = ExtResource("3_2g4ib")
+
+[node name="CSGSphere3D16" type="CSGSphere3D" parent="CSGCombiner3D" unique_id=1080528994]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+cast_shadow = 0
+radius = 0.2
+material = SubResource("StandardMaterial3D_tdk27")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1822933757]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 3.5, 0)
+use_collision = true
+size = Vector3(1, 5, 10)
+material = ExtResource("4_tdk27")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=1215049109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -6.5)
+use_collision = true
+size = Vector3(8, 5, 1)
+material = ExtResource("4_tdk27")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=494371307]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 3.5, 0)
+use_collision = true
+size = Vector3(1, 5, 10)
+material = ExtResource("4_tdk27")
+
+[node name="Computer" type="CSGCombiner3D" parent="." unique_id=1042997572]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -6)
 use_collision = true
 
-[node name="ComputerArea" type="Area3D" parent="Computer"]
+[node name="ComputerArea" type="Area3D" parent="Computer" unique_id=983821284]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer/ComputerArea"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -0.19999981)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Computer/ComputerArea" unique_id=375930923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.8000002)
 shape = SubResource("BoxShape3D_bq21b")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Computer"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.37114e-09, 0.625, 0.10000038)
+[node name="CSGBox3D" type="CSGBox3D" parent="Computer" unique_id=1391300006]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.37114e-09, 0.625, 2.1000004)
 size = Vector3(1.6, 0.25, 2)
 material = ExtResource("5_bq21b")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Computer"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.1920929e-07, 1.5, -0.5999999)
+[node name="CSGBox3D2" type="CSGBox3D" parent="Computer" unique_id=1995078267]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -1.1920929e-07, 1.5, 1.4000001)
 size = Vector3(0.2, 1.5, 2)
 material = ExtResource("6_1r202")
 
-[node name="LevelPortals" type="Node3D" parent="."]
+[node name="LevelPortals" type="Node3D" parent="." unique_id=797476323]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 visible = false
 
-[node name="LevelSelectCamera" type="Camera3D" parent="." groups=["UICamera"]]
+[node name="LevelSelectCamera" type="Camera3D" parent="." unique_id=1749554065 groups=["UICamera"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 70, 0)
 
-[node name="ComputerScreen" type="TabContainer" parent="." groups=["UI"]]
+[node name="ComputerScreen" type="TabContainer" parent="." unique_id=1416839934 groups=["UI"]]
 visible = false
 custom_minimum_size = Vector2(960, 540)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -480.0
-offset_top = -270.0
-offset_right = 480.0
-offset_bottom = 270.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 current_tab = 0
 tabs_visible = false
 
-[node name="Buttons" type="Control" parent="ComputerScreen"]
+[node name="Buttons" type="Control" parent="ComputerScreen" unique_id=65333766]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/Buttons"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/Buttons" unique_id=1218288574]
 custom_minimum_size = Vector2(320, 0)
 layout_mode = 1
 anchors_preset = -1
@@ -135,25 +239,25 @@ offset_bottom = 47.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="AdventureButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
+[node name="AdventureButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer" unique_id=391392034]
 layout_mode = 2
 disabled = true
 text = "Adventure"
 
-[node name="CommunityButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
+[node name="CommunityButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer" unique_id=840081771]
 layout_mode = 2
 text = "Community"
 
-[node name="CreateButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer"]
+[node name="CreateButton" type="Button" parent="ComputerScreen/Buttons/VBoxContainer" unique_id=751850808]
 layout_mode = 2
 text = "Create"
 
-[node name="CommunityLevels" type="ScrollContainer" parent="ComputerScreen"]
+[node name="CommunityLevels" type="ScrollContainer" parent="ComputerScreen" unique_id=1083697468]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="ComputerScreen/CommunityLevels"]
+[node name="MarginContainer" type="MarginContainer" parent="ComputerScreen/CommunityLevels" unique_id=1524070638]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -162,49 +266,72 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer" unique_id=161042357]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer" unique_id=1331490950]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 text = "Community Levels"
 label_settings = ExtResource("7_tdk27")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer" unique_id=1812244584]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 1
 
-[node name="CommunityLevelsLayout" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="CommunityLevelsLayout" type="VBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer" unique_id=641832319]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3
 
-[node name="PageButtonsLayout" type="HBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="PageButtonsLayout" type="HBoxContainer" parent="ComputerScreen/CommunityLevels/MarginContainer/VBoxContainer/VBoxContainer" unique_id=719075691]
 layout_mode = 2
 size_flags_horizontal = 4
 alignment = 1
 
-[node name="InteractionHint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6.5)
+[node name="InteractionHint" type="Node3D" parent="." unique_id=230668611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
 visible = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractionHint"]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.45000002, 1.4, 0.001)
+[node name="SubViewport" type="SubViewport" parent="InteractionHint" unique_id=1629792239]
+transparent_bg = true
+size = Vector2i(256, 64)
+
+[node name="CenterContainer" type="CenterContainer" parent="InteractionHint/SubViewport" unique_id=1534188461]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InputPrompt" parent="InteractionHint/SubViewport/CenterContainer" unique_id=495545318 instance=ExtResource("14_input_prompt")]
+layout_mode = 2
+actions = Array[StringName]([&"interact"])
+text = "Use Computer"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="InteractionHint" unique_id=1868476914]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0.001)
 mesh = SubResource("QuadMesh_tdk27")
 skeleton = NodePath("../..")
 
-[node name="Label3D" type="Label3D" parent="InteractionHint"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.4, 0.0009999275)
-text = "Use Computer"
-outline_size = 0
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2122083772]
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
+[node name="LevelTooltip" parent="." unique_id=1280633337 instance=ExtResource("13_abc")]
 
-[node name="LevelTooltip" parent="." instance=ExtResource("13_abc")]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=130226895]
+environment = SubResource("Environment_ck035")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1994438922]
+transform = Transform3D(-0.25881913, 0.48296288, 0.83651626, 8.195639e-08, -0.8660254, 0.5, 0.9659258, 0.12940961, 0.22414386, 0, 12, 0)
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1929781955]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.9, 0)
+light_color = Color(1, 0.9090725, 0.8155492, 1)
+omni_range = 35.0
 
 [connection signal="body_entered" from="Computer/ComputerArea" to="." method="_on_computer_entered"]
 [connection signal="body_exited" from="Computer/ComputerArea" to="." method="_on_computer_exited"]

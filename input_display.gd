@@ -48,6 +48,11 @@ func _make_col() -> VBoxContainer:
 	return col
 
 
+var _last_using_computer: bool = false
+var _last_menu_visible: bool = false
+var _last_pie_menu_visible: bool = false
+
+
 func _process(_delta: float) -> void:
 	if not owner:
 		return
@@ -55,14 +60,62 @@ func _process(_delta: float) -> void:
 	var menu: Control = owner.get_node_or_null("%Menu")
 	var main_menu: Control = owner.get_node_or_null("%MainMenu")
 	var obj_props: Control = owner.get_node_or_null("%ObjectProperties")
-	var menus_visible := (menu and menu.visible) \
-		or (main_menu and main_menu.visible) \
+	var pie_menu: Control = owner.get_node_or_null("%PieMenu")
+	var menus_visible := (main_menu and main_menu.visible) \
 		or (obj_props and obj_props.visible)
 	modulate.a = 0.0 if menus_visible else 1.0
 
+	if Moon.is_using_computer != _last_using_computer:
+		_last_using_computer = Moon.is_using_computer
+		if Moon.is_using_computer:
+			clear_input_prompts()
+			add_input_prompt([&"ui_cancel"], &"UI", "Exit Computer")
+		else:
+			_restore_default_inputs()
+
+	var menu_visible := menu and menu.visible
+	if menu_visible != _last_menu_visible:
+		_last_menu_visible = menu_visible
+		if menu_visible:
+			clear_input_prompts()
+			add_input_prompt([&"ui_cancel"], &"UI", "Close Pause Menu")
+		elif not Moon.is_using_computer:
+			_restore_default_inputs()
+
+	var pie_visible := pie_menu and pie_menu.visible
+	if pie_visible != _last_pie_menu_visible:
+		_last_pie_menu_visible = pie_visible
+		if pie_visible:
+			clear_input_prompts()
+			add_input_prompt([&"ui_cancel"], &"UI", "Close Wheel")
+		elif not Moon.is_using_computer and not menu_visible:
+			_restore_default_inputs()
+
+
+func _restore_default_inputs() -> void:
+	var editor: Editor = null
+	if owner and owner.menu and owner.menu.player:
+		editor = owner.menu.player.editor
+	if editor and owner.edit_mode:
+		editor._update_input_display()
+	else:
+		moon_inputs()
+
 
 func moon_inputs() -> void:
-	visible = false
+	clear_input_prompts()
+	_add_common_prompts()
+	visible = true
+
+
+func _add_common_prompts(show_customize_player := true) -> void:
+	add_input_prompt([&"move_forward", &"move_back", &"move_left", &"move_right"], &"Basic Movement", "Move")
+	add_input_prompt([&"look_up", &"look_down", &"look_left", &"look_right"], &"Basic Movement", "Look")
+	add_input_prompt([&"jump"], &"Basic Movement")
+	add_input_prompt([&"sprint"], &"Basic Movement")
+	if show_customize_player:
+		add_input_prompt([&"customize_player"], &"UI")
+	add_input_prompt([&"ui_cancel"], &"UI", "Pause Menu") # TODO [COND MENU OPEN]
 
 
 func add_input_prompt(

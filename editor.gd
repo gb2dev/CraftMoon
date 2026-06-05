@@ -123,8 +123,6 @@ func _handle_editor_input() -> void:
 	if _is_action_just_pressed(&"object_properties", true):
 		if collider is CSGShape3D:
 			object_properties.toggle(collider)
-	elif _is_action_just_pressed(&"customize_player"):
-		object_properties.toggle(player)
 
 	if collider:
 		if collider is CSGShape3D:
@@ -799,27 +797,20 @@ func set_object_builder_active(value: bool) -> void:
 
 
 func _update_input_display() -> void:
-	if not player or not player.first_person or not input_display:
+	if not player or not input_display:
 		return
 
 	input_display.clear_input_prompts()
 
-	# TODO show common inputs in play mode too
 	# TODO make input display category visibility customizable
 	# TODO binding ctrl+... key combinations and L1+... button combinations
-	# TODO Resolve conflicts (R3 : Fly Down and R3 : Play/Pause, L1 Left Stick : Sprint+Move and L1 Left Stick Up/Down : Scale Up/Down)
 
-	# Common
-	# # Basic Movement
-	input_display.add_input_prompt([&"move_forward", &"move_back", &"move_left", &"move_right"], &"Basic Movement", "Move")
-	input_display.add_input_prompt([&"look_up", &"look_down", &"look_left", &"look_right"], &"Basic Movement", "Look")
-	input_display.add_input_prompt([&"jump"], &"Basic Movement")
-	input_display.add_input_prompt([&"sprint"], &"Basic Movement")
-
-	# # UI
-	if not object_builder_active: input_display.add_input_prompt([&"customize_player"], &"UI") # TODO Allow in object builder
-	input_display.add_input_prompt([&"ui_cancel"], &"UI", "Pause Menu")
+	# Common (shown in play and edit mode)
+	input_display._add_common_prompts(not object_builder_active) # TODO Allow in object builder
 	# TODO [COND MENU OPEN] Escape | O : Back
+
+	if not player.first_person:
+		return
 
 	# Editor
 	# # All Tools
@@ -829,8 +820,8 @@ func _update_input_display() -> void:
 	# TODO [COND FLYING] Space | X : Fly Up
 
 	# # # Time Control
-	input_display.add_input_prompt([&"time_play_pause"], &"Time Control") # TODO adjust label when playing/pausing
-	input_display.add_input_prompt([&"time_rewind"], &"Time Control") # TODO hide if rewound
+	input_display.add_input_prompt([&"time_play_pause"], &"Time Control", "", false, true) # TODO adjust label when playing/pausing
+	input_display.add_input_prompt([&"time_rewind"], &"Time Control", "", false, true) # TODO hide if rewound
 
 	# # # Tools
 	# TODO input_display.add_input_prompt([&"undo"], &"Tools") # TODO [COND UNDO >0]

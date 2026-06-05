@@ -51,7 +51,11 @@ const AUDIO_OPTION_BUSES := {
 
 var player: Character = null
 var look_controller: Node = null
+var look_controller_3p: Node = null
 var world_environment: WorldEnvironment = null
+const FIRST_PERSON_SENSITIVITY_X: float = 0.2
+const FIRST_PERSON_SENSITIVITY_Y: float = 0.14
+const THIRD_PERSON_SENSITIVITY_MULTIPLIER: float = 1.5
 
 
 func _ready() -> void:
@@ -59,7 +63,7 @@ func _ready() -> void:
 	options.visible = true
 	pause_controls.visible = false
 	game_title.text = str(ProjectSettings.get_setting("application/config/name", "CraftMoon"))
-	world_environment = get_tree().current_scene.get_node_or_null(^"Environment/WorldEnvironment") as WorldEnvironment
+	world_environment = get_tree().current_scene.get_node_or_null(^"DefaultEnvironment/WorldEnvironment") as WorldEnvironment
 
 	configure_supported_options()
 	_on_tab_bar_tab_changed(tab_bar.current_tab)
@@ -73,8 +77,10 @@ func _ready() -> void:
 func set_player(new_player: Character) -> void:
 	player = new_player
 	look_controller = null
+	look_controller_3p = null
 	if player:
 		look_controller = player.get_node_or_null(^"Pivot")
+		look_controller_3p = player.get_node_or_null(^"SpringArmOffset")
 	apply_saved_options()
 
 
@@ -116,29 +122,45 @@ func apply_option(new_value: Variant, option: StringName) -> void:
 		&"MouseSensitivity":
 			if look_controller:
 				look_controller.set(&"mouse_look_sensitivity", float(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"mouse_look_sensitivity", float(new_value))
 		&"MouseHorizontalInverted":
 			if look_controller:
 				look_controller.set(&"mouse_look_inverted_x", bool(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"mouse_look_inverted_x", bool(new_value))
 		&"MouseVerticalInverted":
 			if look_controller:
 				look_controller.set(&"mouse_look_inverted_y", bool(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"mouse_look_inverted_y", bool(new_value))
 
 		# Controller
 		&"ControllerHorizontalSensitivity":
 			if look_controller:
-				look_controller.set(&"joypad_look_sensitivity_x", float(new_value))
+				look_controller.set(&"joypad_look_sensitivity_x", FIRST_PERSON_SENSITIVITY_X * float(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_sensitivity_x", FIRST_PERSON_SENSITIVITY_X * float(new_value) * THIRD_PERSON_SENSITIVITY_MULTIPLIER)
 		&"ControllerVerticalSensitivity":
 			if look_controller:
-				look_controller.set(&"joypad_look_sensitivity_y", float(new_value))
+				look_controller.set(&"joypad_look_sensitivity_y", FIRST_PERSON_SENSITIVITY_Y * float(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_sensitivity_y", FIRST_PERSON_SENSITIVITY_Y * float(new_value) * THIRD_PERSON_SENSITIVITY_MULTIPLIER)
 		&"ControllerHorizontalInverted":
 			if look_controller:
 				look_controller.set(&"joypad_look_inverted_x", bool(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_inverted_x", bool(new_value))
 		&"ControllerVerticalInverted":
 			if look_controller:
 				look_controller.set(&"joypad_look_inverted_y", bool(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_inverted_y", bool(new_value))
 		&"ControllerResponseCurve":
 			if look_controller:
 				look_controller.set(&"joypad_look_curve", float(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_curve", float(new_value))
 		&"ControllerDeadzone":
 			for action: StringName in LOOK_DEADZONE_ACTIONS:
 				if InputMap.has_action(action):
@@ -146,6 +168,8 @@ func apply_option(new_value: Variant, option: StringName) -> void:
 		&"ControllerOuterThreshold":
 			if look_controller:
 				look_controller.set(&"joypad_look_outer_threshold", float(new_value))
+			if look_controller_3p:
+				look_controller_3p.set(&"joypad_look_outer_threshold", float(new_value))
 
 		# Video
 		&"3DScale":

@@ -4877,22 +4877,26 @@ bones/24/rotation = Quaternion(-6.34575e-08, -0.980764, 0.195196, 1.82779e-06)
 bones/24/scale = Vector3(1, 1, 1)
 
 [node name="Bottom" type="MeshInstance3D" parent="3DGodotRobot/RobotArmature/Skeleton3D" unique_id=1376962401]
+gi_mode = 2
 mesh = ExtResource("robot_bottom")
 skin = SubResource("Skin_llc6q")
 surface_material_override/0 = ExtResource("3_hqtel")
 
 [node name="Chest" type="MeshInstance3D" parent="3DGodotRobot/RobotArmature/Skeleton3D" unique_id=1876955826]
+gi_mode = 2
 mesh = ExtResource("robot_chest")
 skin = SubResource("Skin_hu16g")
 surface_material_override/0 = ExtResource("3_hqtel")
 
 [node name="Face" type="MeshInstance3D" parent="3DGodotRobot/RobotArmature/Skeleton3D" unique_id=710277504]
+gi_mode = 2
 mesh = ExtResource("robot_face")
 skin = SubResource("Skin_5h6fu")
 surface_material_override/0 = ExtResource("3_hqtel")
 surface_material_override/1 = ExtResource("3_hqtel")
 
 [node name="Llimbs and head" type="MeshInstance3D" parent="3DGodotRobot/RobotArmature/Skeleton3D" unique_id=996351613]
+gi_mode = 2
 mesh = ExtResource("robot_limbs_head")
 skin = SubResource("Skin_gooby")
 surface_material_override/0 = ExtResource("3_hqtel")
@@ -4912,6 +4916,7 @@ spring_length = 5.0
 
 [node name="Camera3D" type="Camera3D" parent="SpringArmOffset/SpringArm3D" unique_id=1392807058]
 current = true
+far = 2000.0
 
 [node name="PlayerNick" type="Node3D" parent="." unique_id=955849159]
 
@@ -4931,6 +4936,7 @@ _body = NodePath("../3DGodotRobot")
 
 [node name="Camera3D" type="Camera3D" parent="Pivot" unique_id=1630751806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
+far = 2000.0
 
 [node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" unique_id=1321537503 node_paths=PackedStringArray("cursor", "player")]
 process_mode = 4

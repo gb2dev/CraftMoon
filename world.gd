@@ -88,6 +88,11 @@ func _process(_delta: float) -> void:
 	elif Input.is_action_just_pressed(&"toggle_chat"):
 		toggle_chat()
 
+	if object_properties.editor and not object_properties.editor.object_builder_active:
+		var ui_blocking := get_tree().get_nodes_in_group(&"UI").any(func(c: Control) -> bool: return c.visible)
+		if not ui_blocking and object_properties.editor._is_action_just_pressed(&"customize_player"):
+			object_properties.toggle(object_properties.editor.player)
+
 	if not edit_mode:
 		return
 
@@ -97,14 +102,14 @@ func _process(_delta: float) -> void:
 	if not multiplayer.is_server():
 		return
 
-	if Input.is_action_just_pressed(&"time_play_pause"):
+	if object_properties.editor._is_action_just_pressed(&"time_play_pause", true):
 		sync_time_pause.rpc(not time_paused)
 		if time_paused:
 			Audio.play_sound("pause")
 		else:
 			Audio.play_sound("play")
 
-	if Input.is_action_just_pressed(&"time_rewind"):
+	if object_properties.editor._is_action_just_pressed(&"time_rewind", true):
 		sync_time_rewind.rpc()
 		Audio.play_sound("rewind")
 

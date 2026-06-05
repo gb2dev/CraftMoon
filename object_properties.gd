@@ -26,6 +26,8 @@ func toggle(o: Node3D) -> void:
 	object = o
 	if o and not o.tree_exiting.is_connected(close_on_free):
 		var _error := o.tree_exiting.connect(close_on_free)
+	var world := get_tree().current_scene as World
+	var in_edit_mode := world and world.edit_mode
 	if visible:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 		hide()
@@ -48,6 +50,7 @@ func toggle(o: Node3D) -> void:
 				tab_container.size.y = tab_container.get_parent().size.y - 28
 			object_vbox.show()
 			player_vbox.hide()
+		tab_container.set_tab_hidden(1, not in_edit_mode)
 		show()
 
 

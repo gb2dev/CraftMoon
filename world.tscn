@@ -50,26 +50,6 @@
 [ext_resource type="PackedScene" uid="uid://ph1cgojjyex" path="res://ui/notifications.tscn" id="54_q42o5"]
 [ext_resource type="PackedScene" uid="uid://do7f2bdni14ro" path="res://ui/pie_menu.tscn" id="56_iett8"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fj7yv"]
-sky_top_color = Color(0.203382, 0.449173, 0.831538, 1)
-sky_horizon_color = Color(0.5, 0.783333, 1, 1)
-ground_bottom_color = Color(0.501961, 0.784314, 1, 1)
-ground_horizon_color = Color(0.501961, 0.784314, 1, 1)
-ground_curve = 0.5
-
-[sub_resource type="Sky" id="Sky_n0fhy"]
-sky_material = SubResource("ProceduralSkyMaterial_fj7yv")
-
-[sub_resource type="Environment" id="Environment_tlwt5"]
-background_mode = 2
-sky = SubResource("Sky_n0fhy")
-ambient_light_sky_contribution = 0.1
-glow_enabled = true
-glow_intensity = 0.4
-glow_strength = 0.6
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.0
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dwbse"]
 bg_color = Color(0.180392, 0.180392, 0.180392, 1)
 border_width_left = 4
@@ -82,9 +62,6 @@ corner_radius_top_right = 64
 corner_radius_bottom_right = 64
 corner_radius_bottom_left = 64
 corner_detail = 20
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_npnbc"]
-color = Color(0, 0, 0, 0)
 
 [sub_resource type="GDScript" id="GDScript_036b0"]
 script/source = "extends Label
@@ -195,32 +172,14 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_npnbc"]
+color = Color(0, 0, 0, 0)
+
 [node name="World" type="Node3D" unique_id=1662680374 node_paths=PackedStringArray("credits", "time_paused_indicator")]
 script = ExtResource("1_e1sh7")
 player_scene = ExtResource("1_uvcbi")
 credits = NodePath("Credits")
 time_paused_indicator = NodePath("TimePausedIndicator")
-
-[node name="Environment" type="Node3D" parent="." unique_id=1678589333]
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=249074786]
-environment = SubResource("Environment_tlwt5")
-
-[node name="Sun" type="DirectionalLight3D" parent="Environment" unique_id=339554242]
-transform = Transform3D(-0.7071071, 0.49999943, -0.500001, 2.9802322e-08, 0.707108, 0.70710546, 0.7071063, 0.49999857, -0.5000008, 0, 10, 0)
-shadow_enabled = true
-shadow_opacity = 0.8
-
-[node name="InputDisplay" type="Control" parent="." unique_id=177128360]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("45_afx2c")
 
 [node name="BackgroundDim" type="ColorRect" parent="." unique_id=316571671]
 visible = false
@@ -242,7 +201,20 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0)
 
+[node name="InputDisplay" type="Control" parent="." unique_id=177128360]
+unique_name_in_owner = true
+z_index = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("45_afx2c")
+
 [node name="Menu" type="VBoxContainer" parent="." unique_id=305442762 node_paths=PackedStringArray("background_dim", "level_transition_wipe", "level_name", "level_description", "mode_button", "save_button", "upload_button", "moon_button", "export_button", "delete_button", "main_menu_button", "main_menu", "object_properties_node")]
+unique_name_in_owner = true
 process_mode = 3
 visible = false
 z_index = 1
@@ -370,297 +342,6 @@ layout_mode = 2
 text = "Quit"
 
 [node name="OptionsMenu" parent="." unique_id=1973502199 instance=ExtResource("6_b7btk")]
-
-[node name="MainMenu" type="Control" parent="." unique_id=683887848]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ColorRect" type="ColorRect" parent="MainMenu" unique_id=1926584730]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.0901961, 0.0901961, 0.0901961, 1)
-metadata/_edit_use_anchors_ = true
-
-[node name="TitleLabel" type="Label" parent="MainMenu" unique_id=1715416262]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -156.5
-offset_top = 20.0
-offset_right = 156.5
-offset_bottom = 109.00003
-grow_horizontal = 2
-size_flags_horizontal = 6
-size_flags_vertical = 0
-theme_override_fonts/font = ExtResource("53_olr1q")
-theme_override_font_sizes/font_size = 70
-text = "CraftMoon"
-
-[node name="MainContainer" type="VBoxContainer" parent="MainMenu" unique_id=1750362290]
-visible = false
-layout_direction = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -164.5
-offset_top = -210.0
-offset_right = 164.5
-offset_bottom = 210.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer" unique_id=1310340008]
-layout_mode = 2
-theme_override_constants/separation = 10
-theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
-
-[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1465382040]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option1" unique_id=900631640]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 35
-text = "Nickname : "
-
-[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/Option1" unique_id=646170812]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-placeholder_text = "YourNick"
-max_length = 20
-expand_to_text_length = true
-
-[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=361982379]
-layout_mode = 2
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option2" unique_id=1687878958]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 35
-text = "Player Skin : "
-
-[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/Option2" unique_id=694688853]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1923294691]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Label" type="Label" parent="MainMenu/MainContainer/Option3" unique_id=1790709192]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 35
-text = "IP Address : "
-
-[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/Option3" unique_id=1011717860]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-placeholder_text = "localhost"
-alignment = 1
-expand_to_text_length = true
-
-[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer" unique_id=512933074]
-layout_mode = 2
-theme_override_constants/separation = 30
-theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
-
-[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=301663309]
-layout_mode = 2
-theme_override_constants/separation = 30
-alignment = 1
-
-[node name="Host" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=581409685]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
-theme_override_font_sizes/font_size = 35
-text = "HOST"
-flat = true
-
-[node name="Join" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=776435520]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0.525257, 0, 1)
-theme_override_font_sizes/font_size = 35
-text = "JOIN"
-flat = true
-
-[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=844814299]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Credits" type="Button" parent="MainMenu/MainContainer/Option4" unique_id=112623463]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-text = "CREDITS"
-flat = true
-
-[node name="Option6" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165170]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="SignOut" type="Button" parent="MainMenu/MainContainer/Option6" unique_id=1343435431]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0.858824, 0.52549, 0, 0.862745)
-theme_override_colors/font_hover_color = Color(0.858824, 0.52549, 0, 0.862745)
-theme_override_font_sizes/font_size = 35
-text = "SIGN OUT"
-flat = true
-
-[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165169]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Quit" type="Button" parent="MainMenu/MainContainer/Option5" unique_id=1343435430]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
-theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
-theme_override_font_sizes/font_size = 35
-text = "QUIT"
-flat = true
-
-[node name="LoginContainer" type="VBoxContainer" parent="MainMenu" unique_id=421130937]
-layout_direction = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -164.5
-offset_top = -210.0
-offset_right = 164.5
-offset_bottom = 210.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="HSeparator1" type="HSeparator" parent="MainMenu/LoginContainer" unique_id=689967654]
-layout_mode = 2
-theme_override_constants/separation = 10
-theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
-
-[node name="Option1" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2105438797]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option1" unique_id=1404383656]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 35
-text = "Email : "
-
-[node name="EmailInput" type="LineEdit" parent="MainMenu/LoginContainer/Option1" unique_id=1756929839]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-placeholder_text = "your@email.com"
-expand_to_text_length = true
-
-[node name="Option2" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2084063165]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="GetSecurityCode" type="Button" parent="MainMenu/LoginContainer/Option2" unique_id=459456381]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
-theme_override_font_sizes/font_size = 35
-text = "GET SECURITY CODE"
-flat = true
-
-[node name="Option3" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=718097512]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option3" unique_id=1056052360]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 35
-text = "Security Code : "
-
-[node name="SecurityCodeInput" type="LineEdit" parent="MainMenu/LoginContainer/Option3" unique_id=1631761737]
-layout_mode = 2
-theme_override_font_sizes/font_size = 35
-placeholder_text = "ABC12"
-max_length = 20
-expand_to_text_length = true
-
-[node name="Option4" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=142168206]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Login" type="Button" parent="MainMenu/LoginContainer/Option4" unique_id=266225463]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
-theme_override_font_sizes/font_size = 35
-disabled = true
-text = "LOGIN"
-flat = true
-
-[node name="StatusLabel" type="Label" parent="MainMenu/LoginContainer" unique_id=1385683446]
-custom_minimum_size = Vector2(600, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.858824, 0, 0, 0.862745)
-theme_override_font_sizes/font_size = 35
-horizontal_alignment = 1
-
-[node name="Option5" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=625026865]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-alignment = 1
-
-[node name="Quit" type="Button" parent="MainMenu/LoginContainer/Option5" unique_id=1815319201]
-layout_mode = 2
-theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
-theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
-theme_override_font_sizes/font_size = 35
-text = "QUIT"
-flat = true
 
 [node name="MultiplayerChat" type="Control" parent="." unique_id=542990841 groups=["UI"]]
 visible = false
@@ -1179,6 +860,298 @@ mouse_filter = 2
 [node name="PieMenu" parent="." unique_id=1766704397 instance=ExtResource("56_iett8")]
 unique_name_in_owner = true
 
+[node name="MainMenu" type="Control" parent="." unique_id=683887848]
+z_index = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="MainMenu" unique_id=1926584730]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0901961, 0.0901961, 0.0901961, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="TitleLabel" type="Label" parent="MainMenu" unique_id=1715416262]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -156.5
+offset_top = 20.0
+offset_right = 156.5
+offset_bottom = 109.00003
+grow_horizontal = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("53_olr1q")
+theme_override_font_sizes/font_size = 70
+text = "CraftMoon"
+
+[node name="MainContainer" type="VBoxContainer" parent="MainMenu" unique_id=1750362290]
+visible = false
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.5
+offset_top = -210.0
+offset_right = 164.5
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/MainContainer" unique_id=1310340008]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
+
+[node name="Option1" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1465382040]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option1" unique_id=900631640]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Nickname : "
+
+[node name="NickInput" type="LineEdit" parent="MainMenu/MainContainer/Option1" unique_id=646170812]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "YourNick"
+max_length = 20
+expand_to_text_length = true
+
+[node name="Option2" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=361982379]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option2" unique_id=1687878958]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Player Skin : "
+
+[node name="SkinColorPicker" type="ColorPickerButton" parent="MainMenu/MainContainer/Option2" unique_id=694688853]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Option3" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=1923294691]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/MainContainer/Option3" unique_id=1790709192]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "IP Address : "
+
+[node name="AddressInput" type="LineEdit" parent="MainMenu/MainContainer/Option3" unique_id=1011717860]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "localhost"
+alignment = 1
+expand_to_text_length = true
+
+[node name="HSeparator2" type="HSeparator" parent="MainMenu/MainContainer" unique_id=512933074]
+layout_mode = 2
+theme_override_constants/separation = 30
+theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
+
+[node name="Buttons" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=301663309]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="Host" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=581409685]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
+theme_override_font_sizes/font_size = 35
+text = "HOST"
+flat = true
+
+[node name="Join" type="Button" parent="MainMenu/MainContainer/Buttons" unique_id=776435520]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.525257, 0, 1)
+theme_override_font_sizes/font_size = 35
+text = "JOIN"
+flat = true
+
+[node name="Option4" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=844814299]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Credits" type="Button" parent="MainMenu/MainContainer/Option4" unique_id=112623463]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "CREDITS"
+flat = true
+
+[node name="Option6" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165170]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="SignOut" type="Button" parent="MainMenu/MainContainer/Option6" unique_id=1343435431]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0.858824, 0.52549, 0, 0.862745)
+theme_override_colors/font_hover_color = Color(0.858824, 0.52549, 0, 0.862745)
+theme_override_font_sizes/font_size = 35
+text = "SIGN OUT"
+flat = true
+
+[node name="Option5" type="HBoxContainer" parent="MainMenu/MainContainer" unique_id=756165169]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Quit" type="Button" parent="MainMenu/MainContainer/Option5" unique_id=1343435430]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
+theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
+theme_override_font_sizes/font_size = 35
+text = "QUIT"
+flat = true
+
+[node name="LoginContainer" type="VBoxContainer" parent="MainMenu" unique_id=421130937]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -164.5
+offset_top = -210.0
+offset_right = 164.5
+offset_bottom = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="MainMenu/LoginContainer" unique_id=689967654]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_styles/separator = SubResource("StyleBoxLine_npnbc")
+
+[node name="Option1" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2105438797]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option1" unique_id=1404383656]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Email : "
+
+[node name="EmailInput" type="LineEdit" parent="MainMenu/LoginContainer/Option1" unique_id=1756929839]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "your@email.com"
+expand_to_text_length = true
+
+[node name="Option2" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=2084063165]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="GetSecurityCode" type="Button" parent="MainMenu/LoginContainer/Option2" unique_id=459456381]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
+theme_override_font_sizes/font_size = 35
+text = "GET SECURITY CODE"
+flat = true
+
+[node name="Option3" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=718097512]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Label" type="Label" parent="MainMenu/LoginContainer/Option3" unique_id=1056052360]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 35
+text = "Security Code : "
+
+[node name="SecurityCodeInput" type="LineEdit" parent="MainMenu/LoginContainer/Option3" unique_id=1631761737]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+placeholder_text = "ABC12"
+max_length = 20
+expand_to_text_length = true
+
+[node name="Option4" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=142168206]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Login" type="Button" parent="MainMenu/LoginContainer/Option4" unique_id=266225463]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0, 0.52549, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0.52549, 0, 1)
+theme_override_font_sizes/font_size = 35
+disabled = true
+text = "LOGIN"
+flat = true
+
+[node name="StatusLabel" type="Label" parent="MainMenu/LoginContainer" unique_id=1385683446]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.858824, 0, 0, 0.862745)
+theme_override_font_sizes/font_size = 35
+horizontal_alignment = 1
+
+[node name="Option5" type="HBoxContainer" parent="MainMenu/LoginContainer" unique_id=625026865]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="Quit" type="Button" parent="MainMenu/LoginContainer/Option5" unique_id=1815319201]
+layout_mode = 2
+theme_override_colors/font_pressed_color = Color(0.858824, 0, 0, 0.862745)
+theme_override_colors/font_hover_color = Color(0.858807, 4.71681e-06, 1.15514e-06, 0.862745)
+theme_override_font_sizes/font_size = 35
+text = "QUIT"
+flat = true
+
 [connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
 [connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
@@ -1193,6 +1166,16 @@ unique_name_in_owner = true
 [connection signal="pressed" from="Menu/OptionsButton" to="Menu" method="_on_options_button_pressed"]
 [connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
 [connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
+[connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
+[connection signal="spawned" from="PlayerMultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
+[connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]
+[connection signal="color_changed" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
+[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/Gadgets" to="ObjectProperties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
+[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_gui_input"]
+[connection signal="mouse_entered" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_exited"]
+[connection signal="visibility_changed" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_visibility_changed"]
+[connection signal="pressed" from="ObjectProperties/CloseButton" to="ObjectProperties" method="close"]
 [connection signal="text_changed" from="MainMenu/MainContainer/Option1/NickInput" to="." method="_on_nick_input_text_changed"]
 [connection signal="color_changed" from="MainMenu/MainContainer/Option2/SkinColorPicker" to="." method="_on_skin_color_picker_color_changed"]
 [connection signal="text_changed" from="MainMenu/MainContainer/Option3/AddressInput" to="." method="_on_address_input_text_changed"]
@@ -1204,13 +1187,3 @@ unique_name_in_owner = true
 [connection signal="pressed" from="MainMenu/LoginContainer/Option2/GetSecurityCode" to="." method="_on_get_security_code_pressed"]
 [connection signal="pressed" from="MainMenu/LoginContainer/Option4/Login" to="." method="_on_login_pressed"]
 [connection signal="pressed" from="MainMenu/LoginContainer/Option5/Quit" to="." method="_on_quit_pressed"]
-[connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
-[connection signal="spawned" from="PlayerMultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
-[connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]
-[connection signal="color_changed" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
-[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/Gadgets" to="ObjectProperties/TabContainer/Logic/Gadgets" method="_on_gui_input"]
-[connection signal="gui_input" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_gui_input"]
-[connection signal="mouse_entered" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_mouse_exited"]
-[connection signal="visibility_changed" from="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" to="ObjectProperties/TabContainer/Logic/ScrollContainer/Logic" method="_on_visibility_changed"]
-[connection signal="pressed" from="ObjectProperties/CloseButton" to="ObjectProperties" method="close"]

@@ -132,6 +132,9 @@ func _input(event: InputEvent) -> void:
 				close()
 		elif event.button_index == JOY_BUTTON_B:
 			close()
+		elif event.button_index == JOY_BUTTON_Y:
+			close()
+		get_viewport().set_input_as_handled()
 
 
 func _gui_input(event: InputEvent) -> void:

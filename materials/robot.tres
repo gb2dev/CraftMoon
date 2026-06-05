@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://ctfsad07a8lm4"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://ctfsad07a8lm4"]
 
 [ext_resource type="Shader" uid="uid://cptt7aksondmc" path="res://materials/robot.gdshader" id="1_ug7b3"]
 [ext_resource type="Texture2D" uid="uid://fpmmv2oxjcdv" path="res://textures/robot.png" id="2_vowew"]

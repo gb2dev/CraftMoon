@@ -10,6 +10,7 @@ const DEFAULT_MATERIAL = preload("res://materials/checkerboard_dark.tres")
 const MOON_MATERIAL = preload("res://materials/concrete/concrete.tres")
 const LEVEL_ICON_MATERIAL = preload("res://materials/level_icon.tres")
 const MOON_SCENE = preload("res://moon.tscn")
+const DEFAULT_ENVIRONMENT = preload("res://default_environment.tscn")
 
 static var shown: bool
 static var slot := 0
@@ -29,6 +30,7 @@ static var slot := 0
 @export var object_properties_node: ObjectProperties
 
 var player: Character
+@onready var pie_menu: PieMenu = get_node("%PieMenu")
 
 @onready var world := get_tree().current_scene as World
 @onready var options_menu: OptionsMenu = $"../OptionsMenu"
@@ -52,11 +54,22 @@ func _process(_delta: float) -> void:
 		else:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
-	if Input.is_action_just_pressed(&"ui_cancel"):
-		if options_menu.visible:
-			options_menu.close()
-			return
-		toggle()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed(&"ui_cancel"):
+		return
+	if event is InputEventKey and event.echo:
+		return
+	if pie_menu and pie_menu.visible:
+		pie_menu.close()
+		get_viewport().set_input_as_handled()
+		return
+	if options_menu.visible:
+		options_menu.close()
+		get_viewport().set_input_as_handled()
+		return
+	toggle()
+	get_viewport().set_input_as_handled()
 
 
 func toggle() -> void:
@@ -236,6 +249,7 @@ func load_level(save_file_path := "") -> void:
 	if save_data:
 		new_level()
 		await get_tree().process_frame
+		_add_default_environment()
 		level_name.text = save_data[0].name
 		level_description.text = save_data[0].description
 
@@ -319,6 +333,7 @@ func new_level(blank := true) -> void:
 
 		new_level()
 		await get_tree().process_frame
+		_add_default_environment()
 		# Default floor
 		var _floor_object := player.editor.construct_shape(
 			"Cuboid",
@@ -343,10 +358,11 @@ func enter_edit_mode() -> void:
 	world.sync_time_rewind()
 	world.time_paused_indicator.visible = true
 	mode_button.text = tr(&"Play Mode")
+	player.first_person = true
 	player.editor.input_display.visible = true
 	player.editor.process_mode = PROCESS_MODE_INHERIT
-	player.first_person = true
 	player.editor.set_object_builder_active(false)
+	player.editor._update_input_display()
 
 
 @rpc("any_peer", "call_local")
@@ -357,18 +373,32 @@ func enter_play_mode() -> void:
 	world.time_paused_indicator.visible = false
 	mode_button.text = tr(&"Edit Mode")
 	player.fly = false
-	player.editor.set_object_builder_active(false)
-	player.editor.input_display.visible = false
-	player.editor.process_mode = PROCESS_MODE_DISABLED
 	player.first_person = false
+	player.editor.process_mode = PROCESS_MODE_DISABLED
+	player.editor.set_object_builder_active(false)
+	player.editor.input_display.visible = true
+	player.editor._update_input_display()
 
 
 func spawn_moon() -> void:
+	_remove_default_environment()
 	var moon := MOON_SCENE.instantiate() as Moon
 	world.add_child(moon)
 	var _error := moon.enter_level.connect(_on_moon_level_entered)
 	moon.spawn_level_portals()
 	moon.populate_level_portals()
+
+
+func _add_default_environment() -> void:
+	if world.get_node_or_null("DefaultEnvironment"):
+		return
+	world.add_child(DEFAULT_ENVIRONMENT.instantiate())
+
+
+func _remove_default_environment() -> void:
+	var env := world.get_node_or_null("DefaultEnvironment")
+	if env:
+		env.queue_free()
 
 
 func _on_moon_level_entered(path: String, level_slot: int, blank_level: bool) -> void:
