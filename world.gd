@@ -10,6 +10,7 @@ static var destroyed_nodes: Dictionary[Node, Node]
 @export var player_scene: PackedScene
 @export var credits: Popup
 @export var time_paused_indicator: Label
+@export var mode_indicator: Label
 
 @onready var skin_color_picker: ColorPickerButton = $MainMenu/MainContainer/Option2/SkinColorPicker
 @onready var nick_input: LineEdit = $MainMenu/MainContainer/Option1/NickInput
@@ -128,6 +129,22 @@ func update_timer_paused_indicator() -> void:
 		time_paused_indicator.text = "PAUSED - %02d:%02d" % [minutes, seconds]
 	else:
 		time_paused_indicator.text = "PLAYING - %02d:%02d" % [minutes, seconds]
+
+
+func update_mode_indicator() -> void:
+	if not mode_indicator:
+		return
+	if not edit_mode:
+		mode_indicator.visible = false
+		return
+	var editor: Editor = null
+	if menu and menu.player:
+		editor = menu.player.editor
+	if editor and editor.object_builder_active:
+		mode_indicator.text = tr(&"Object Builder")
+		mode_indicator.visible = true
+	else:
+		mode_indicator.visible = false
 
 
 @rpc("authority", "call_local")

@@ -363,6 +363,7 @@ func enter_edit_mode() -> void:
 	player.editor.process_mode = PROCESS_MODE_INHERIT
 	player.editor.set_object_builder_active(false)
 	player.editor._update_input_display()
+	world.update_mode_indicator()
 
 
 @rpc("any_peer", "call_local")
@@ -378,6 +379,7 @@ func enter_play_mode() -> void:
 	player.editor.set_object_builder_active(false)
 	player.editor.input_display.visible = true
 	player.editor._update_input_display()
+	world.update_mode_indicator()
 
 
 func spawn_moon() -> void:

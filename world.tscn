@@ -175,11 +175,12 @@ corner_radius_bottom_left = 10
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_npnbc"]
 color = Color(0, 0, 0, 0)
 
-[node name="World" type="Node3D" unique_id=1662680374 node_paths=PackedStringArray("credits", "time_paused_indicator")]
+[node name="World" type="Node3D" unique_id=1662680374 node_paths=PackedStringArray("credits", "time_paused_indicator", "mode_indicator")]
 script = ExtResource("1_e1sh7")
 player_scene = ExtResource("1_uvcbi")
 credits = NodePath("Credits")
 time_paused_indicator = NodePath("TimePausedIndicator")
+mode_indicator = NodePath("ModeIndicator")
 
 [node name="BackgroundDim" type="ColorRect" parent="." unique_id=316571671]
 visible = false
@@ -853,6 +854,18 @@ horizontal_alignment = 1
 visible = false
 offset_right = 40.0
 offset_bottom = 21.0
+
+[node name="ModeIndicator" type="Label" parent="." unique_id=20877051]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -0.5
+offset_right = 0.5
+offset_bottom = 36.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Notifications" parent="." unique_id=159077098 instance=ExtResource("54_q42o5")]
 mouse_filter = 2

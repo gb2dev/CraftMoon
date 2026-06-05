@@ -794,6 +794,7 @@ func set_object_builder_active(value: bool) -> void:
 
 	_update_player_thought()
 	_update_input_display()
+	(get_tree().current_scene as World).update_mode_indicator()
 
 
 func _update_input_display() -> void:
