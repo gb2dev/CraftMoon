@@ -3,11 +3,15 @@ extends Control
 
 
 const FSR: Array[float] = [0.77, 0.67, 0.59, 0.5]
-const LOOK_DEADZONE_ACTIONS: Array[StringName] = [
+const JOYPAD_DEADZONE_ACTIONS: Array[StringName] = [
 	&"look_up",
 	&"look_down",
 	&"look_left",
 	&"look_right",
+	&"move_forward",
+	&"move_back",
+	&"move_left",
+	&"move_right",
 ]
 const OPTION_LABELS := {
 	&"MouseSensitivity": "Mouse Sensitivity",
@@ -162,7 +166,7 @@ func apply_option(new_value: Variant, option: StringName) -> void:
 			if look_controller_3p:
 				look_controller_3p.set(&"joypad_look_curve", float(new_value))
 		&"ControllerDeadzone":
-			for action: StringName in LOOK_DEADZONE_ACTIONS:
+			for action: StringName in JOYPAD_DEADZONE_ACTIONS:
 				if InputMap.has_action(action):
 					InputMap.action_set_deadzone(action, float(new_value))
 		&"ControllerOuterThreshold":

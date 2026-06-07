@@ -154,12 +154,9 @@ func _is_action_just_pressed(action: StringName, require_joypad_modifier: bool =
 
 
 func _update_cursor() -> void:
-	if _is_action_just_pressed(&"cursor_forward") and not Input.is_key_pressed(KEY_ALT):
-		cursor_distance -= CURSOR_STEP
-		target_position.z -= CURSOR_STEP
-	elif _is_action_just_pressed(&"cursor_back") and not Input.is_key_pressed(KEY_ALT):
-		cursor_distance += CURSOR_STEP
-		target_position.z += CURSOR_STEP
+	# TODO Expose cursor distance in UI
+		#cursor_distance -= CURSOR_STEP
+		#target_position.z -= CURSOR_STEP
 	cursor_distance = clampf(cursor_distance, CURSOR_MIN, CURSOR_MAX)
 	target_position.z = clampf(target_position.z, CURSOR_MIN, CURSOR_MAX)
 
