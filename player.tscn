@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://dtlvsu0ryg7qo" path="res://first_person_look.gd" id="5_sweqy"]
 [ext_resource type="Script" uid="uid://bct8krghgsn0a" path="res://editor.gd" id="6_ee2o4"]
 [ext_resource type="Texture2D" uid="uid://cliaiig1uhis4" path="res://icons/crosshair.svg" id="8_0jj5r"]
+[ext_resource type="Compositor" uid="uid://cmt0igw4g2o0j" path="res://outline/outline_compositor.tres" id="outline_comp"]
 [ext_resource type="ArrayMesh" path="res://meshes/robot_bottom.res" id="robot_bottom"]
 [ext_resource type="ArrayMesh" path="res://meshes/robot_chest.res" id="robot_chest"]
 [ext_resource type="ArrayMesh" path="res://meshes/robot_face.res" id="robot_face"]
@@ -4917,6 +4918,7 @@ spring_length = 4.0
 [node name="Camera3D" type="Camera3D" parent="SpringArmOffset/SpringArm3D" unique_id=1392807058]
 current = true
 far = 2000.0
+compositor = ExtResource("outline_comp")
 
 [node name="PlayerNick" type="Node3D" parent="." unique_id=955849159]
 
@@ -4937,6 +4939,7 @@ _body = NodePath("../3DGodotRobot")
 [node name="Camera3D" type="Camera3D" parent="Pivot" unique_id=1630751806]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0)
 far = 2000.0
+compositor = ExtResource("outline_comp")
 
 [node name="Editor" type="RayCast3D" parent="Pivot/Camera3D" unique_id=1321537503 node_paths=PackedStringArray("cursor", "player")]
 process_mode = 4

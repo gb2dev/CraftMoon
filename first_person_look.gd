@@ -60,7 +60,7 @@ func _process(_delta: float) -> void:
 	_body.apply_rotation_first_person(global_rotation.y)
 	camera.rotate_x(-look.y)
 
-	# Clamp vertical camera rotation for both mouse and joypad
+	# Clamp vertical camera rotation for joypad look
 	camera.rotation.x = clamp(camera.rotation.x, -PI / 2, PI / 2)
 
 

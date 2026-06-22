@@ -189,6 +189,12 @@ func apply_option(new_value: Variant, option: StringName) -> void:
 				2:
 					get_viewport().msaa_3d = Viewport.MSAA_2X
 					get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+				3:
+					get_viewport().msaa_3d = Viewport.MSAA_4X
+					get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
+				4:
+					get_viewport().msaa_3d = Viewport.MSAA_8X
+					get_viewport().screen_space_aa = Viewport.SCREEN_SPACE_AA_DISABLED
 		&"Bloom":
 			if world_environment and world_environment.environment:
 				world_environment.environment.glow_enabled = bool(new_value)

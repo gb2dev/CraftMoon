@@ -1,0 +1,17 @@
+[gd_resource type="Compositor" format=3 uid="uid://cmt0igw4g2o0j"]
+
+[ext_resource type="Script" uid="uid://uckflcxi5x" path="res://outline/stencil_based_outline_compositor_effect.gd" id="1_outline"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_outline"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 2
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("1_outline")
+outline_color = Color(1, 0.65, 0, 1)
+thickness = 5
+
+[resource]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_outline")])

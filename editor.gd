@@ -4,6 +4,11 @@ extends RayCast3D
 
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
+## Stencil value written by selected objects so the outline CompositorEffect
+## (see res://outline/) draws an outline around them. Must match the effect's
+## stencil_value/stencil_mask in res://outline/outline_compositor.tres.
+const OUTLINE_STENCIL_VALUE := 1
+
 const ICON_CUBOID := preload("res://icons/cube.svg")
 const ICON_ELLIPSOID := preload("res://icons/ellipsoid.svg")
 const ICON_CYLINDER := preload("res://icons/cylinder.svg")
@@ -33,6 +38,9 @@ var highlighted_geometry: GeometryInstance3D:
 			highlighted_geometry = value
 			if not object_builder_active:
 				_update_input_display()
+## Objects currently selected in default editor mode. Selected objects write to
+## the stencil buffer so the outline CompositorEffect outlines them.
+var selected_geometry: Array[CSGShape3D] = []
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
 var _selected_shape := -1
@@ -124,6 +132,12 @@ func _handle_editor_input() -> void:
 		if collider is CSGShape3D:
 			object_properties.toggle(collider)
 
+	if _is_action_just_pressed(&"action"):
+		if collider is CSGShape3D:
+			toggle_selection(collider)
+		else:
+			clear_selection()
+
 	if collider:
 		if collider is CSGShape3D:
 			highlighted_geometry = collider
@@ -133,6 +147,97 @@ func _handle_editor_input() -> void:
 					destroy.rpc(highlighted_geometry.get_path())
 			return
 	highlighted_geometry = null
+
+
+func is_selected(shape: CSGShape3D) -> bool:
+	return shape in selected_geometry
+
+
+func toggle_selection(shape: CSGShape3D) -> void:
+	if is_selected(shape):
+		deselect(shape)
+	else:
+		select(shape)
+
+
+func select(shape: CSGShape3D) -> void:
+	if not is_instance_valid(shape) or is_selected(shape):
+		return
+	selected_geometry.append(shape)
+	# Remember the object's real material and swap in a stencil-writing copy so
+	# the outline CompositorEffect picks it up. Pruned automatically if freed.
+	shape.set_meta(&"base_material", shape.material)
+	_refresh_outline_material(shape)
+	var _connected := shape.tree_exiting.connect(
+		func() -> void: selected_geometry.erase(shape), CONNECT_ONE_SHOT)
+	Audio.play_sound("click")
+	if not object_builder_active:
+		_update_input_display()
+
+
+func deselect(shape: CSGShape3D) -> void:
+	if not is_selected(shape):
+		return
+	selected_geometry.erase(shape)
+	if is_instance_valid(shape):
+		_restore_base_material(shape)
+	Audio.play_sound("click")
+	if not object_builder_active:
+		_update_input_display()
+
+
+func clear_selection() -> void:
+	if selected_geometry.is_empty():
+		return
+	for shape: CSGShape3D in selected_geometry.duplicate():
+		if is_instance_valid(shape):
+			_restore_base_material(shape)
+	selected_geometry.clear()
+	if not object_builder_active:
+		_update_input_display()
+
+
+## (Re)build the stencil-writing material for a selected object from its stored
+## base material. Called on select and whenever the base material changes.
+func _refresh_outline_material(shape: CSGShape3D) -> void:
+	var base: Material = null
+	if shape.has_meta(&"base_material"):
+		base = shape.get_meta(&"base_material") as Material
+	var outline_mat: BaseMaterial3D
+	if base is BaseMaterial3D:
+		outline_mat = (base as BaseMaterial3D).duplicate()
+	else:
+		outline_mat = StandardMaterial3D.new()
+	outline_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	outline_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+	outline_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+	outline_mat.stencil_reference = OUTLINE_STENCIL_VALUE
+	shape.material = outline_mat
+
+
+func _restore_base_material(shape: CSGShape3D) -> void:
+	if shape.has_meta(&"base_material"):
+		shape.material = shape.get_meta(&"base_material") as Material
+		shape.remove_meta(&"base_material")
+
+
+## Set an object's material, keeping the outline intact if it is selected.
+## Routed through here by ObjectProperties so a material change on a selected
+## object keeps writing to the stencil buffer.
+func set_object_material(shape: CSGShape3D, material: Material) -> void:
+	if is_selected(shape):
+		shape.set_meta(&"base_material", material)
+		_refresh_outline_material(shape)
+	else:
+		shape.material = material
+
+
+## The object's logical material, ignoring any stencil-writing copy applied for
+## the selection outline.
+func get_object_material(shape: CSGShape3D) -> Material:
+	if shape.has_meta(&"base_material"):
+		return shape.get_meta(&"base_material") as Material
+	return shape.material
 
 
 func is_joypad_modifier_pressed() -> bool:
@@ -787,6 +892,7 @@ func set_object_builder_active(value: bool) -> void:
 	vertices.clear()
 	rotation_angles = Vector3.ZERO
 	object_properties.close()
+	clear_selection()
 	object_builder_active = value
 	cursor.visible = object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
@@ -848,7 +954,10 @@ func _update_input_display() -> void:
 			# TODO input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "", true)
 			input_display.add_input_prompt([&"object_properties"], &"Highlighted Object", "", true, true)
 			input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true) # TODO hide on undeletable objects
-			# TODO input_display.add_input_prompt([&"action"], &"Highlighted Object", "Select Object", true)
+			var select_label := "Deselect Object" if highlighted_geometry in selected_geometry else "Select Object"
+			input_display.add_input_prompt([&"action"], &"Highlighted Object", select_label, true)
+		elif not selected_geometry.is_empty():
+			input_display.add_input_prompt([&"action"], &"Selected Objects", "Deselect All", true)
 
 		## TODO Grouping & Selecting Objects TODO Quantify
 		#input_display.add_input_prompt([&"group_objects"], &"Selected Objects", "", true, true) # TODO make gamepad modifier button customizable

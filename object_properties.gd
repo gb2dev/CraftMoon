@@ -87,20 +87,31 @@ func close_gadget_properties() -> bool:
 func sync_object_material(material_path: String, object_path: NodePath) -> void:
 	var target_node := get_node_or_null(object_path)
 	if target_node:
-		target_node.material = load(material_path)
+		var mat := load(material_path) as Material
+		if target_node is CSGShape3D and editor:
+			# Routed through the editor so a locally-selected object keeps its
+			# stencil-writing outline material.
+			editor.set_object_material(target_node as CSGShape3D, mat)
+		else:
+			target_node.material = mat
 		if object and object.get_path() == object_path:
 			selected_material_changed.emit()
 
 
 func change_object_material(material_resource: BaseMaterial3D) -> void:
 	if is_instance_valid(object):
-		object.material = material_resource
+		if object is CSGShape3D and editor:
+			editor.set_object_material(object as CSGShape3D, material_resource)
+		else:
+			object.material = material_resource
 	else:
 		editor.construction_material = material_resource
 
 
 func get_object_material() -> BaseMaterial3D:
 	if is_instance_valid(object):
+		if object is CSGShape3D and editor:
+			return editor.get_object_material(object as CSGShape3D) as BaseMaterial3D
 		return object.material
 	else:
 		return editor.construction_material
