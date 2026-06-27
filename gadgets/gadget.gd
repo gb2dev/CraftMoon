@@ -67,6 +67,8 @@ func _process(delta: float) -> void:
 					var nearest_input_control: GadgetInputPort
 					var nearest_input_control_distance := INF
 					for input_control: GadgetInputPort in get_tree().get_nodes_in_group(&"GadgetInputPort"):
+						if not input_control.is_visible_in_tree():
+							continue
 						var distance := mouse_pos.distance_squared_to(
 							input_control.global_position + input_control.size / 2
 						)
@@ -183,11 +185,15 @@ func _get_port_position(port_count: int, port_index: int, side: Side) -> Vector2
 
 
 func is_input_data_powered(input_index: int, unconnected_means_powered: bool) -> bool:
+	var input_control := input_controls[input_index] as GadgetInputPort
+	if input_control.output_controls.is_empty():
+		return unconnected_means_powered
 	var data: Variant = get_input_data(input_index)
 	if data == null:
-		return unconnected_means_powered
-	else:
-		return not is_zero_approx(data as float)
+		return false
+	if typeof(data) == TYPE_BOOL:
+		return data
+	return not is_zero_approx(float(data))
 
 
 func get_input_data(input_index: int) -> Variant:
@@ -371,9 +377,21 @@ func attach_to_object(node_path: NodePath) -> void:
 		node_3d.position = node.get_parent().get_aabb().get_center()
 	else:
 		node.add_child(node_3d)
+	
+	var parent := node_3d.get_parent()
+	if parent is Node3D:
+		var parent_scale: Vector3 = parent.global_transform.basis.get_scale()
+		var target_scale := Vector3.ONE
+		if absf(parent_scale.x) > 0.0001: target_scale.x /= parent_scale.x
+		if absf(parent_scale.y) > 0.0001: target_scale.y /= parent_scale.y
+		if absf(parent_scale.z) > 0.0001: target_scale.z /= parent_scale.z
+		node_3d.scale = target_scale
+
 	var _error := node_3d.tree_exited.connect(func() -> void:
-		if not World.destroyed_nodes.values().has(node_3d.get_parent()):
-			queue_free()
+		var node_parent := node_3d.get_parent()
+		if not is_instance_valid(node_parent) or node_parent.is_queued_for_deletion():
+			if not World.destroyed_nodes.values().has(node_parent):
+				queue_free()
 	)
 
 

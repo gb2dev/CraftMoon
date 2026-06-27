@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://chen132o1fw7d"
+path="res://.godot/imported/scope_focus.glsl-2a0c13f3bc78f7316c02104c39321949.res"
+
+[deps]
+
+source_file="res://outline/shaders/scope_focus.glsl"
+dest_files=["res://.godot/imported/scope_focus.glsl-2a0c13f3bc78f7316c02104c39321949.res"]
+
+[params]
+

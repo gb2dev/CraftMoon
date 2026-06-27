@@ -1,17 +1,33 @@
 [gd_resource type="Compositor" format=3 uid="uid://cmt0igw4g2o0j"]
 
 [ext_resource type="Script" uid="uid://uckflcxi5x" path="res://outline/stencil_based_outline_compositor_effect.gd" id="1_outline"]
+[ext_resource type="Script" uid="uid://ddjec5it15tki" path="res://outline/scope_focus_compositor_effect.gd" id="2_scope"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_scope"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = false
+effect_callback_type = 2
+access_resolved_color = false
+access_resolved_depth = false
+needs_motion_vectors = false
+needs_normal_roughness = false
+needs_separate_specular = false
+script = ExtResource("2_scope")
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_outline"]
 resource_local_to_scene = false
 resource_name = ""
 enabled = true
 effect_callback_type = 2
+access_resolved_color = false
+access_resolved_depth = false
 needs_motion_vectors = false
 needs_normal_roughness = false
+needs_separate_specular = false
 script = ExtResource("1_outline")
 outline_color = Color(1, 0.65, 0, 1)
 thickness = 5
 
 [resource]
-compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_outline")])
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_scope"), SubResource("CompositorEffect_outline")])

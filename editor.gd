@@ -4,10 +4,9 @@ extends RayCast3D
 
 const HIGHLIGHT_MATERIAL = preload("res://materials/highlight.tres")
 
-## Stencil value written by selected objects so the outline CompositorEffect
-## (see res://outline/) draws an outline around them. Must match the effect's
-## stencil_value/stencil_mask in res://outline/outline_compositor.tres.
-const OUTLINE_STENCIL_VALUE := 1
+const OUTLINE_ID_MASK := 0x3F
+const OUTLINE_ID_MAX := 0x3F
+const SCOPE_FOCUS_BIT := 0x80
 
 const ICON_CUBOID := preload("res://icons/cube.svg")
 const ICON_ELLIPSOID := preload("res://icons/ellipsoid.svg")
@@ -31,16 +30,30 @@ var object_builder_active := false
 var highlighted_geometry: GeometryInstance3D:
 	set(value):
 		if highlighted_geometry != value:
-			if highlighted_geometry:
-				highlighted_geometry.material_overlay = null
+			for shape: GeometryInstance3D in _highlighted_overlay_shapes:
+				if is_instance_valid(shape):
+					shape.material_overlay = null
+			_highlighted_overlay_shapes.clear()
 			if value:
-				value.material_overlay = HIGHLIGHT_MATERIAL
+				if value is CSGShape3D:
+					for shape: CSGShape3D in resolve_group_shapes(value as CSGShape3D):
+						shape.material_overlay = HIGHLIGHT_MATERIAL
+						_highlighted_overlay_shapes.append(shape)
+				else:
+					value.material_overlay = HIGHLIGHT_MATERIAL
+					_highlighted_overlay_shapes.append(value)
 			highlighted_geometry = value
 			if not object_builder_active:
 				_update_input_display()
+
+var _highlighted_overlay_shapes: Array[GeometryInstance3D] = []
+
 ## Objects currently selected in default editor mode. Selected objects write to
 ## the stencil buffer so the outline CompositorEffect outlines them.
 var selected_geometry: Array[CSGShape3D] = []
+var group_entities: Dictionary = {}
+var current_scope: String = ""
+var _saved_scope_before_builder := ""
 var cursor_distance := -3.0
 var vertices: Array[Vector3]
 var _selected_shape := -1
@@ -75,9 +88,15 @@ var _block_action_from_pie_menu := false
 @onready var pie_menu: PieMenu = get_tree().current_scene.get_node("%PieMenu")
 @onready var tree := get_tree()
 
+var _scope_focus_effect: ScopeFocusCompositorEffect
+var _outline_effect: StencilBasedOutlineCompositorEffect
+var _outline_ids: Dictionary = {}
+
+
 func _ready() -> void:
 	set_object_builder_active(false)
 	selected_shape = 0
+	_resolve_compositor_effects()
 
 	if cursor:
 		var mesh_instance := cursor as MeshInstance3D
@@ -107,7 +126,14 @@ func _process(_delta: float) -> void:
 			if object_properties.visible:
 				object_properties.close()
 			else:
-				set_object_builder_active(not object_builder_active)
+				if not object_builder_active:
+					_saved_scope_before_builder = current_scope
+					set_object_builder_active(true)
+				else:
+					set_object_builder_active(false)
+					current_scope = _saved_scope_before_builder
+					_saved_scope_before_builder = ""
+					_update_input_display()
 
 		if not object_builder_active:
 			_handle_editor_input()
@@ -130,21 +156,43 @@ func _handle_editor_input() -> void:
 
 	if _is_action_just_pressed(&"object_properties", true):
 		if collider is CSGShape3D:
+			var group_id := get_group_of(collider)
+			if group_id != "" and current_scope != group_id:
+				var entity = group_entities.get(group_id)
+				if is_instance_valid(entity):
+					object_properties.toggle(entity)
+					return
 			object_properties.toggle(collider)
 
 	if _is_action_just_pressed(&"action"):
 		if collider is CSGShape3D:
-			toggle_selection(collider)
+			_toggle_selection_resolved(collider)
 		else:
 			clear_selection()
+
+	if _is_action_just_pressed(&"group_objects", true, true):
+		if _single_selected_group() != "":
+			ungroup_selected()
+		else:
+			group_selected()
+	if _is_action_just_pressed(&"ungroup_objects", true, true):
+		ungroup_selected()
+	if _is_action_just_pressed(&"scope_in", true):
+		scope_in()
+	if _is_action_just_pressed(&"scope_out", true):
+		scope_out()
 
 	if collider:
 		if collider is CSGShape3D:
 			highlighted_geometry = collider
 			if _is_action_just_pressed(&"destroy"):
-				if not highlighted_geometry.is_in_group(&"Undeletable"):
+				var destroyed_any := false
+				for shape: CSGShape3D in resolve_group_shapes(collider):
+					if not shape.is_in_group(&"Undeletable"):
+						destroy.rpc(shape.get_path())
+						destroyed_any = true
+				if destroyed_any:
 					Audio.play_sound("destroy")
-					destroy.rpc(highlighted_geometry.get_path())
 			return
 	highlighted_geometry = null
 
@@ -164,10 +212,7 @@ func select(shape: CSGShape3D) -> void:
 	if not is_instance_valid(shape) or is_selected(shape):
 		return
 	selected_geometry.append(shape)
-	# Remember the object's real material and swap in a stencil-writing copy so
-	# the outline CompositorEffect picks it up. Pruned automatically if freed.
-	shape.set_meta(&"base_material", shape.material)
-	_refresh_outline_material(shape)
+	_reassign_outline_ids()
 	var _connected := shape.tree_exiting.connect(
 		func() -> void: selected_geometry.erase(shape), CONNECT_ONE_SHOT)
 	Audio.play_sound("click")
@@ -180,7 +225,9 @@ func deselect(shape: CSGShape3D) -> void:
 		return
 	selected_geometry.erase(shape)
 	if is_instance_valid(shape):
-		_restore_base_material(shape)
+		_outline_ids.erase(shape)
+		_apply_stencil_state(shape)
+	_reassign_outline_ids()
 	Audio.play_sound("click")
 	if not object_builder_active:
 		_update_input_display()
@@ -189,45 +236,423 @@ func deselect(shape: CSGShape3D) -> void:
 func clear_selection() -> void:
 	if selected_geometry.is_empty():
 		return
-	for shape: CSGShape3D in selected_geometry.duplicate():
-		if is_instance_valid(shape):
-			_restore_base_material(shape)
+	var shapes := selected_geometry.duplicate()
 	selected_geometry.clear()
+	_outline_ids.clear()
+	if _outline_effect:
+		_outline_effect.set_active_outline_ids(PackedInt32Array())
+	for shape: CSGShape3D in shapes:
+		if is_instance_valid(shape):
+			_apply_stencil_state(shape)
 	if not object_builder_active:
 		_update_input_display()
 
 
-## (Re)build the stencil-writing material for a selected object from its stored
-## base material. Called on select and whenever the base material changes.
-func _refresh_outline_material(shape: CSGShape3D) -> void:
-	var base: Material = null
-	if shape.has_meta(&"base_material"):
-		base = shape.get_meta(&"base_material") as Material
-	var outline_mat: BaseMaterial3D
-	if base is BaseMaterial3D:
-		outline_mat = (base as BaseMaterial3D).duplicate()
+func get_group_of(node: Node3D) -> String:
+	if is_instance_valid(node):
+		if node.get_parent() is GroupEntity:
+			return (node.get_parent() as GroupEntity).group_id
+		elif node.has_meta(&"group"):
+			return node.get_meta(&"group", "")
+	return ""
+
+
+func get_group_members(group_id: String) -> Array[Node3D]:
+	var entity = group_entities.get(group_id)
+	var result: Array[Node3D] = []
+	if is_instance_valid(entity):
+		for child in entity.get_children():
+			if child is CSGShape3D or child is GroupEntity:
+				result.append(child)
+	return result
+
+
+func get_active_group_of(node: Node3D) -> String:
+	var gid := get_group_of(node)
+	if gid == "" or gid == current_scope:
+		return ""
+	var current := gid
+	while current != "":
+		var parent_gid := ""
+		var entity = group_entities.get(current)
+		if is_instance_valid(entity):
+			parent_gid = get_group_of(entity)
+		if parent_gid == current_scope:
+			return current
+		if parent_gid == "":
+			return current
+		current = parent_gid
+	return gid
+
+
+func get_all_shapes_in_group_recursive(group_id: String) -> Array[CSGShape3D]:
+	var result: Array[CSGShape3D] = []
+	for node in get_group_members(group_id):
+		if node is CSGShape3D:
+			result.append(node)
+		elif node is GroupEntity:
+			result.append_array(get_all_shapes_in_group_recursive(node.group_id))
+	return result
+
+
+func _generate_group_id() -> String:
+	return str(multiplayer.get_unique_id()) + "_" + str(Time.get_ticks_usec()) + "_" + str(randi() % 1000)
+
+
+func resolve_group_shapes(shape: CSGShape3D) -> Array[CSGShape3D]:
+	var active_group := get_active_group_of(shape)
+	if active_group != "":
+		return get_all_shapes_in_group_recursive(active_group)
+	var single: Array[CSGShape3D] = [shape]
+	return single
+
+
+func _toggle_selection_resolved(shape: CSGShape3D) -> void:
+	var active_group := get_active_group_of(shape)
+	if active_group != "":
+		toggle_group_selection(active_group)
 	else:
-		outline_mat = StandardMaterial3D.new()
-	outline_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
-	outline_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
-	outline_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
-	outline_mat.stencil_reference = OUTLINE_STENCIL_VALUE
-	shape.material = outline_mat
+		toggle_selection(shape)
+
+
+func toggle_group_selection(group_id: String) -> void:
+	var members := get_all_shapes_in_group_recursive(group_id)
+	if members.is_empty():
+		return
+	var all_selected := true
+	for shape in members:
+		if not is_selected(shape):
+			all_selected = false
+			break
+	for shape in members:
+		if all_selected:
+			deselect(shape)
+		else:
+			select(shape)
+
+
+func group_selected() -> void:
+	var groups_to_group := []
+	var shapes_to_group := []
+	var remaining_selected := selected_geometry.duplicate()
+	var groups_checked := {}
+	for shape in selected_geometry:
+		var group_id := get_group_of(shape)
+		if group_id != "" and not groups_checked.has(group_id):
+			groups_checked[group_id] = true
+			var members := get_all_shapes_in_group_recursive(group_id)
+			var all_selected := true
+			for m in members:
+				if m not in selected_geometry:
+					all_selected = false
+					break
+			if all_selected:
+				var entity = group_entities.get(group_id)
+				if is_instance_valid(entity):
+					groups_to_group.append(entity)
+					for m in members:
+						remaining_selected.erase(m)
+	for shape in remaining_selected:
+		shapes_to_group.append(shape)
+	var targets := []
+	targets.append_array(groups_to_group)
+	targets.append_array(shapes_to_group)
+	if targets.size() < 2:
+		return
+	var paths: Array[NodePath] = []
+	for node in targets:
+		paths.append(node.get_path())
+	sync_group.rpc(paths, _generate_group_id())
+
+
+func ungroup_selected() -> void:
+	var group_ids := {}
+	for shape: CSGShape3D in selected_geometry:
+		var group_id := get_group_of(shape)
+		if group_id != "":
+			group_ids[group_id] = true
+	if group_ids.is_empty():
+		return
+	sync_ungroup.rpc(group_ids.keys())
+
+
+func scope_in() -> void:
+	var target_group := _single_selected_group()
+	if target_group != "" and target_group != current_scope:
+		clear_selection()
+		current_scope = target_group
+		for shape: CSGShape3D in get_all_shapes_in_group_recursive(current_scope):
+			_apply_stencil_state(shape)
+		_set_scope_focus_enabled(true)
+		Audio.play_sound("click")
+		_update_input_display()
+
+
+func scope_out() -> void:
+	if current_scope != "":
+		var old_scope := current_scope
+		var old_members := get_all_shapes_in_group_recursive(old_scope)
+		clear_selection()
+		var parent_group := ""
+		var entity = group_entities.get(current_scope)
+		if is_instance_valid(entity):
+			parent_group = get_group_of(entity)
+		current_scope = parent_group
+		if current_scope == "":
+			_set_scope_focus_enabled(false)
+		for shape: CSGShape3D in old_members:
+			_apply_stencil_state(shape)
+		if current_scope != "":
+			for shape: CSGShape3D in get_all_shapes_in_group_recursive(current_scope):
+				_apply_stencil_state(shape)
+		Audio.play_sound("click")
+		_update_input_display()
+
+
+func scope_out_fully() -> void:
+	while current_scope != "":
+		scope_out()
+
+
+func _set_scope_focus_enabled(value: bool) -> void:
+	if _scope_focus_effect:
+		_scope_focus_effect.enabled = value
+
+
+func _resolve_compositor_effects() -> void:
+	var camera := get_viewport().get_camera_3d()
+	var compositor: Compositor = null
+	if camera:
+		compositor = camera.compositor
+	if compositor == null:
+		var parent := get_parent()
+		if parent is Camera3D:
+			compositor = (parent as Camera3D).compositor
+	if compositor == null:
+		return
+	for effect: CompositorEffect in compositor.compositor_effects:
+		if effect is ScopeFocusCompositorEffect:
+			_scope_focus_effect = effect as ScopeFocusCompositorEffect
+		elif effect is StencilBasedOutlineCompositorEffect:
+			_outline_effect = effect as StencilBasedOutlineCompositorEffect
+
+
+func _reassign_outline_ids() -> void:
+	_outline_ids.clear()
+	var key_to_id := {}
+	var next_id := 1
+	for shape: CSGShape3D in selected_geometry:
+		if not is_instance_valid(shape):
+			continue
+		var group_id := get_group_of(shape)
+		var key: Variant = group_id if group_id != "" else shape.get_instance_id()
+		var id: int = key_to_id.get(key, 0)
+		if id == 0:
+			id = next_id
+			key_to_id[key] = id
+			next_id = mini(next_id + 1, OUTLINE_ID_MAX)
+		_outline_ids[shape] = id
+	if _outline_effect:
+		_outline_effect.set_active_outline_ids(PackedInt32Array(key_to_id.values()))
+	for shape: CSGShape3D in selected_geometry:
+		if is_instance_valid(shape):
+			_apply_stencil_state(shape)
+
+
+func _is_focus_member(shape: CSGShape3D) -> bool:
+	var active_scope := current_scope if current_scope != "" else _saved_scope_before_builder
+	if active_scope == "":
+		return false
+	var gid := get_group_of(shape)
+	while gid != "":
+		if gid == active_scope:
+			return true
+		var entity = group_entities.get(gid)
+		if is_instance_valid(entity):
+			gid = get_group_of(entity)
+		else:
+			break
+	return false
+
+
+func _selection_has_group() -> bool:
+	for shape: CSGShape3D in selected_geometry:
+		if get_group_of(shape) != "":
+			return true
+	return false
+
+
+func _single_selected_group() -> String:
+	var group_id := ""
+	for shape: CSGShape3D in selected_geometry:
+		var shape_group := get_group_of(shape)
+		if shape_group == "":
+			return ""
+		if group_id == "":
+			group_id = shape_group
+		elif group_id != shape_group:
+			return ""
+	return group_id
+
+
+func _remove_from_group(node: Node3D) -> void:
+	var group_id := get_group_of(node)
+	if group_id == "":
+		return
+	node.reparent.call_deferred(geometry_root, true)
+	if node.has_meta(&"group"):
+		node.remove_meta(&"group")
+	if node is CSGShape3D:
+		_apply_stencil_state(node)
+	_check_dissolve_group.call_deferred(group_id)
+
+
+var _dissolving_groups: Dictionary
+
+func _dissolve_group(group_id: String) -> void:
+	if not group_entities.has(group_id) or _dissolving_groups.get(group_id, false):
+		return
+	_dissolving_groups[group_id] = true
+	var was_scope := current_scope == group_id
+	if was_scope:
+		current_scope = ""
+		_set_scope_focus_enabled(false)
+	for node: Node3D in get_group_members(group_id):
+		if is_instance_valid(node):
+			node.reparent.call_deferred(geometry_root, true)
+			if node.has_meta(&"group"):
+				node.remove_meta(&"group")
+			if node is CSGShape3D:
+				_apply_stencil_state(node)
+	if group_entities.has(group_id):
+		var entity = group_entities[group_id]
+		if is_instance_valid(entity):
+			entity.queue_free()
+		group_entities.erase(group_id)
+	_dissolving_groups.erase(group_id)
+
+
+func _on_grouped_shape_exiting(node: Node3D) -> void:
+	var group_id := get_group_of(node)
+	if group_id == "" or not group_entities.has(group_id):
+		return
+	_check_dissolve_group.call_deferred(group_id)
+
+
+func _check_dissolve_group(group_id: String) -> void:
+	if get_group_members(group_id).size() < 2:
+		_dissolve_group(group_id)
+
+
+func _add_to_group(group_id: String, node: Node3D) -> void:
+	var entity = group_entities.get(group_id)
+	if not is_instance_valid(entity):
+		entity = GroupEntity.new()
+		entity.group_id = group_id
+		entity.editor = self
+		geometry_root.add_child(entity)
+		group_entities[group_id] = entity
+	node.reparent.call_deferred(entity, true)
+	node.set_meta(&"group", group_id)
+	var callable := _on_grouped_shape_exiting.bind(node)
+	if not node.tree_exiting.is_connected(callable):
+		var _connected := node.tree_exiting.connect(callable, CONNECT_ONE_SHOT)
+	if (current_scope == group_id or _saved_scope_before_builder == group_id) and node is CSGShape3D:
+		_apply_stencil_state(node)
+	entity.update_transform_from_members.call_deferred()
+
+
+func register_loaded_group_member(group_id: String, shape: CSGShape3D) -> void:
+	_add_to_group(group_id, shape)
+
+
+func reset_groups() -> void:
+	for entity in group_entities.values():
+		if is_instance_valid(entity):
+			entity.queue_free()
+	group_entities.clear()
+	current_scope = ""
+	_set_scope_focus_enabled(false)
+
+
+@rpc("any_peer", "call_local")
+func sync_group(paths: Array, group_id: String) -> void:
+	var members: Array[Node3D] = []
+	for path: NodePath in paths:
+		var node := get_node_or_null(path)
+		if node is Node3D:
+			_remove_from_group(node)
+			members.append(node)
+	if members.size() < 2:
+		return
+	clear_selection()
+	for node in members:
+		_add_to_group(group_id, node)
+	Audio.play_sound("click")
+	if not object_builder_active:
+		_update_input_display()
+
+
+@rpc("any_peer", "call_local")
+func sync_ungroup(group_ids: Array) -> void:
+	var changed := false
+	for group_id: String in group_ids:
+		if group_entities.has(group_id):
+			_dissolve_group(group_id)
+			changed = true
+	if changed:
+		clear_selection()
+		_reassign_outline_ids()
+		Audio.play_sound("click")
+		if not object_builder_active:
+			_update_input_display()
+
+
+func _apply_stencil_state(shape: CSGShape3D, force := false) -> void:
+	if not is_instance_valid(shape):
+		return
+	var reference := int(_outline_ids.get(shape, 0)) & OUTLINE_ID_MASK
+	if _is_focus_member(shape):
+		reference |= SCOPE_FOCUS_BIT
+
+	if reference == 0:
+		_restore_base_material(shape)
+		return
+
+	if not force and shape.has_meta(&"base_material") and int(shape.get_meta(&"stencil_ref", -1)) == reference:
+		return
+
+	if not shape.has_meta(&"base_material"):
+		shape.set_meta(&"base_material", shape.material)
+	var base := shape.get_meta(&"base_material") as Material
+	var stencil_mat: BaseMaterial3D
+	if base is BaseMaterial3D:
+		stencil_mat = (base as BaseMaterial3D).duplicate()
+	else:
+		stencil_mat = StandardMaterial3D.new()
+	stencil_mat.stencil_mode = BaseMaterial3D.STENCIL_MODE_CUSTOM
+	stencil_mat.stencil_flags = BaseMaterial3D.STENCIL_FLAG_WRITE
+	stencil_mat.stencil_compare = BaseMaterial3D.STENCIL_COMPARE_ALWAYS
+	stencil_mat.stencil_reference = reference
+	shape.material = stencil_mat
+	shape.set_meta(&"stencil_ref", reference)
 
 
 func _restore_base_material(shape: CSGShape3D) -> void:
 	if shape.has_meta(&"base_material"):
 		shape.material = shape.get_meta(&"base_material") as Material
 		shape.remove_meta(&"base_material")
+	if shape.has_meta(&"stencil_ref"):
+		shape.remove_meta(&"stencil_ref")
 
 
 ## Set an object's material, keeping the outline intact if it is selected.
 ## Routed through here by ObjectProperties so a material change on a selected
 ## object keeps writing to the stencil buffer.
 func set_object_material(shape: CSGShape3D, material: Material) -> void:
-	if is_selected(shape):
+	if shape.has_meta(&"base_material"):
 		shape.set_meta(&"base_material", material)
-		_refresh_outline_material(shape)
+		_apply_stencil_state(shape, true)
 	else:
 		shape.material = material
 
@@ -750,7 +1175,8 @@ func _try_finish_shape() -> void:
 		construction_material.resource_path,
 		construction_collision,
 		uniform_scale_mode,
-		unique_node_name
+		unique_node_name,
+		current_scope if current_scope != "" else _saved_scope_before_builder
 	)
 	vertices.clear()
 
@@ -803,7 +1229,8 @@ func construct_shape(
 	material: String,
 	use_collision: bool,
 	uniform := false,
-	node_name := ""
+	node_name := "",
+	scope_id := ""
 ) -> CSGShape3D:
 	var shape := _create_shape(type)
 	if not shape:
@@ -842,6 +1269,10 @@ func construct_shape(
 		shape.name = str(shape.get_index())
 	else:
 		shape.name = node_name
+
+	var target_scope := scope_id if scope_id != "" else _saved_scope_before_builder
+	if target_scope != "" and group_entities.has(target_scope):
+		_add_to_group(target_scope, shape)
 
 	return shape
 
@@ -893,6 +1324,7 @@ func set_object_builder_active(value: bool) -> void:
 	rotation_angles = Vector3.ZERO
 	object_properties.close()
 	clear_selection()
+	current_scope = ""
 	object_builder_active = value
 	cursor.visible = object_builder_active
 	target_position.z = -2.5 if object_builder_active else -5.0
@@ -954,16 +1386,26 @@ func _update_input_display() -> void:
 			# TODO input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "", true)
 			input_display.add_input_prompt([&"object_properties"], &"Highlighted Object", "", true, true)
 			input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true) # TODO hide on undeletable objects
-			var select_label := "Deselect Object" if highlighted_geometry in selected_geometry else "Select Object"
+			var highlighted_group := get_group_of(highlighted_geometry as CSGShape3D)
+			var select_label: String
+			if highlighted_geometry in selected_geometry:
+				select_label = "Deselect Group" if highlighted_group != "" and highlighted_group != current_scope else "Deselect Object"
+			else:
+				select_label = "Select Group" if highlighted_group != "" and highlighted_group != current_scope else "Select Object"
 			input_display.add_input_prompt([&"action"], &"Highlighted Object", select_label, true)
 		elif not selected_geometry.is_empty():
 			input_display.add_input_prompt([&"action"], &"Selected Objects", "Deselect All", true)
 
-		## TODO Grouping & Selecting Objects TODO Quantify
-		#input_display.add_input_prompt([&"group_objects"], &"Selected Objects", "", true, true) # TODO make gamepad modifier button customizable
-		#input_display.add_input_prompt([&"ungroup_objects"], &"Selected Objects", "", true, true)
-		#input_display.add_input_prompt([&"scope_in"], &"Selected Objects", "", true, true)
-		#input_display.add_input_prompt([&"scope_out"], &"Selected Objects", "", true, true)
+		if _single_selected_group() != "":
+			input_display.add_input_prompt([&"group_objects"], &"Selected Objects", "Ungroup", true, true)
+		elif selected_geometry.size() >= 2:
+			input_display.add_input_prompt([&"group_objects"], &"Selected Objects", "Group", true, true)
+
+		var single_group := _single_selected_group()
+		if single_group != "" and single_group != current_scope:
+			input_display.add_input_prompt([&"scope_in"], &"Selected Objects", "Enter Group", true, true)
+		if current_scope != "":
+			input_display.add_input_prompt([&"scope_out"], &"Group", "Exit Group", true, true)
 
 		## TODO Transform Objects TODO Quantify
 		#input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Transform Objects", "Rotate Horizontally (Y)", true, true)

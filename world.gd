@@ -171,8 +171,11 @@ func sync_time_rewind() -> void:
 	update_timer_paused_indicator()
 	for gadget: Gadget in object_properties.logic_panel.get_children():
 		gadget.reset_metas_to_initial()
-	for parent: Node in destroyed_nodes.keys():
-		parent.add_child(destroyed_nodes[parent])
+	for parent in destroyed_nodes:
+		if is_instance_valid(parent):
+			var child = destroyed_nodes[parent]
+			if is_instance_valid(child):
+				parent.add_child(child)
 	destroyed_nodes.clear()
 	Signals.time_paused.emit()
 	Signals.time_rewound.emit()

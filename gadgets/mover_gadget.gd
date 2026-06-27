@@ -5,14 +5,22 @@ var movement_direction := Vector3.ZERO
 var initial_transform: Transform3D
 
 
+var has_simulated := false
+
+
 func start() -> void:
 	var _error := Signals.time_rewound.connect(_on_time_rewound)
 	initial_transform = node_3d.get_parent_node_3d().transform
+	has_simulated = false
 
 
 func tick(delta: float) -> void:
-	if is_input_data_powered(0, true) and not World.time_paused:
-		node_3d.get_parent().position += movement_direction * delta
+	if World.time_paused and not has_simulated:
+		initial_transform = node_3d.get_parent_node_3d().transform
+	elif not World.time_paused:
+		has_simulated = true
+		if is_input_data_powered(0, true):
+			node_3d.get_parent().position += movement_direction * delta
 
 
 @rpc("any_peer", "call_local")
@@ -34,3 +42,4 @@ func setup_properties(gadget_properties: GadgetProperties) -> void:
 
 func _on_time_rewound() -> void:
 	node_3d.get_parent_node_3d().transform = initial_transform
+	has_simulated = false

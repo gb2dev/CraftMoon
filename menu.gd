@@ -104,31 +104,30 @@ func toggle() -> void:
 		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
 
 
-func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dictionary]) -> void:
-	var index_offset := 0
-	var parent_index := 0
-	var logic_panel := player.editor.object_properties.logic_panel
-	for gadget: Gadget in gadgets:
-		var new_parent_index := gadget.node_3d.get_parent().get_index()
-		if parent_index != new_parent_index:
-			parent_index = new_parent_index
-			index_offset = gadget.get_index()
-
-		var gadget_properties: Dictionary = gadget_properties_array[gadget.get_index()]
+func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dictionary], parent_gadgets: Array[Array]) -> void:
+	for i in gadgets.size():
+		var gadget := gadgets[i]
+		var gadget_properties := gadget_properties_array[i]
 		var outputs_count: int = gadget_properties.connections.size()
 		for output_index in outputs_count:
 			for output_properties: Dictionary in gadget_properties.connections[output_index]:
-				gadget.update_connection(
-					Gadget.ConnectionChange.CONNECT,
-					gadget.output_controls[output_index].back().get_path(),
-					logic_panel.get_children()[index_offset + output_properties.target_gadget].get_path(),
-					output_properties.target_input,
-					true
-				)
+				var target_parent_index: int = output_properties.target_parent
+				var target_gadget_index: int = output_properties.target_gadget
+				
+				var target_gadget := parent_gadgets[target_parent_index][target_gadget_index] as Gadget
+				if is_instance_valid(target_gadget):
+					gadget.update_connection(
+						Gadget.ConnectionChange.CONNECT,
+						gadget.output_controls[output_index].back().get_path(),
+						target_gadget.get_path(),
+						output_properties.target_input,
+						true
+					)
 
 
 func save_level() -> void:
 	world.sync_time_rewind()
+	player.editor.scope_out_fully()
 
 	var save_data := [{
 		"type": "Level",
@@ -140,34 +139,48 @@ func save_level() -> void:
 	var gadget_indexes: Dictionary
 
 	for gadget: Gadget in player.editor.object_properties.logic_panel.get_children():
-		var parent_index: int = gadget.node_3d.get_parent().get_index()
-		if not gadget_indexes.has(parent_index):
-			gadget_indexes[parent_index] = []
-		gadget_indexes[parent_index].append(gadget.get_index())
+		var parent = gadget.node_3d.get_parent()
+		if not gadget_indexes.has(parent):
+			gadget_indexes[parent] = []
+		gadget_indexes[parent].append(gadget.get_index())
 
-	var geometry_nodes: Array[CSGShape3D]
+	var target_nodes: Array[Node3D]
 	var gadget_nodes: Array[Gadget]
 	for node in get_tree().get_nodes_in_group(&"Persist"):
 		if node is Gadget:
 			gadget_nodes.append(node)
-		elif node is CSGShape3D:
-			geometry_nodes.append(node)
-	for geometry in geometry_nodes:
-		var type: String = geometry.get_meta(&"shape_type", "")
-		save_data.append({
-			"type": type,
-			"position": geometry.get_meta(&"box_center", geometry.position),
-			"rotation": geometry.get_meta(&"rotation", Vector3.ZERO),
-			"size": geometry.get_meta(&"box_size", Vector3.ONE),
-			"material": geometry.material.resource_path,
-			"collision": geometry.use_collision,
-			"uniform": geometry.get_meta(&"uniform", false),
-			"gadgets": [],
-		})
+		elif node is CSGShape3D or node is GroupEntity:
+			target_nodes.append(node)
+			
+	for target in target_nodes:
+		if target is CSGShape3D:
+			var type: String = target.get_meta(&"shape_type", "")
+			save_data.append({
+				"type": type,
+				"position": target.get_meta(&"box_center", target.position),
+				"rotation": target.get_meta(&"rotation", Vector3.ZERO),
+				"size": target.get_meta(&"box_size", Vector3.ONE),
+				"material": player.editor.get_object_material(target).resource_path,
+				"collision": target.use_collision,
+				"uniform": target.get_meta(&"uniform", false),
+				"group": target.get_meta(&"group", ""),
+				"gadgets": [],
+			})
+		elif target is GroupEntity:
+			save_data.append({
+				"type": "Group",
+				"group_id": target.group_id,
+				"group": target.get_meta(&"group", ""),
+				"gadgets": [],
+			})
+
 	for gadget: Gadget in gadget_nodes:
 		var path: String = "res://gadgets/" + gadget.type.to_snake_case()
 		var gadget_data := load(path + ".tres")
-		var parent_index: int = gadget.node_3d.get_parent().get_index()
+		var parent = gadget.node_3d.get_parent()
+		var parent_index = target_nodes.find(parent)
+		if parent_index == -1:
+			continue
 		var gadgets: Array = save_data[parent_index + 1].gadgets
 		var connections: Array[Array]
 		var outputs_count: int = gadget.output_controls.size()
@@ -178,7 +191,8 @@ func save_level() -> void:
 					continue
 
 				connections[output_index].append({
-					"target_gadget": gadget_indexes[parent_index].find(
+					"target_parent": target_nodes.find(output_control.target_gadget.node_3d.get_parent()),
+					"target_gadget": gadget_indexes[output_control.target_gadget.node_3d.get_parent()].find(
 						output_control.target_gadget.get_index()
 					),
 					"target_input": output_control.target_input,
@@ -264,16 +278,14 @@ func load_level(save_file_path := "") -> void:
 
 		var gadgets: Array[Gadget]
 		var gadget_properties_array: Array[Dictionary]
+		
 		for object_properties: Dictionary in save_data:
-			var object: CSGShape3D
 			match object_properties.type:
-				"Level":
-					continue
 				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
 					player.editor.construction_material = load(object_properties.material)
 					player.editor.construction_collision = object_properties.collision
 					var uniform_mode: bool = object_properties.get("uniform", false)
-					object = player.editor.construct_shape(
+					var object = player.editor.construct_shape(
 						object_properties.type,
 						object_properties.position,
 						object_properties.rotation,
@@ -282,6 +294,33 @@ func load_level(save_file_path := "") -> void:
 						player.editor.construction_collision,
 						uniform_mode
 					)
+					object_properties["_node"] = object
+					var group_id: String = object_properties.get("group", "")
+					if not group_id.is_empty():
+						player.editor.register_loaded_group_member(group_id, object)
+		
+		for object_properties: Dictionary in save_data:
+			if object_properties.type == "Group":
+				var child_id: String = object_properties.group_id
+				var parent_id: String = object_properties.get("group", "")
+				if not parent_id.is_empty() and not child_id.is_empty():
+					var child_entity = player.editor.group_entities.get(child_id)
+					if is_instance_valid(child_entity):
+						player.editor._add_to_group(parent_id, child_entity)
+		
+		var parent_gadgets: Array[Array] = []
+		for object_properties: Dictionary in save_data:
+			var object: Node3D = null
+			match object_properties.type:
+				"Level":
+					continue
+				"Group":
+					object = player.editor.group_entities.get(object_properties.group_id)
+				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
+					object = object_properties.get("_node")
+			if not is_instance_valid(object):
+				continue
+			var current_parent_gadgets: Array[Gadget] = []
 			for gadget_properties: Dictionary in object_properties.gadgets:
 				player.editor.object_properties.object = object
 				var path: String = "res://gadgets/" + gadget_properties.type.to_snake_case()
@@ -294,11 +333,13 @@ func load_level(save_file_path := "") -> void:
 				)
 				gadgets.append(gadget)
 				gadget_properties_array.append(gadget_properties)
+				current_parent_gadgets.append(gadget)
 				for property: StringName in gadget_properties.properties:
 					var value: Variant = gadget_properties.properties[property]
 					gadget.sync_meta(property, value)
 					gadget.change_property(property, value)
-		connect_gadgets(gadgets, gadget_properties_array)
+			parent_gadgets.append(current_parent_gadgets)
+		connect_gadgets(gadgets, gadget_properties_array, parent_gadgets)
 
 	respawn_player.rpc()
 
@@ -357,6 +398,8 @@ func new_level(blank := true) -> void:
 	else:
 		get_tree().call_group(&"Moon", &"queue_free")
 		get_tree().call_group(&"Persist", &"queue_free")
+		if player and player.editor:
+			player.editor.reset_groups()
 		level_name.text = tr(&"New Level")
 		level_description.text = ""
 
@@ -385,6 +428,7 @@ func enter_play_mode() -> void:
 	player.fly = false
 	player.first_person = false
 	player.editor.process_mode = PROCESS_MODE_DISABLED
+	player.editor.scope_out_fully()
 	player.editor.set_object_builder_active(false)
 	player.editor.input_display.visible = true
 	player.editor._update_input_display()

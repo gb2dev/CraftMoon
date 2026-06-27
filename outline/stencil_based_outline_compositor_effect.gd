@@ -1,12 +1,9 @@
 extends CompositorEffect
 class_name StencilBasedOutlineCompositorEffect
 
-## Screen-space outline CompositorEffect.
-##
-## Any mesh whose material writes [member stencil_value] into the stencil buffer
-## (BaseMaterial3D: Stencil Mode = Custom, Flags = Write, Compare = Always,
-## Reference = stencil_value) gets a solid outline of [member outline_color] and
-## [member thickness] pixels, generated with a jump-flood distance field.
+## Screen-space outline CompositorEffect, one independent outline per stencil id
+## set via [method set_active_outline_ids]: objects sharing an id merge into one
+## silhouette, different ids get separate outlines even where they overlap.
 ##
 ## Based on the stencil + jump-flood outline by David M. Lary
 ## (github.com/dmlary/godot-stencil-based-outline-compositor-effect),
@@ -22,11 +19,15 @@ class_name StencilBasedOutlineCompositorEffect
 	set(value):
 		thickness = clampi(value, 0, 4096)
 
-## Stencil value that denotes pixels to be outlined.
-@export var stencil_value := 1
+@export var stencil_mask := 0x3F
 
-## Stencil mask used when checking the stencil value.
-@export var stencil_mask := 1
+var _active_ids := PackedInt32Array()
+var _ids_mutex := Mutex.new()
+
+func set_active_outline_ids(ids: PackedInt32Array) -> void:
+	_ids_mutex.lock()
+	_active_ids = ids.duplicate()
+	_ids_mutex.unlock()
 
 ## Internal 3D render resolution; updated on the render thread each frame.
 var render_resolution := Vector2i(1, 1)
@@ -40,15 +41,19 @@ var resolve_shader_file: String = _shader_dir + "resolve_msaa.glsl"
 
 var rd: RenderingDevice
 
-## Stencil-copy render pipeline (seeds the jump-flood buffer from the stencil).
+## Stencil-copy resources (seed the jump-flood buffer from the stencil).
 var sc_shader: RID
 var sc_framebuffer: RID
-var sc_pipeline: RID
+var sc_format: int
 
-## Draw-outline render pipeline (blends the final outline onto the frame).
+## Draw-outline resources (blend the final outline onto the frame).
 var do_shader: RID
-var do_pipeline: RID
 var do_framebuffer: RID
+var do_format: int
+
+## Render pipelines cached per stencil id (the reference is baked into them).
+var _sc_pipelines := {}
+var _do_pipelines := {}
 
 ## Full-screen-triangle vertex array, shared by the two render pipelines.
 var scdo_vertex_format: int
@@ -182,8 +187,33 @@ func _load_glsl_from_file(path: String) -> RDShaderSPIRV:
 		return null
 	return shader_file.get_spirv()
 
-## Stencil-copy pipeline: seeds the jump-flood buffer from the stencil buffer.
-func _build_sc_pipeline() -> void:
+func _free_pipeline_cache() -> void:
+	_sc_pipelines.clear()
+	_do_pipelines.clear()
+
+func _make_stencil_state(compare: RenderingDevice.CompareOperator, id: int) -> RDPipelineDepthStencilState:
+	var stencil_state := RDPipelineDepthStencilState.new()
+	stencil_state.enable_stencil = true
+	stencil_state.front_op_compare = compare
+	stencil_state.back_op_compare = compare
+	stencil_state.front_op_compare_mask = stencil_mask
+	stencil_state.back_op_compare_mask = stencil_mask
+	stencil_state.front_op_reference = id
+	stencil_state.back_op_reference = id
+	stencil_state.front_op_fail = RenderingDevice.STENCIL_OP_KEEP
+	stencil_state.front_op_pass = RenderingDevice.STENCIL_OP_KEEP
+	stencil_state.back_op_fail = RenderingDevice.STENCIL_OP_KEEP
+	stencil_state.back_op_pass = RenderingDevice.STENCIL_OP_KEEP
+	return stencil_state
+
+func _make_multisample_state() -> RDPipelineMultisampleState:
+	var multisample_state := RDPipelineMultisampleState.new()
+	multisample_state.sample_count = _msaa_samples
+	multisample_state.enable_sample_shading = true
+	multisample_state.min_sample_shading = 1.0
+	return multisample_state
+
+func _build_sc_resources() -> void:
 	if sc_shader.is_valid():
 		rd.free_rid(sc_shader)
 		sc_shader = RID()
@@ -218,47 +248,33 @@ func _build_sc_pipeline() -> void:
 	attachment_format.samples = _msaa_samples
 	attachments.push_back(attachment_format)
 
-	var format: int
 	if not sc_framebuffer.is_valid():
-		format = rd.framebuffer_format_create(attachments)
-		sc_framebuffer = rd.framebuffer_create([color_tex, depth_texture], format)
+		sc_format = rd.framebuffer_format_create(attachments)
+		sc_framebuffer = rd.framebuffer_create([color_tex, depth_texture], sc_format)
 		assert(sc_framebuffer.is_valid())
 	else:
-		format = rd.framebuffer_get_format(sc_framebuffer)
+		sc_format = rd.framebuffer_get_format(sc_framebuffer)
+
+func _get_sc_pipeline(id: int) -> RID:
+	if _sc_pipelines.has(id):
+		return _sc_pipelines[id]
 
 	var blend := RDPipelineColorBlendState.new()
 	blend.attachments.push_back(RDPipelineColorBlendStateAttachment.new())
 
-	# Only write pixels where (stencil & mask) == reference, i.e. outlined objects.
-	var stencil_state := RDPipelineDepthStencilState.new()
-	stencil_state.enable_stencil = true
-	stencil_state.front_op_compare = RenderingDevice.COMPARE_OP_EQUAL
-	stencil_state.back_op_compare = RenderingDevice.COMPARE_OP_EQUAL
-	stencil_state.front_op_compare_mask = stencil_mask
-	stencil_state.back_op_compare_mask = stencil_mask
-	stencil_state.front_op_reference = stencil_value
-	stencil_state.back_op_reference = stencil_value
-	stencil_state.front_op_fail = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.front_op_pass = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.back_op_fail = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.back_op_pass = RenderingDevice.STENCIL_OP_KEEP
-
-	var multisample_state := RDPipelineMultisampleState.new()
-	multisample_state.sample_count = _msaa_samples
-	multisample_state.enable_sample_shading = true
-	multisample_state.min_sample_shading = 1.0
-
-	sc_pipeline = rd.render_pipeline_create(
+	var pipeline := rd.render_pipeline_create(
 		sc_shader,
-		format,
+		sc_format,
 		scdo_vertex_format,
 		RenderingDevice.RENDER_PRIMITIVE_TRIANGLES,
 		RDPipelineRasterizationState.new(),
-		multisample_state,
-		stencil_state,
+		_make_multisample_state(),
+		_make_stencil_state(RenderingDevice.COMPARE_OP_EQUAL, id),
 		blend,
 	)
-	assert(sc_pipeline.is_valid())
+	assert(pipeline.is_valid())
+	_sc_pipelines[id] = pipeline
+	return pipeline
 
 func _build_resolve_pipeline() -> void:
 	if resolve_shader.is_valid():
@@ -275,8 +291,7 @@ func _build_resolve_pipeline() -> void:
 	resolve_pipeline = rd.compute_pipeline_create(resolve_shader)
 	assert(resolve_pipeline.is_valid())
 
-## Draw-outline pipeline: blends the generated outline onto the frame.
-func _build_do_pipeline() -> void:
+func _build_do_resources() -> void:
 	if do_shader.is_valid():
 		rd.free_rid(do_shader)
 		do_shader = RID()
@@ -304,13 +319,16 @@ func _build_do_pipeline() -> void:
 	attachment_format.samples = _msaa_samples
 	attachments.push_back(attachment_format)
 
-	var format: int
 	if not do_framebuffer.is_valid():
-		format = rd.framebuffer_format_create(attachments)
-		do_framebuffer = rd.framebuffer_create([color_texture, depth_texture], format)
+		do_format = rd.framebuffer_format_create(attachments)
+		do_framebuffer = rd.framebuffer_create([color_texture, depth_texture], do_format)
 		assert(do_framebuffer.is_valid())
 	else:
-		format = rd.framebuffer_get_format(do_framebuffer)
+		do_format = rd.framebuffer_get_format(do_framebuffer)
+
+func _get_do_pipeline(id: int) -> RID:
+	if _do_pipelines.has(id):
+		return _do_pipelines[id]
 
 	var blend := RDPipelineColorBlendState.new()
 	var blend_attachment := RDPipelineColorBlendStateAttachment.new()
@@ -321,36 +339,19 @@ func _build_do_pipeline() -> void:
 	blend_attachment.dst_alpha_blend_factor = RenderingDevice.BLEND_FACTOR_ONE_MINUS_SRC_ALPHA
 	blend.attachments.push_back(blend_attachment)
 
-	# Only draw where (stencil & mask) != reference, i.e. outside outlined objects.
-	var stencil_state := RDPipelineDepthStencilState.new()
-	stencil_state.enable_stencil = true
-	stencil_state.front_op_compare = RenderingDevice.COMPARE_OP_NOT_EQUAL
-	stencil_state.back_op_compare = RenderingDevice.COMPARE_OP_NOT_EQUAL
-	stencil_state.front_op_compare_mask = stencil_mask
-	stencil_state.back_op_compare_mask = stencil_mask
-	stencil_state.front_op_reference = stencil_value
-	stencil_state.back_op_reference = stencil_value
-	stencil_state.front_op_fail = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.front_op_pass = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.back_op_fail = RenderingDevice.STENCIL_OP_KEEP
-	stencil_state.back_op_pass = RenderingDevice.STENCIL_OP_KEEP
-
-	var multisample_state := RDPipelineMultisampleState.new()
-	multisample_state.sample_count = _msaa_samples
-	multisample_state.enable_sample_shading = true
-	multisample_state.min_sample_shading = 1.0
-
-	do_pipeline = rd.render_pipeline_create(
+	var pipeline := rd.render_pipeline_create(
 		do_shader,
-		format,
+		do_format,
 		scdo_vertex_format,
 		RenderingDevice.RENDER_PRIMITIVE_TRIANGLES,
 		RDPipelineRasterizationState.new(),
-		multisample_state,
-		stencil_state,
+		_make_multisample_state(),
+		_make_stencil_state(RenderingDevice.COMPARE_OP_NOT_EQUAL, id),
 		blend,
 	)
-	assert(do_pipeline.is_valid())
+	assert(pipeline.is_valid())
+	_do_pipelines[id] = pipeline
+	return pipeline
 
 func _build_jf_pipeline() -> void:
 	if jf_shader.is_valid():
@@ -399,6 +400,8 @@ func _free_framebuffers() -> void:
 		if rd.framebuffer_is_valid(do_framebuffer):
 			rd.free_rid(do_framebuffer)
 		do_framebuffer = RID()
+
+	_free_pipeline_cache()
 
 func _build_textures() -> void:
 	var count := _textures.size()
@@ -506,10 +509,24 @@ func _render_callback(_p_effect_callback_type: int, p_render_data: RenderData) -
 
 	if rebuild:
 		_build_textures()
-		_build_sc_pipeline()
+		_build_sc_resources()
 		_build_resolve_pipeline()
 		_build_jf_pipeline()
-		_build_do_pipeline()
+		_build_do_resources()
+		_free_pipeline_cache()
+
+	_ids_mutex.lock()
+	var ids := _active_ids.duplicate()
+	_ids_mutex.unlock()
+	if ids.is_empty():
+		return
+
+	for id: int in ids:
+		_render_outline_for_id(id)
+
+func _render_outline_for_id(id: int) -> void:
+	var sc_pipeline := _get_sc_pipeline(id)
+	var do_pipeline := _get_do_pipeline(id)
 
 	# 1. Seed the jump-flood buffer from the stencil buffer. The color attachment
 	#    is cleared to (-1, -1, ...) so untouched pixels read as "empty".

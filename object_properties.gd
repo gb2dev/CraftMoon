@@ -83,38 +83,63 @@ func close_gadget_properties() -> bool:
 	return false
 
 
+func _target_objects() -> Array[Node3D]:
+	var targets: Array[Node3D] = []
+	if editor and not editor.selected_geometry.is_empty() and object is CSGShape3D and object in editor.selected_geometry:
+		for shape: CSGShape3D in editor.selected_geometry:
+			if is_instance_valid(shape):
+				targets.append(shape)
+	elif is_instance_valid(object):
+		if object.has_method(&"get_affected_nodes"):
+			targets.append_array(object.get_affected_nodes())
+		else:
+			targets.append(object)
+	return targets
+
+
 @rpc("any_peer")
 func sync_object_material(material_path: String, object_path: NodePath) -> void:
 	var target_node := get_node_or_null(object_path)
 	if target_node:
 		var mat := load(material_path) as Material
-		if target_node is CSGShape3D and editor:
-			# Routed through the editor so a locally-selected object keeps its
-			# stencil-writing outline material.
-			editor.set_object_material(target_node as CSGShape3D, mat)
+		var targets: Array[Node3D] = []
+		if target_node.has_method(&"get_affected_nodes"):
+			targets.append_array(target_node.get_affected_nodes())
 		else:
-			target_node.material = mat
+			targets.append(target_node)
+			
+		for target in targets:
+			if target is CSGShape3D and editor:
+				editor.set_object_material(target, mat)
+			else:
+				target.material = mat
 		if object and object.get_path() == object_path:
 			selected_material_changed.emit()
 
 
 func change_object_material(material_resource: BaseMaterial3D) -> void:
 	if is_instance_valid(object):
-		if object is CSGShape3D and editor:
-			editor.set_object_material(object as CSGShape3D, material_resource)
-		else:
-			object.material = material_resource
+		for target in _target_objects():
+			if target is CSGShape3D and editor:
+				editor.set_object_material(target, material_resource)
+			else:
+				target.material = material_resource
 	else:
 		editor.construction_material = material_resource
 
 
 func get_object_material() -> BaseMaterial3D:
 	if is_instance_valid(object):
-		if object is CSGShape3D and editor:
-			return editor.get_object_material(object as CSGShape3D) as BaseMaterial3D
-		return object.material
-	else:
-		return editor.construction_material
+		var targets := _target_objects()
+		if not targets.is_empty():
+			var first = targets[0]
+			if first is CSGShape3D and editor:
+				return editor.get_object_material(first) as BaseMaterial3D
+			elif "material" in first:
+				return first.material
+		if "material" in object:
+			return object.material
+	return editor.construction_material
 
 
 @rpc("any_peer", "call_local")
@@ -154,6 +179,7 @@ func create_gadget(
 
 func _on_collision_check_box_toggled(toggled_on: bool) -> void:
 	if is_instance_valid(object):
-		object.use_collision = toggled_on
+		for target in _target_objects():
+			target.use_collision = toggled_on
 	else:
 		editor.construction_collision = toggled_on
