@@ -1,3 +1,4 @@
+.wrangler/
 addons/modio/linux/
 addons/modio/win/
 # Godot 4+ specific ignores
