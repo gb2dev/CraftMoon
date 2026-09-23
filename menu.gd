@@ -127,6 +127,8 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dict
 
 func save_level() -> void:
 	world.sync_time_rewind()
+	if player.editor.transforming:
+		player.editor.cancel_transform()
 	player.editor.scope_out_fully()
 
 	var save_data := [{
@@ -163,6 +165,7 @@ func save_level() -> void:
 				"material": player.editor.get_object_material(target).resource_path,
 				"collision": target.use_collision,
 				"uniform": target.get_meta(&"uniform", false),
+				"transform": target.get_meta(&"transform", null),
 				"group": target.get_meta(&"group", ""),
 				"gadgets": [],
 			})
@@ -294,6 +297,10 @@ func load_level(save_file_path := "") -> void:
 						player.editor.construction_collision,
 						uniform_mode
 					)
+					var saved_transform: Variant = object_properties.get("transform")
+					if saved_transform is Transform3D:
+						object.global_transform = saved_transform
+						object.set_meta(&"transform", saved_transform)
 					object_properties["_node"] = object
 					var group_id: String = object_properties.get("group", "")
 					if not group_id.is_empty():

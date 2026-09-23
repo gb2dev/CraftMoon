@@ -22,6 +22,11 @@ const LINE_LENGTH := 1000
 const SHAPE_COUNT := 6
 const PREVIEW_LINE_WIDTH := 0.016
 const CURSOR_LINE_WIDTH := 0.015
+const TRANSFORM_ROTATION_STEP := PI / 4.0
+const TRANSFORM_SCALE_STEP := 1.25
+const TRANSFORM_SCALE_MIN := 0.125
+const TRANSFORM_SCALE_MAX := 16.0
+const TRANSFORM_DISTANCE_MAX := 50.0
 
 @export var cursor: Node3D
 @export var player: Character
@@ -82,6 +87,15 @@ var _dim_label_y: Label3D = null
 var _dim_label_z: Label3D = null
 var _block_action_from_pie_menu := false
 
+var transforming := false
+var _transform_targets: Array[CSGShape3D] = []
+var _transform_start: Dictionary = {}
+var _transform_collision: Dictionary = {}
+var _transform_pivot := Vector3.ZERO
+var _transform_local_position := Vector3.ZERO
+var _transform_angles := Vector3.ZERO
+var _transform_scale := 1.0
+
 @onready var object_properties := get_tree().current_scene.get_node("%ObjectProperties") as ObjectProperties
 @onready var input_display := get_tree().current_scene.get_node("%InputDisplay") as InputDisplay
 @onready var geometry_root := get_tree().current_scene.get_node(^"Geometry")
@@ -120,8 +134,18 @@ func _ready() -> void:
 	pie_menu.add_to_group(&"UI")
 
 
+func _input(event: InputEvent) -> void:
+	if transforming and event.is_action_pressed(&"ui_cancel"):
+		cancel_transform()
+		get_viewport().set_input_as_handled()
+
+
 func _process(_delta: float) -> void:
 	if not Menu.shown:
+		if transforming:
+			_handle_transform()
+			return
+
 		if _is_action_just_pressed(&"object_builder"):
 			if object_properties.visible:
 				object_properties.close()
@@ -164,6 +188,13 @@ func _handle_editor_input() -> void:
 					return
 			object_properties.toggle(collider)
 
+	if _is_action_just_pressed(&"transform_objects", false, true):
+		var targets: Array[CSGShape3D] = selected_geometry.duplicate()
+		if collider is CSGShape3D and not is_selected(collider):
+			targets = resolve_group_shapes(collider)
+		if start_transform(targets):
+			return
+
 	if _is_action_just_pressed(&"action"):
 		if collider is CSGShape3D:
 			_toggle_selection_resolved(collider)
@@ -195,6 +226,140 @@ func _handle_editor_input() -> void:
 					Audio.play_sound("destroy")
 			return
 	highlighted_geometry = null
+
+
+func start_transform(shapes: Array[CSGShape3D]) -> bool:
+	_transform_targets.clear()
+	for shape: CSGShape3D in shapes:
+		if is_instance_valid(shape) and not shape.is_in_group(&"Undeletable"):
+			_transform_targets.append(shape)
+	if _transform_targets.is_empty():
+		return false
+
+	highlighted_geometry = null
+	_transform_start.clear()
+	_transform_collision.clear()
+	_transform_pivot = Vector3.ZERO
+	for shape: CSGShape3D in _transform_targets:
+		_transform_start[shape] = shape.global_transform
+		_transform_collision[shape] = shape.use_collision
+		shape.use_collision = false
+		shape.material_overlay = HIGHLIGHT_MATERIAL
+		_transform_pivot += shape.global_position
+	_transform_pivot /= _transform_targets.size()
+	_transform_local_position = global_transform.affine_inverse() * _transform_pivot
+	_transform_angles = Vector3.ZERO
+	_transform_scale = 1.0
+	_ensure_labels()
+	cursor.visible = true
+	transforming = true
+	Audio.play_sound("click")
+	_update_input_display()
+	return true
+
+
+func confirm_transform() -> void:
+	var paths: Array[NodePath] = []
+	var transforms: Array[Transform3D] = []
+	for shape: CSGShape3D in _transform_targets:
+		if is_instance_valid(shape):
+			shape.set_meta(&"transform", shape.global_transform)
+			paths.append(shape.get_path())
+			transforms.append(shape.global_transform)
+	_end_transform()
+	sync_transform.rpc(paths, transforms)
+	Audio.play_sound("place")
+
+
+func cancel_transform() -> void:
+	for shape: CSGShape3D in _transform_targets:
+		if is_instance_valid(shape):
+			shape.global_transform = _transform_start[shape]
+	_end_transform()
+	Audio.play_sound("click")
+
+
+func _end_transform() -> void:
+	for shape: CSGShape3D in _transform_targets:
+		if is_instance_valid(shape):
+			shape.use_collision = _transform_collision[shape]
+			shape.material_overlay = null
+	_transform_targets.clear()
+	_transform_start.clear()
+	_transform_collision.clear()
+	_hide_ghost()
+	cursor.visible = object_builder_active
+	transforming = false
+	_update_input_display()
+
+
+func _handle_transform() -> void:
+	for i in range(_transform_targets.size() - 1, -1, -1):
+		if not is_instance_valid(_transform_targets[i]):
+			_transform_targets.remove_at(i)
+	if _transform_targets.is_empty():
+		_end_transform()
+		return
+
+	if _is_action_just_pressed(&"transform_objects", false, true) or _is_action_just_pressed(&"action"):
+		confirm_transform()
+		return
+	if _is_action_just_pressed(&"scope_out", true):
+		cancel_transform()
+		return
+
+	var angles := _transform_angles
+	if _is_action_just_pressed(&"rotate_up", true):
+		angles.x += TRANSFORM_ROTATION_STEP
+	elif _is_action_just_pressed(&"rotate_down", true):
+		angles.x -= TRANSFORM_ROTATION_STEP
+	elif _is_action_just_pressed(&"rotate_cw", true):
+		angles.y -= TRANSFORM_ROTATION_STEP
+	elif _is_action_just_pressed(&"rotate_ccw", true):
+		angles.y += TRANSFORM_ROTATION_STEP
+	elif _is_action_just_pressed(&"flip_h", true):
+		angles.y = fmod(angles.y + PI, 2.0 * PI)
+	elif _is_action_just_pressed(&"flip_v", true):
+		angles.x = fmod(angles.x + PI, 2.0 * PI)
+	if absf(angles.y) >= 2.0 * PI - 0.01:
+		angles.y = 0.0
+	if absf(angles.x) >= 2.0 * PI - 0.01:
+		angles.x = 0.0
+	_transform_angles = angles
+
+	if _is_action_just_pressed(&"scale_up", true):
+		_transform_scale = minf(_transform_scale * TRANSFORM_SCALE_STEP, TRANSFORM_SCALE_MAX)
+	elif _is_action_just_pressed(&"scale_down", true):
+		_transform_scale = maxf(_transform_scale / TRANSFORM_SCALE_STEP, TRANSFORM_SCALE_MIN)
+
+	if _is_action_just_pressed(&"push_object", false, true):
+		_transform_local_position.z = clampf(_transform_local_position.z - CURSOR_STEP, -TRANSFORM_DISTANCE_MAX, CURSOR_MAX)
+	elif _is_action_just_pressed(&"pull_object", false, true):
+		_transform_local_position.z = clampf(_transform_local_position.z + CURSOR_STEP, -TRANSFORM_DISTANCE_MAX, CURSOR_MAX)
+
+	var pivot := _transform_pivot + (global_transform * _transform_local_position - _transform_pivot).snapped(Vector3.ONE)
+	var rotation_basis := Basis.from_euler(_transform_angles, EULER_ORDER_YXZ)
+	var delta := Transform3D(rotation_basis.scaled(Vector3.ONE * _transform_scale), pivot) \
+		* Transform3D(Basis.IDENTITY, -_transform_pivot)
+	var bounds := AABB()
+	for i in _transform_targets.size():
+		var shape := _transform_targets[i]
+		shape.global_transform = delta * (_transform_start[shape] as Transform3D)
+		var shape_bounds := shape.global_transform * shape.get_aabb()
+		bounds = shape_bounds if i == 0 else bounds.merge(shape_bounds)
+
+	cursor.global_position = pivot
+	_draw_cursor_line()
+	_draw_rotation_gizmo(pivot, bounds.size * 0.5, _transform_angles)
+
+
+@rpc("any_peer")
+func sync_transform(paths: Array, transforms: Array) -> void:
+	for i in paths.size():
+		var shape := get_node_or_null(paths[i] as NodePath) as CSGShape3D
+		if shape:
+			shape.global_transform = transforms[i]
+			shape.set_meta(&"transform", transforms[i])
 
 
 func is_selected(shape: CSGShape3D) -> bool:
@@ -675,6 +840,14 @@ func is_joypad_modifier_pressed() -> bool:
 	return false
 
 
+func is_look_stick_modified() -> bool:
+	return (transforming or object_builder_active) and is_joypad_modifier_pressed()
+
+
+func is_move_stick_modified() -> bool:
+	return transforming and is_joypad_modifier_pressed()
+
+
 func _is_action_just_pressed(action: StringName, require_joypad_modifier: bool = false, exact_match: bool = false) -> bool:
 	if not Input.is_action_just_pressed(action, exact_match):
 		return false
@@ -696,6 +869,10 @@ func _update_cursor() -> void:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
 	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
+	_draw_cursor_line()
+
+
+func _draw_cursor_line() -> void:
 	var cursor_line_color := Color(0, 0.85, 0.85, 0.99)
 	_draw_line(cursor.global_position, cursor.global_position + Vector3.DOWN * LINE_LENGTH, cursor_line_color, 1, CURSOR_LINE_WIDTH, 1, false, BaseMaterial3D.DEPTH_DRAW_ALWAYS, 0.0)
 
@@ -867,16 +1044,7 @@ func _ensure_ghost() -> void:
 	if shape_name.is_empty():
 		return
 
-	if not _angle_label_y:
-		_angle_label_y = _create_label(true, 120)
-	if not _angle_label_x:
-		_angle_label_x = _create_label(true, 120)
-	if not _dim_label_x:
-		_dim_label_x = _create_label(true, 120)
-	if not _dim_label_y:
-		_dim_label_y = _create_label(true, 120)
-	if not _dim_label_z:
-		_dim_label_z = _create_label(true, 120)
+	_ensure_labels()
 
 	if selected_shape == _ghost_cached_shape and _ghost:
 		_ghost.visible = true
@@ -897,6 +1065,19 @@ func _ensure_ghost() -> void:
 	geometry_root.add_child(_ghost)
 
 
+func _ensure_labels() -> void:
+	if not _angle_label_y:
+		_angle_label_y = _create_label(true, 120)
+	if not _angle_label_x:
+		_angle_label_x = _create_label(true, 120)
+	if not _dim_label_x:
+		_dim_label_x = _create_label(true, 120)
+	if not _dim_label_y:
+		_dim_label_y = _create_label(true, 120)
+	if not _dim_label_z:
+		_dim_label_z = _create_label(true, 120)
+
+
 func _update_ghost(a: Vector3, c: Vector3) -> void:
 	if not _ghost:
 		return
@@ -915,6 +1096,10 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 		tf.basis.z /= sz
 	_ghost.transform = Transform3D(tf.basis, center + tf.origin)
 
+	_draw_rotation_gizmo(center, abs_size * 0.5, rotation_angles)
+
+
+func _draw_rotation_gizmo(center: Vector3, half_extents: Vector3, angles: Vector3) -> void:
 	var camera := get_viewport().get_camera_3d()
 	var dist := 5.0
 	if camera:
@@ -926,9 +1111,9 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 	var cone_height := 0.2 * scale_factor
 	var cone_radius := 0.08 * scale_factor
 
-	var axis_len_y := abs_size.y * 0.5
-	var axis_len_x := abs_size.x * 0.5
-	var axis_len_z := abs_size.z * 0.5
+	var axis_len_y := half_extents.y
+	var axis_len_x := half_extents.x
+	var axis_len_z := half_extents.z
 
 	var d_draw := BaseMaterial3D.DEPTH_DRAW_DISABLED
 	var p_axis := 10
@@ -943,13 +1128,13 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 	# Z Axis (Blue)
 	_draw_dashed_line(center - Vector3.FORWARD * axis_len_z, center + Vector3.FORWARD * axis_len_z, Color(0.2, 0.4, 1.0, 0.75), 1, 0, p_axis, 0.2, 0.1, false, d_draw, s_off)
 
-	var pointer_basis := Basis.from_euler(rotation_angles, EULER_ORDER_YXZ)
+	var pointer_basis := Basis.from_euler(angles, EULER_ORDER_YXZ)
 	var forward_dir := pointer_basis.z.normalized()
 
 	var p_gizmo := 5
 	var s_gizmo := 0.0
 
-	if rotation_angles.length_squared() > 0.001:
+	if angles.length_squared() > 0.001:
 		_draw_line(center, center + Vector3.BACK * radius, Color(0, 0, 0, 0.8), 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, p_gizmo, true, BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, s_gizmo)
 		_draw_line(center, center + forward_dir * (forward_len - cone_height), Color(0.9, 0.9, 0.9, 0.95), 1, CURSOR_LINE_WIDTH * 1.5 * scale_factor, p_gizmo + 1, true, BaseMaterial3D.DEPTH_DRAW_OPAQUE_ONLY, s_gizmo)
 	else:
@@ -960,7 +1145,7 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 	var shared_label_basis := _get_snapped_label_basis(center)
 
 	# Horizontal dial (Y rotation)
-	var ry := rotation_angles.y
+	var ry := angles.y
 	var ry_deg := roundi(rad_to_deg(ry))
 	if ry_deg != 0 and ry_deg != 360 and ry_deg != -360:
 		var start_dir := Vector3.BACK
@@ -977,7 +1162,7 @@ func _update_ghost(a: Vector3, c: Vector3) -> void:
 		_angle_label_y.visible = false
 
 	# Vertical dial (X rotation)
-	var rx := rotation_angles.x
+	var rx := angles.x
 	var rx_deg := roundi(rad_to_deg(rx))
 	if rx_deg != 0 and rx_deg != 360 and rx_deg != -360:
 		var start_dir := Vector3.BACK.rotated(Vector3.UP, ry).normalized()
@@ -1319,6 +1504,8 @@ func get_nearest_node(nodes: Array[Node], pos: Vector3) -> Node3D:
 
 
 func set_object_builder_active(value: bool) -> void:
+	if transforming:
+		cancel_transform()
 	_hide_ghost()
 	vertices.clear()
 	rotation_angles = Vector3.ZERO
@@ -1378,12 +1565,23 @@ func _update_input_display() -> void:
 		input_display.add_input_prompt([&"flip_h"], &"Object Builder", "", true, true)
 		input_display.add_input_prompt([&"flip_v"], &"Object Builder", "", true, true)
 	else:
+		if transforming:
+			input_display.add_input_prompt([&"transform_objects", &"action"], &"Transform Objects", "Confirm", true, false, true)
+			input_display.add_input_prompt([&"ui_cancel", &"scope_out"], &"Transform Objects", "Cancel", true, false, true)
+			input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Transform Objects", "Rotate Horizontally (Y)", true, true)
+			input_display.add_input_prompt([&"rotate_up", &"rotate_down"], &"Transform Objects", "Rotate Vertically (X)", true, true)
+			input_display.add_input_prompt([&"flip_h"], &"Transform Objects", "", true, true)
+			input_display.add_input_prompt([&"flip_v"], &"Transform Objects", "", true, true)
+			input_display.add_input_prompt([&"scale_up", &"scale_down"], &"Transform Objects", "Scale Up/Down", true, true)
+			input_display.add_input_prompt([&"push_object", &"pull_object"], &"Transform Objects", "Move Further/Closer", true)
+			return
+
 		input_display.add_input_prompt([&"object_builder"], &"Tools", "Enter Object Builder")
 
 		# # Default
 		if highlighted_geometry:
 			# # # Highlighted Object TODO or Selected Object(s) TODO Quantify
-			# TODO input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "", true)
+			input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "Transform Object(s)", true)
 			input_display.add_input_prompt([&"object_properties"], &"Highlighted Object", "", true, true)
 			input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true) # TODO hide on undeletable objects
 			var highlighted_group := get_group_of(highlighted_geometry as CSGShape3D)
@@ -1394,6 +1592,7 @@ func _update_input_display() -> void:
 				select_label = "Select Group" if highlighted_group != "" and highlighted_group != current_scope else "Select Object"
 			input_display.add_input_prompt([&"action"], &"Highlighted Object", select_label, true)
 		elif not selected_geometry.is_empty():
+			input_display.add_input_prompt([&"transform_objects"], &"Selected Objects", "Transform Object(s)", true)
 			input_display.add_input_prompt([&"action"], &"Selected Objects", "Deselect All", true)
 
 		if _single_selected_group() != "":
@@ -1406,13 +1605,6 @@ func _update_input_display() -> void:
 			input_display.add_input_prompt([&"scope_in"], &"Selected Objects", "Enter Group", true, true)
 		if current_scope != "":
 			input_display.add_input_prompt([&"scope_out"], &"Group", "Exit Group", true, true)
-
-		## TODO Transform Objects TODO Quantify
-		#input_display.add_input_prompt([&"rotate_cw", &"rotate_ccw"], &"Transform Objects", "Rotate Horizontally (Y)", true, true)
-		#input_display.add_input_prompt([&"rotate_up", &"rotate_down"], &"Transform Objects", "Rotate Vertically (X)", true, true)
-		#input_display.add_input_prompt([&"flip_h"], &"Transform Objects", "", true, true)
-		#input_display.add_input_prompt([&"flip_v"], &"Transform Objects", "", true, true)
-		#input_display.add_input_prompt([&"scale_up", &"scale_down"], &"Transform Objects", "", true, true)
 
 
 func _update_player_thought() -> void:

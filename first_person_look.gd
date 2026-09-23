@@ -51,7 +51,7 @@ func _process(_delta: float) -> void:
 	if joypad_look_inverted_y:
 		look_input.y *= -1
 
-	if JoypadLook.update_block_state(player.editor.is_joypad_modifier_pressed(), look_input):
+	if JoypadLook.update_block_state(player.editor.is_look_stick_modified(), look_input):
 		look_input = Vector2.ZERO
 
 	var look := JoypadLook.calculate(look_input, joypad_look_curve, joypad_look_sensitivity_x, joypad_look_sensitivity_y, joypad_look_outer_threshold)

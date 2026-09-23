@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cyam2v5fisx5e"
-path="res://.godot/imported/bubble_show_frame_0.svg-19c85fd3b4d652a5d8bf9f4eeb1e53a2.ctex"
+uid="uid://cdl4f3wenrunr"
+path="res://.godot/imported/bubble_xlarge_1.png-ce57cafef7f9996f4e6bce92f0573433.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/thought_bubble/bubble_show_frame_0.svg"
-dest_files=["res://.godot/imported/bubble_show_frame_0.svg-19c85fd3b4d652a5d8bf9f4eeb1e53a2.ctex"]
+source_file="res://textures/thought_bubble/bubble_xlarge_1.png"
+dest_files=["res://.godot/imported/bubble_xlarge_1.png-ce57cafef7f9996f4e6bce92f0573433.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=4.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

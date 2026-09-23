@@ -1,60 +1,81 @@
 class_name ThoughtBubble
 extends Node3D
 
+const DOT_TEXTURE_PATH := "res://textures/thought_bubble/bubble_%s_%d.png"
+const DOT_FRAME_COUNT := 7
+const STEP_TIME := 1.0 / 12.0
+const DOTS: Array[Dictionary] = [
+	{"name": "small", "position": Vector2(40, 30)},
+	{"name": "medium", "position": Vector2(105, 95)},
+	{"name": "large", "position": Vector2(185, 175)},
+]
+const CLOUD_POSITION := Vector2(470, 440)
+const CONTENT_ART_OFFSET := Vector2(48, 64)
+
 @export var bubble_frames: SpriteFrames
 @export var content_frames: SpriteFrames
 @export var pixel_size: float = 0.0012
+@export var content_scale: float = 0.75
 
-var _bubble_sprite: AnimatedSprite3D
+var _dot_sprites: Array[AnimatedSprite3D] = []
+var _cloud_sprite: AnimatedSprite3D
 var _content_sprite: AnimatedSprite3D
 
 var _current_tool_name: String = ""
 var _target_tool_name: String = ""
 var _is_hiding: bool = false
+var _sequence := 0
 
 
 func _ready() -> void:
-	_bubble_sprite = AnimatedSprite3D.new()
-	_bubble_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_bubble_sprite.double_sided = true
-	_bubble_sprite.shaded = false
-	_bubble_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
-	_bubble_sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_bubble_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
-	_bubble_sprite.sorting_offset = 0.0
-	_bubble_sprite.pixel_size = pixel_size
-	_bubble_sprite.centered = false
-	_bubble_sprite.offset = Vector2(0, -256)
+	for dot: Dictionary in DOTS:
+		_dot_sprites.append(_create_sprite(_create_dot_frames(dot["name"]), pixel_size, dot["position"]))
+	_cloud_sprite = _create_sprite(bubble_frames, pixel_size, CLOUD_POSITION)
+	for sprite: AnimatedSprite3D in _bubble_sprites():
+		var _err := sprite.animation_finished.connect(_on_piece_animation_finished.bind(sprite))
 
-	if bubble_frames:
-		_bubble_sprite.sprite_frames = bubble_frames
-	else:
-		var frames := SpriteFrames.new()
-		if ResourceLoader.exists("res://icons/thought_bubble.svg"):
-			var texture := load("res://icons/thought_bubble.svg")
-			frames.add_frame(&"default", texture)
-		_bubble_sprite.sprite_frames = frames
-
-	var _err_bubble := _bubble_sprite.animation_finished.connect(_on_bubble_animation_finished)
-	add_child(_bubble_sprite)
-
-	_content_sprite = AnimatedSprite3D.new()
-	_content_sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_content_sprite.double_sided = true
-	_content_sprite.shaded = false
-	_content_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
-	_content_sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_content_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	_content_sprite = _create_sprite(content_frames, pixel_size * content_scale, CLOUD_POSITION / content_scale - CONTENT_ART_OFFSET)
 	_content_sprite.sorting_offset = 1.0
-	_content_sprite.sprite_frames = content_frames
-	_content_sprite.pixel_size = pixel_size
-	_content_sprite.centered = false
-	_content_sprite.offset = Vector2(0, -256)
-
 	var _err_content := _content_sprite.animation_finished.connect(_on_content_animation_finished)
-	_bubble_sprite.add_child(_content_sprite)
-	
+
 	visible = false
+
+
+func _create_sprite(frames: SpriteFrames, size: float, sprite_offset: Vector2) -> AnimatedSprite3D:
+	var sprite := AnimatedSprite3D.new()
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.double_sided = true
+	sprite.shaded = false
+	sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	sprite.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	sprite.pixel_size = size
+	sprite.offset = sprite_offset
+	sprite.sprite_frames = frames
+	sprite.visible = false
+	add_child(sprite)
+	return sprite
+
+
+func _create_dot_frames(dot_name: String) -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	frames.set_animation_loop(&"default", true)
+	frames.set_animation_speed(&"default", 8.0)
+	for i in range(2, DOT_FRAME_COUNT + 1):
+		frames.add_frame(&"default", load(DOT_TEXTURE_PATH % [dot_name, i]) as Texture2D)
+	var pop_texture := load(DOT_TEXTURE_PATH % [dot_name, 1]) as Texture2D
+	for anim: StringName in [&"show", &"hide"]:
+		frames.add_animation(anim)
+		frames.set_animation_loop(anim, false)
+		frames.set_animation_speed(anim, 12.0)
+		frames.add_frame(anim, pop_texture)
+	return frames
+
+
+func _bubble_sprites() -> Array[AnimatedSprite3D]:
+	var sprites := _dot_sprites.duplicate()
+	sprites.append(_cloud_sprite)
+	return sprites
 
 
 func show_thought(tool_name: String) -> void:
@@ -64,13 +85,13 @@ func show_thought(tool_name: String) -> void:
 		_target_tool_name = tool_name
 		_play_content_hide()
 		return
-		
+
 	visible = true
 	_is_hiding = false
 	_current_tool_name = tool_name
 	_target_tool_name = ""
 	_content_sprite.visible = false
-	
+
 	_play_bubble_show()
 
 
@@ -79,31 +100,62 @@ func hide_thought() -> void:
 		return
 	_is_hiding = true
 	_target_tool_name = ""
-	
+
 	_play_bubble_hide()
 	_play_content_hide()
 
 
 func _play_bubble_show() -> void:
-	if not _bubble_sprite.sprite_frames:
-		_play_content_show()
-		return
-	if _bubble_sprite.sprite_frames.has_animation(&"show"):
-		_bubble_sprite.play(&"show")
-	else:
-		if _bubble_sprite.sprite_frames.has_animation(&"default"):
-			_bubble_sprite.play(&"default")
-		_play_content_show()
+	_sequence += 1
+	var sequence := _sequence
+	for sprite: AnimatedSprite3D in _bubble_sprites():
+		sprite.visible = false
+	for sprite: AnimatedSprite3D in _bubble_sprites():
+		_play_piece(sprite, &"show")
+		await get_tree().create_timer(STEP_TIME).timeout
+		if sequence != _sequence:
+			return
+	if _cloud_sprite.is_playing() and _cloud_sprite.animation == &"show":
+		await _cloud_sprite.animation_finished
+		if sequence != _sequence:
+			return
+	_play_content_show()
 
 
 func _play_bubble_hide() -> void:
-	if not _bubble_sprite.sprite_frames:
-		visible = false
+	_sequence += 1
+	var sequence := _sequence
+	var sprites := _bubble_sprites()
+	sprites.reverse()
+	for sprite: AnimatedSprite3D in sprites:
+		_play_piece(sprite, &"hide")
+		await get_tree().create_timer(STEP_TIME).timeout
+		if sequence != _sequence:
+			return
+	visible = false
+
+
+func _play_piece(sprite: AnimatedSprite3D, anim: StringName) -> void:
+	var frames := sprite.sprite_frames
+	if not frames:
+		sprite.visible = false
 		return
-	if _bubble_sprite.sprite_frames.has_animation(&"hide"):
-		_bubble_sprite.play(&"hide")
-	else:
-		visible = false
+	if anim == &"hide" and not frames.has_animation(anim):
+		sprite.visible = false
+		return
+	sprite.visible = true
+	if frames.has_animation(anim):
+		sprite.play(anim)
+	elif frames.has_animation(&"default"):
+		sprite.play(&"default")
+
+
+func _on_piece_animation_finished(sprite: AnimatedSprite3D) -> void:
+	if sprite.animation == &"show":
+		if sprite.sprite_frames.has_animation(&"default"):
+			sprite.play(&"default")
+	elif sprite.animation == &"hide":
+		sprite.visible = false
 
 
 func _play_content_show() -> void:
@@ -147,17 +199,6 @@ func _play_content_hide() -> void:
 		_on_content_hidden()
 
 
-func _on_bubble_animation_finished() -> void:
-	if _bubble_sprite.animation == &"show":
-		if _bubble_sprite.sprite_frames.has_animation(&"default"):
-			_bubble_sprite.play(&"default")
-		elif _bubble_sprite.sprite_frames.has_animation(&"idle"):
-			_bubble_sprite.play(&"idle")
-		_play_content_show()
-	elif _bubble_sprite.animation == &"hide":
-		visible = false
-
-
 func _on_content_animation_finished() -> void:
 	var anim: StringName = _content_sprite.animation
 	if anim.ends_with("_show") or anim == &"show":
@@ -173,5 +214,3 @@ func _on_content_hidden() -> void:
 		_play_content_show()
 	elif _is_hiding:
 		_content_sprite.visible = false
-		if not _bubble_sprite.sprite_frames or not _bubble_sprite.sprite_frames.has_animation(&"hide"):
-			visible = false

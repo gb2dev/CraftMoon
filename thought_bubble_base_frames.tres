@@ -1,29 +1,42 @@
 [gd_resource type="SpriteFrames" format=3 uid="uid://ch1iopbae1el6"]
 
-[ext_resource type="Texture2D" uid="uid://cyam2v5fisx5e" path="res://icons/thought_bubble/bubble_show_frame_0.svg" id="1_f0show"]
-[ext_resource type="Texture2D" uid="uid://dornsjwcxwgi8" path="res://icons/thought_bubble/bubble_show_frame_1.svg" id="2_f1show"]
-[ext_resource type="Texture2D" uid="uid://cq4o1byeh6rdf" path="res://icons/thought_bubble/bubble_show_frame_2.svg" id="3_f2show"]
-[ext_resource type="Texture2D" uid="uid://dqonqp0im2ceo" path="res://icons/thought_bubble/bubble_show_frame_3.svg" id="4_f3show"]
+[ext_resource type="Texture2D" uid="uid://cdl4f3wenrunr" path="res://textures/thought_bubble/bubble_xlarge_1.png" id="1_grsch"]
+[ext_resource type="Texture2D" uid="uid://1bdck5d3dqil" path="res://textures/thought_bubble/bubble_xlarge_2.png" id="2_4aqcc"]
+[ext_resource type="Texture2D" uid="uid://bqrfqqow184iv" path="res://textures/thought_bubble/bubble_xlarge_3.png" id="3_hugxt"]
+[ext_resource type="Texture2D" uid="uid://rnhkv8q34eap" path="res://textures/thought_bubble/bubble_xlarge_4.png" id="4_bnavu"]
+[ext_resource type="Texture2D" uid="uid://5d34x8ugepnj" path="res://textures/thought_bubble/bubble_xlarge_5.png" id="5_6ovlc"]
+[ext_resource type="Texture2D" uid="uid://ch82eep3vxwn" path="res://textures/thought_bubble/bubble_xlarge_6.png" id="6_d5flp"]
+[ext_resource type="Texture2D" uid="uid://bj7t1r0fld7qq" path="res://textures/thought_bubble/bubble_xlarge_7.png" id="7_svero"]
+[ext_resource type="Texture2D" uid="uid://7ot0dpdf6wgn" path="res://textures/thought_bubble/bubble_xlarge_8.png" id="8_n3dic"]
 
 [resource]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4_f3show")
+"texture": ExtResource("3_hugxt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_bnavu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_6ovlc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_d5flp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_svero")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_n3dic")
 }],
 "loop": true,
 "name": &"default",
-"speed": 1.0
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("3_f2show")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_f1show")
-}, {
-"duration": 1.0,
-"texture": ExtResource("1_f0show")
+"texture": ExtResource("1_grsch")
 }],
 "loop": false,
 "name": &"hide",
@@ -31,13 +44,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_f0show")
+"texture": ExtResource("1_grsch")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_f1show")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_f2show")
+"texture": ExtResource("2_4aqcc")
 }],
 "loop": false,
 "name": &"show",

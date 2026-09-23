@@ -39,6 +39,7 @@ var thought_bubble: ThoughtBubble
 @onready var color_picker := get_tree().current_scene.get_node("%ColorPickerButton") as ColorPickerButton
 
 var _current_speed: float
+var _move_stick_blocked := false
 var _respawn_point := Vector3(0, 5, 0)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -121,6 +122,12 @@ func _move() -> void:
 			"move_left", "move_right",
 			"move_forward", "move_back"
 			)
+	if editor and editor.is_move_stick_modified():
+		_move_stick_blocked = true
+	elif _move_stick_blocked and _input_direction == Vector2.ZERO:
+		_move_stick_blocked = false
+	if _move_stick_blocked:
+		_input_direction = Vector2.ZERO
 
 	var _direction: Vector3 = transform.basis * Vector3(_input_direction.x, 0, _input_direction.y)
 
