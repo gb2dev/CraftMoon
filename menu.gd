@@ -168,7 +168,7 @@ func save_level() -> void:
 				"material": player.editor.get_object_material(target).resource_path,
 				"collision": target.use_collision,
 				"uniform": target.get_meta(&"uniform", false),
-				"transform": target.get_meta(&"transform", null),
+				"transform": target.get_meta(&"transform") if target.has_meta(&"transform") else null,
 				"group": target.get_meta(&"group", ""),
 				"undeletable": target.is_in_group(&"Undeletable"),
 				"gadgets": [],
