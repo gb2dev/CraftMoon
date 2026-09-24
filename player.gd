@@ -24,6 +24,8 @@ var first_person: bool:
 		_update_thought_bubble()
 var fly := false
 var doubletap_time := DOUBLETAP_DELAY
+var sprinting := false
+var _sprint_doubletap_time := 0.0
 
 var thought_bubble: ThoughtBubble
 @export var thought_bubble_base_frames: SpriteFrames
@@ -69,12 +71,17 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var world := get_tree().get_current_scene() as World
-	if world and world.is_chat_visible() and is_on_floor():
+	var chat_open := world and world.is_chat_visible()
+	if chat_open and is_on_floor():
 		freeze()
 		return
 
+	var modified := _is_joypad_modifier_held()
+	var input_blocked := Menu.shown or chat_open
+	var jump_just_pressed := Input.is_action_just_pressed(&"jump") and not modified and not input_blocked
+
 	doubletap_time -= delta
-	if Input.is_action_just_pressed(&"jump") and editor.process_mode == PROCESS_MODE_INHERIT and not Menu.shown:
+	if jump_just_pressed and editor.process_mode == PROCESS_MODE_INHERIT:
 		if doubletap_time >= 0:
 			fly = not fly
 		else:
@@ -84,16 +91,16 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 		_body.animate(velocity)
 
-	if is_on_floor() and not Menu.shown:
-		if Input.is_action_just_pressed(&"jump"):
+	if is_on_floor() and not input_blocked:
+		if jump_just_pressed:
 			velocity.y = JUMP_VELOCITY
 	else:
 		velocity.y -= gravity * delta
 
 	if fly:
-		if Input.is_action_pressed(&"jump") and not Menu.shown:
+		if Input.is_action_pressed(&"jump") and not modified and not input_blocked:
 			velocity.y = JUMP_VELOCITY
-		elif Input.is_action_pressed(&"crouch") and not Menu.shown:
+		elif Input.is_action_pressed(&"crouch") and not modified and not input_blocked:
 			velocity.y = -JUMP_VELOCITY
 		else:
 			velocity.y = 0
@@ -117,7 +124,9 @@ func freeze() -> void:
 
 func _move() -> void:
 	var _input_direction: Vector2 = Vector2.ZERO
-	if is_multiplayer_authority() and not Menu.shown and not (editor and editor.pie_menu.visible):
+	var world := get_tree().get_current_scene() as World
+	var chat_open := world and world.is_chat_visible()
+	if is_multiplayer_authority() and not Menu.shown and not chat_open and not (editor and editor.pie_menu.visible):
 		_input_direction = Input.get_vector(
 			"move_left", "move_right",
 			"move_forward", "move_back"
@@ -131,6 +140,7 @@ func _move() -> void:
 
 	var _direction: Vector3 = transform.basis * Vector3(_input_direction.x, 0, _input_direction.y)
 
+	_update_sprinting(_input_direction)
 	var _is_running := is_running()
 	if first_person:
 		_direction = _direction.rotated(Vector3.UP, pivot.rotation.y)
@@ -149,12 +159,32 @@ func _move() -> void:
 
 
 func is_running() -> bool:
-	if Input.is_action_pressed("sprint"):
+	if sprinting:
 		_current_speed = SPRINT_SPEED
 		return true
 	else:
 		_current_speed = NORMAL_SPEED
 		return false
+
+
+func _update_sprinting(input_direction: Vector2) -> void:
+	var moving_forward := input_direction.y < -0.1
+	_sprint_doubletap_time -= get_physics_process_delta_time()
+	if not Menu.shown:
+		if Input.is_action_just_pressed(&"move_forward"):
+			if _sprint_doubletap_time >= 0:
+				sprinting = true
+			else:
+				_sprint_doubletap_time = DOUBLETAP_DELAY
+		if Input.is_action_just_pressed(&"sprint") and not _is_joypad_modifier_held() and moving_forward:
+			sprinting = true
+	if not moving_forward:
+		sprinting = false
+
+
+func _is_joypad_modifier_held() -> bool:
+	return editor and editor.process_mode == PROCESS_MODE_INHERIT \
+		and InputHelper.last_event_is_joypad and editor.is_joypad_modifier_pressed()
 
 
 func _check_fall_and_respawn() -> void:

@@ -27,10 +27,10 @@ static var destroyed_nodes: Dictionary[Node, Node]
 @onready var login: Button = $MainMenu/LoginContainer/Option4/Login
 
 # multiplayer chat
-@onready var message: LineEdit = $MultiplayerChat/VBoxContainer/HBoxContainer/Message
-@onready var send: Button = $MultiplayerChat/VBoxContainer/HBoxContainer/Send
-@onready var chat: TextEdit = $MultiplayerChat/VBoxContainer/Chat
-@onready var multiplayer_chat: Control = $MultiplayerChat
+@onready var message: LineEdit = %MultiplayerChat/VBoxContainer/HBoxContainer/Message
+@onready var send: Button = %MultiplayerChat/VBoxContainer/HBoxContainer/Send
+@onready var chat: TextEdit = %MultiplayerChat/VBoxContainer/Chat
+@onready var multiplayer_chat: Control = %MultiplayerChat
 @onready var object_properties := %"ObjectProperties" as ObjectProperties
 @onready var options_menu: OptionsMenu = $OptionsMenu
 
@@ -81,13 +81,8 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if chat_visible:
-		if Input.is_action_just_pressed(&"ui_cancel"):
-			toggle_chat()
-		elif Input.is_action_just_pressed(&"ui_accept"):
-			_on_send_pressed()
-	elif Input.is_action_just_pressed(&"toggle_chat"):
-		toggle_chat()
+	if chat_visible and message.has_focus() and Input.is_action_just_pressed(&"ui_accept"):
+		_on_send_pressed()
 
 	if object_properties.editor and not object_properties.editor.object_builder_active:
 		var ui_blocking := get_tree().get_nodes_in_group(&"UI").any(func(c: Control) -> bool: return c.visible)
@@ -101,6 +96,9 @@ func _process(_delta: float) -> void:
 		update_timer_paused_indicator()
 
 	if not multiplayer.is_server():
+		return
+
+	if chat_visible:
 		return
 
 	if object_properties.editor._is_action_just_pressed(&"time_play_pause", true):
@@ -171,10 +169,10 @@ func sync_time_rewind() -> void:
 	update_timer_paused_indicator()
 	for gadget: Gadget in object_properties.logic_panel.get_children():
 		gadget.reset_metas_to_initial()
-	for parent in destroyed_nodes:
-		if is_instance_valid(parent):
-			var child = destroyed_nodes[parent]
-			if is_instance_valid(child):
+	for child in destroyed_nodes:
+		if is_instance_valid(child):
+			var parent = destroyed_nodes[child]
+			if is_instance_valid(parent):
 				parent.add_child(child)
 	destroyed_nodes.clear()
 	Signals.time_paused.emit()
@@ -276,20 +274,11 @@ func _on_quit_pressed() -> void:
 
 
 # ---------- MULTIPLAYER CHAT ----------
-func toggle_chat() -> void:
-	if main_menu.visible or Menu.shown:
-		return
-
-	chat_visible = !chat_visible
-	if chat_visible:
-		multiplayer_chat.show()
-		get_viewport().set_input_as_handled()
-		message.grab_focus()
-		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-	else:
-		multiplayer_chat.hide.call_deferred()
-		get_viewport().set_input_as_handled()
-		DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_CAPTURED)
+func set_chat_visible(value: bool) -> void:
+	chat_visible = value
+	multiplayer_chat.visible = value
+	if not value:
+		message.release_focus()
 
 
 func is_chat_visible() -> bool:

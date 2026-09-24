@@ -50,5 +50,7 @@ func _on_visible_on_screen_notifier_3d_screen_exited() -> void:
 
 
 func _on_time_rewound() -> void:
+	if dormant:
+		return
 	output(0, false)
 	is_visible_on_screen = visible_notifier.is_on_screen()

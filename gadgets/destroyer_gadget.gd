@@ -6,7 +6,7 @@ func start() -> void:
 		if is_input_data_powered(0, false) and not World.time_paused:
 			var node := node_3d.get_parent()
 			var node_parent := node.get_parent()
-			World.destroyed_nodes[node_parent] = node
+			World.destroyed_nodes[node] = node_parent
 			node_parent.remove_child(node)
 	)
 

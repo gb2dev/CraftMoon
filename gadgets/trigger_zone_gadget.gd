@@ -124,5 +124,7 @@ func _on_area_3d_body_exited(_body: Node3D) -> void:
 
 
 func _on_time_rewound() -> void:
+	if dormant:
+		return
 	output(0, false)
 	is_player_detected = area.has_overlapping_bodies()

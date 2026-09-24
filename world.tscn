@@ -224,10 +224,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -223.0
-offset_top = -114.0
-offset_right = 223.0
-offset_bottom = 114.0
+offset_left = -400.0
+offset_top = -170.0
+offset_right = 400.0
+offset_bottom = 170.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 4
@@ -235,37 +235,46 @@ theme_override_constants/separation = 10
 script = ExtResource("5_r4y2q")
 background_dim = NodePath("../BackgroundDim")
 level_transition_wipe = NodePath("../LevelTransitionWipe")
-level_name = NodePath("HBoxContainer/VBoxContainer/LevelName")
-level_description = NodePath("HBoxContainer/VBoxContainer/LevelDescription")
-mode_button = NodePath("ModeButton")
-save_button = NodePath("SaveButton")
-upload_button = NodePath("UploadButton")
-moon_button = NodePath("MoonButton")
-export_button = NodePath("ExportButton")
-delete_button = NodePath("DeleteButton")
-main_menu_button = NodePath("MainMenuButton")
+level_name = NodePath("Columns/Actions/HBoxContainer/VBoxContainer/LevelName")
+level_description = NodePath("Columns/Actions/HBoxContainer/VBoxContainer/LevelDescription")
+mode_button = NodePath("Columns/Actions/NavButtons/ModeButton")
+save_button = NodePath("Columns/Actions/LevelButtons/SaveButton")
+upload_button = NodePath("Columns/Actions/LevelButtons/UploadButton")
+moon_button = NodePath("Columns/Actions/NavButtons/MoonButton")
+export_button = NodePath("Columns/Actions/LevelButtons/ExportButton")
+delete_button = NodePath("Columns/Actions/LevelButtons/DeleteButton")
+main_menu_button = NodePath("Columns/Actions/SystemButtons/MainMenuButton")
 main_menu = NodePath("../MainMenu")
 object_properties_node = NodePath("../ObjectProperties")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Menu" unique_id=1790696598]
+[node name="Columns" type="HBoxContainer" parent="Menu" unique_id=746454978]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Panel" type="PanelContainer" parent="Menu/HBoxContainer" unique_id=117329860]
+[node name="Actions" type="VBoxContainer" parent="Menu/Columns" unique_id=1863105928]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Menu/Columns/Actions" unique_id=1790696598]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Panel" type="PanelContainer" parent="Menu/Columns/Actions/HBoxContainer" unique_id=117329860]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_dwbse")
 
-[node name="TextureRect" type="TextureRect" parent="Menu/HBoxContainer/Panel" unique_id=392443161]
+[node name="TextureRect" type="TextureRect" parent="Menu/Columns/Actions/HBoxContainer/Panel" unique_id=392443161]
 custom_minimum_size = Vector2(118, 118)
 layout_mode = 2
 texture = ExtResource("5_xpg20")
 expand_mode = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Menu/HBoxContainer" unique_id=1227355825]
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/Columns/Actions/HBoxContainer" unique_id=1227355825]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LevelName" type="LineEdit" parent="Menu/HBoxContainer/VBoxContainer" unique_id=1322537306]
+[node name="LevelName" type="LineEdit" parent="Menu/Columns/Actions/HBoxContainer/VBoxContainer" unique_id=1322537306]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_uneditable_color = Color(0.878431, 0.878431, 0.878431, 1)
@@ -276,7 +285,7 @@ editable = false
 context_menu_enabled = false
 flat = true
 
-[node name="LevelDescription" type="TextEdit" parent="Menu/HBoxContainer/VBoxContainer" unique_id=375625883]
+[node name="LevelDescription" type="TextEdit" parent="Menu/Columns/Actions/HBoxContainer/VBoxContainer" unique_id=375625883]
 visible = false
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
@@ -284,119 +293,128 @@ size_flags_vertical = 3
 placeholder_text = "Description"
 context_menu_enabled = false
 
-[node name="Control" type="Control" parent="Menu" unique_id=1568808155]
+[node name="NavButtons" type="HBoxContainer" parent="Menu/Columns/Actions" unique_id=829573310]
 layout_mode = 2
+theme_override_constants/separation = 10
 
-[node name="Control2" type="Control" parent="Menu" unique_id=958716771]
-layout_mode = 2
-
-[node name="ModeButton" type="Button" parent="Menu" unique_id=1207487912]
+[node name="ModeButton" type="Button" parent="Menu/Columns/Actions/NavButtons" unique_id=1207487912]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Play Mode"
 
-[node name="NewLevelButton" type="Button" parent="Menu" unique_id=467899553]
+[node name="MoonButton" type="Button" parent="Menu/Columns/Actions/NavButtons" unique_id=1514993761]
 visible = false
 layout_mode = 2
-text = "New Level"
-
-[node name="DeleteButton" type="Button" parent="Menu" unique_id=290940358]
-visible = false
-layout_mode = 2
-text = "Delete"
-
-[node name="SaveButton" type="Button" parent="Menu" unique_id=972739602]
-visible = false
-layout_mode = 2
-text = "Save"
-
-[node name="ExportButton" type="Button" parent="Menu" unique_id=1990674762]
-visible = false
-layout_mode = 2
-text = "Export"
-
-[node name="UploadButton" type="Button" parent="Menu" unique_id=716439082]
-visible = false
-layout_mode = 2
-text = "Upload"
-
-[node name="LoadButton" type="Button" parent="Menu" unique_id=258693999]
-visible = false
-layout_mode = 2
-text = "Load"
-
-[node name="MoonButton" type="Button" parent="Menu" unique_id=1514993761]
-visible = false
-layout_mode = 2
+size_flags_horizontal = 3
 text = "Return to Moon"
 
-[node name="OptionsButton" type="Button" parent="Menu" unique_id=200002341]
+[node name="LevelButtons" type="GridContainer" parent="Menu/Columns/Actions" unique_id=977156289]
 layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="SaveButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=972739602]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Save"
+
+[node name="ExportButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=1990674762]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Export"
+
+[node name="UploadButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=716439082]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Upload"
+
+[node name="DeleteButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=290940358]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Delete"
+
+[node name="NewLevelButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=467899553]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "New Level"
+
+[node name="LoadButton" type="Button" parent="Menu/Columns/Actions/LevelButtons" unique_id=258693999]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Load"
+
+[node name="Spacer" type="Control" parent="Menu/Columns/Actions" unique_id=286273647]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SystemButtons" type="HBoxContainer" parent="Menu/Columns/Actions" unique_id=743802101]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="OptionsButton" type="Button" parent="Menu/Columns/Actions/SystemButtons" unique_id=200002341]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Options"
 
-[node name="MainMenuButton" type="Button" parent="Menu" unique_id=1923944406]
+[node name="MainMenuButton" type="Button" parent="Menu/Columns/Actions/SystemButtons" unique_id=1923944406]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Main Menu"
 
-[node name="QuitButton" type="Button" parent="Menu" unique_id=1923014059]
+[node name="QuitButton" type="Button" parent="Menu/Columns/Actions/SystemButtons" unique_id=1923014059]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Quit"
 
-[node name="OptionsMenu" parent="." unique_id=1973502199 instance=ExtResource("6_b7btk")]
-
-[node name="MultiplayerChat" type="Control" parent="." unique_id=542990841 groups=["UI"]]
+[node name="MultiplayerChat" type="Control" parent="Menu/Columns" unique_id=542990841]
 unique_name_in_owner = true
 visible = false
-top_level = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -764.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
+custom_minimum_size = Vector2(300, 220)
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MultiplayerChat" unique_id=879072021]
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/Columns/MultiplayerChat" unique_id=879072021]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 26.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="Chat" type="TextEdit" parent="MultiplayerChat/VBoxContainer" unique_id=1558268378]
+[node name="Chat" type="TextEdit" parent="Menu/Columns/MultiplayerChat/VBoxContainer" unique_id=1558268378]
 layout_mode = 2
 size_flags_vertical = 3
 text = "
 "
 editable = false
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MultiplayerChat/VBoxContainer" unique_id=1330137313]
+[node name="HBoxContainer" type="HBoxContainer" parent="Menu/Columns/MultiplayerChat/VBoxContainer" unique_id=1330137313]
 layout_mode = 2
 
-[node name="Message" type="LineEdit" parent="MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1212106684]
+[node name="Message" type="LineEdit" parent="Menu/Columns/MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1212106684]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 keep_editing_on_text_submit = true
 
-[node name="Send" type="Button" parent="MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1959046554]
+[node name="Send" type="Button" parent="Menu/Columns/MultiplayerChat/VBoxContainer/HBoxContainer" unique_id=1959046554]
 layout_mode = 2
 text = "Send"
 
-[node name="ChatTitle" type="Label" parent="MultiplayerChat" unique_id=604449909]
-top_level = true
+[node name="ChatTitle" type="Label" parent="Menu/Columns/MultiplayerChat" unique_id=604449909]
 layout_mode = 0
 anchor_right = 1.0
-offset_top = 16.0
-offset_right = -764.0
-offset_bottom = 34.0
+offset_bottom = 18.0
 grow_horizontal = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -404,6 +422,8 @@ text = "Welcome to Global Chat!"
 horizontal_alignment = 1
 vertical_alignment = 1
 uppercase = true
+
+[node name="OptionsMenu" parent="." unique_id=1973502199 instance=ExtResource("6_b7btk")]
 
 [node name="PlayerMultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1425155103]
 _spawnable_scenes = PackedStringArray("uid://cffjduipbb3s5")
@@ -1167,20 +1187,20 @@ text = "QUIT"
 flat = true
 
 [connection signal="visibility_changed" from="Menu" to="Menu" method="_on_visibility_changed"]
-[connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
-[connection signal="text_changed" from="Menu/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
-[connection signal="pressed" from="Menu/ModeButton" to="Menu" method="_on_mode_button_pressed"]
-[connection signal="pressed" from="Menu/NewLevelButton" to="Menu" method="_on_new_level_button_pressed"]
-[connection signal="pressed" from="Menu/DeleteButton" to="Menu" method="_on_delete_button_pressed"]
-[connection signal="pressed" from="Menu/SaveButton" to="Menu" method="_on_save_button_pressed"]
-[connection signal="pressed" from="Menu/ExportButton" to="Menu" method="_on_export_button_pressed"]
-[connection signal="pressed" from="Menu/UploadButton" to="." method="_on_upload_button_pressed"]
-[connection signal="pressed" from="Menu/LoadButton" to="Menu" method="_on_load_button_pressed"]
-[connection signal="pressed" from="Menu/MoonButton" to="Menu" method="_on_moon_button_pressed"]
-[connection signal="pressed" from="Menu/OptionsButton" to="Menu" method="_on_options_button_pressed"]
-[connection signal="pressed" from="Menu/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
-[connection signal="pressed" from="Menu/QuitButton" to="Menu" method="_on_quit_button_pressed"]
-[connection signal="pressed" from="MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
+[connection signal="text_changed" from="Menu/Columns/Actions/HBoxContainer/VBoxContainer/LevelName" to="Menu" method="_on_level_name_text_changed"]
+[connection signal="text_changed" from="Menu/Columns/Actions/HBoxContainer/VBoxContainer/LevelDescription" to="Menu" method="_on_level_description_text_changed"]
+[connection signal="pressed" from="Menu/Columns/Actions/NavButtons/ModeButton" to="Menu" method="_on_mode_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/NavButtons/MoonButton" to="Menu" method="_on_moon_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/SaveButton" to="Menu" method="_on_save_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/ExportButton" to="Menu" method="_on_export_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/UploadButton" to="." method="_on_upload_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/DeleteButton" to="Menu" method="_on_delete_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/NewLevelButton" to="Menu" method="_on_new_level_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/LevelButtons/LoadButton" to="Menu" method="_on_load_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/SystemButtons/OptionsButton" to="Menu" method="_on_options_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/Actions/SystemButtons/MainMenuButton" to="Menu" method="_on_main_menu_button_pressed" flags=3]
+[connection signal="pressed" from="Menu/Columns/Actions/SystemButtons/QuitButton" to="Menu" method="_on_quit_button_pressed"]
+[connection signal="pressed" from="Menu/Columns/MultiplayerChat/VBoxContainer/HBoxContainer/Send" to="." method="_on_send_pressed"]
 [connection signal="spawned" from="PlayerMultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
 [connection signal="toggled" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Object/Physics/CollisionCheckBox" to="ObjectProperties" method="_on_collision_check_box_toggled"]
 [connection signal="color_changed" from="ObjectProperties/TabContainer/Properties/Panel/ScrollContainer/MarginContainer/Player/Color/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]

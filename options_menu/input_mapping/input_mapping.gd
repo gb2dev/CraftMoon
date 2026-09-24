@@ -22,7 +22,6 @@ const ACTION_LABELS := {
 	&"interact": "Interact",
 	&"object_builder": "Object Builder",
 	&"object_properties": "Object Properties & Guides",
-	&"toggle_chat": "Open Chat",
 }
 
 var joy_name := "Joypad"

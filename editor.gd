@@ -56,7 +56,7 @@ var _highlighted_overlay_shapes: Array[GeometryInstance3D] = []
 ## Objects currently selected in default editor mode. Selected objects write to
 ## the stencil buffer so the outline CompositorEffect outlines them.
 var selected_geometry: Array[CSGShape3D] = []
-var group_entities: Dictionary = {}
+static var group_entities: Dictionary = {}
 var current_scope: String = ""
 var _saved_scope_before_builder := ""
 var cursor_distance := -3.0
@@ -141,10 +141,15 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(_delta: float) -> void:
+	var world := tree.current_scene as World
+	if world and world.is_chat_visible():
+		return
 	if not Menu.shown:
 		if transforming:
 			_handle_transform()
 			return
+
+		_handle_history_input()
 
 		if _is_action_just_pressed(&"object_builder"):
 			if object_properties.visible:
@@ -217,12 +222,12 @@ func _handle_editor_input() -> void:
 		if collider is CSGShape3D:
 			highlighted_geometry = collider
 			if _is_action_just_pressed(&"destroy"):
-				var destroyed_any := false
+				var to_destroy: Array[CSGShape3D] = []
 				for shape: CSGShape3D in resolve_group_shapes(collider):
 					if not shape.is_in_group(&"Undeletable"):
-						destroy.rpc(shape.get_path())
-						destroyed_any = true
-				if destroyed_any:
+						to_destroy.append(shape)
+				if not to_destroy.is_empty():
+					destroy_shapes(to_destroy)
 					Audio.play_sound("destroy")
 			return
 	highlighted_geometry = null
@@ -261,12 +266,22 @@ func start_transform(shapes: Array[CSGShape3D]) -> bool:
 func confirm_transform() -> void:
 	var paths: Array[NodePath] = []
 	var transforms: Array[Transform3D] = []
+	var names := []
+	var before := []
 	for shape: CSGShape3D in _transform_targets:
 		if is_instance_valid(shape):
 			shape.set_meta(&"transform", shape.global_transform)
 			paths.append(shape.get_path())
 			transforms.append(shape.global_transform)
+			names.append(String(shape.name))
+			before.append(_transform_start[shape])
 	_end_transform()
+	var after := transforms.duplicate()
+	var undo_action := func() -> void:
+		sync_shape_transforms.rpc(names, before)
+	var redo_action := func() -> void:
+		sync_shape_transforms.rpc(names, after)
+	push_undo(undo_action, redo_action)
 	sync_transform.rpc(paths, transforms)
 	Audio.play_sound("place")
 
@@ -378,9 +393,26 @@ func select(shape: CSGShape3D) -> void:
 		return
 	selected_geometry.append(shape)
 	_reassign_outline_ids()
-	var _connected := shape.tree_exiting.connect(
-		func() -> void: selected_geometry.erase(shape), CONNECT_ONE_SHOT)
+	var callable := _on_selected_shape_exited.bind(shape)
+	if not shape.tree_exited.is_connected(callable):
+		var _connected := shape.tree_exited.connect(callable)
 	Audio.play_sound("click")
+	if not object_builder_active:
+		_update_input_display()
+
+
+func _on_selected_shape_exited(shape: CSGShape3D) -> void:
+	_drop_selected_if_removed.call_deferred(shape)
+
+
+func _drop_selected_if_removed(shape: CSGShape3D) -> void:
+	if not is_selected(shape) or (is_instance_valid(shape) and shape.is_inside_tree()):
+		return
+	selected_geometry.erase(shape)
+	if is_instance_valid(shape):
+		var _erased := _outline_ids.erase(shape)
+		_apply_stencil_state(shape)
+	_reassign_outline_ids()
 	if not object_builder_active:
 		_update_input_display()
 
@@ -525,9 +557,23 @@ func group_selected() -> void:
 	if targets.size() < 2:
 		return
 	var paths: Array[NodePath] = []
+	var refs := []
+	var old_group_ids := []
 	for node in targets:
 		paths.append(node.get_path())
-	sync_group.rpc(paths, _generate_group_id())
+		refs.append(_node_ref(node))
+		var old_group_id := get_group_of(node)
+		if old_group_id != "" and old_group_id not in old_group_ids:
+			old_group_ids.append(old_group_id)
+	var old_group_state := _capture_group_state(old_group_ids)
+	var new_group_id := _generate_group_id()
+	sync_group.rpc(paths, new_group_id)
+	var undo_action := func() -> void:
+		sync_ungroup.rpc([new_group_id])
+		sync_parent_groups.rpc(old_group_state)
+	var redo_action := func() -> void:
+		sync_group_refs.rpc(refs, new_group_id)
+	push_undo(undo_action, redo_action)
 
 
 func ungroup_selected() -> void:
@@ -538,7 +584,14 @@ func ungroup_selected() -> void:
 			group_ids[group_id] = true
 	if group_ids.is_empty():
 		return
-	sync_ungroup.rpc(group_ids.keys())
+	var ids := group_ids.keys()
+	var group_state := _capture_group_state(ids)
+	sync_ungroup.rpc(ids)
+	var undo_action := func() -> void:
+		sync_parent_groups.rpc(group_state)
+	var redo_action := func() -> void:
+		sync_ungroup.rpc(ids)
+	push_undo(undo_action, redo_action)
 
 
 func scope_in() -> void:
@@ -669,35 +722,45 @@ func _remove_from_group(node: Node3D) -> void:
 		node.remove_meta(&"group")
 	if node is CSGShape3D:
 		_apply_stencil_state(node)
-	_check_dissolve_group.call_deferred(group_id)
 
 
-var _dissolving_groups: Dictionary
+static var _dissolving_groups: Dictionary
 
 func _dissolve_group(group_id: String) -> void:
 	if not group_entities.has(group_id) or _dissolving_groups.get(group_id, false):
 		return
 	_dissolving_groups[group_id] = true
+	var parent_group := ""
+	var dissolved_entity: Variant = group_entities.get(group_id)
+	if is_instance_valid(dissolved_entity):
+		parent_group = get_group_of(dissolved_entity)
+		if not group_entities.has(parent_group):
+			parent_group = ""
 	var was_scope := current_scope == group_id
 	if was_scope:
-		current_scope = ""
-		_set_scope_focus_enabled(false)
+		current_scope = parent_group
+		_set_scope_focus_enabled(parent_group != "")
 	for node: Node3D in get_group_members(group_id):
 		if is_instance_valid(node):
-			node.reparent.call_deferred(geometry_root, true)
-			if node.has_meta(&"group"):
-				node.remove_meta(&"group")
+			if parent_group != "":
+				_add_to_group(parent_group, node)
+			else:
+				node.reparent.call_deferred(geometry_root, true)
+				if node.has_meta(&"group"):
+					node.remove_meta(&"group")
 			if node is CSGShape3D:
 				_apply_stencil_state(node)
 	if group_entities.has(group_id):
 		var entity = group_entities[group_id]
 		if is_instance_valid(entity):
-			entity.queue_free()
+			_detach_node.call_deferred(entity)
 		group_entities.erase(group_id)
 	_dissolving_groups.erase(group_id)
 
 
 func _on_grouped_shape_exiting(node: Node3D) -> void:
+	if World.destroyed_nodes.has(node):
+		return
 	var group_id := get_group_of(node)
 	if group_id == "" or not group_entities.has(group_id):
 		return
@@ -712,16 +775,19 @@ func _check_dissolve_group(group_id: String) -> void:
 func _add_to_group(group_id: String, node: Node3D) -> void:
 	var entity = group_entities.get(group_id)
 	if not is_instance_valid(entity):
+		entity = _attach_node("g:" + group_id)
+	if not is_instance_valid(entity):
 		entity = GroupEntity.new()
 		entity.group_id = group_id
 		entity.editor = self
+		entity.name = "Group_" + group_id
 		geometry_root.add_child(entity)
 		group_entities[group_id] = entity
 	node.reparent.call_deferred(entity, true)
 	node.set_meta(&"group", group_id)
 	var callable := _on_grouped_shape_exiting.bind(node)
 	if not node.tree_exiting.is_connected(callable):
-		var _connected := node.tree_exiting.connect(callable, CONNECT_ONE_SHOT)
+		var _connected := node.tree_exiting.connect(callable)
 	if (current_scope == group_id or _saved_scope_before_builder == group_id) and node is CSGShape3D:
 		_apply_stencil_state(node)
 	entity.update_transform_from_members.call_deferred()
@@ -736,8 +802,11 @@ func reset_groups() -> void:
 		if is_instance_valid(entity):
 			entity.queue_free()
 	group_entities.clear()
+	for ref: String in _detached.keys():
+		_free_detached(ref)
 	current_scope = ""
 	_set_scope_focus_enabled(false)
+	clear_history()
 
 
 @rpc("any_peer", "call_local")
@@ -746,13 +815,27 @@ func sync_group(paths: Array, group_id: String) -> void:
 	for path: NodePath in paths:
 		var node := get_node_or_null(path)
 		if node is Node3D:
-			_remove_from_group(node)
 			members.append(node)
+	_group_nodes(members, group_id)
+
+
+func _group_nodes(members: Array[Node3D], group_id: String) -> void:
+	var parent_group := ""
+	if not members.is_empty():
+		parent_group = get_group_of(members[0])
+		for node in members:
+			if get_group_of(node) != parent_group:
+				parent_group = ""
+				break
+	if not group_entities.has(parent_group):
+		parent_group = ""
 	if members.size() < 2:
 		return
 	clear_selection()
 	for node in members:
 		_add_to_group(group_id, node)
+	if parent_group != "":
+		_add_to_group(parent_group, group_entities[group_id])
 	Audio.play_sound("click")
 	if not object_builder_active:
 		_update_input_display()
@@ -771,6 +854,322 @@ func sync_ungroup(group_ids: Array) -> void:
 		Audio.play_sound("click")
 		if not object_builder_active:
 			_update_input_display()
+
+
+const UNDO_LIMIT := 100
+
+var _undo_stack: Array[Dictionary] = []
+var _redo_stack: Array[Dictionary] = []
+static var _detached: Dictionary = {}
+static var _detached_transforms: Dictionary = {}
+
+
+func push_undo(undo_action: Callable, redo_action: Callable, detached_when_done := [], detached_when_undone := []) -> void:
+	_undo_stack.append({
+		"undo": undo_action,
+		"redo": redo_action,
+		"detached_when_done": detached_when_done,
+		"detached_when_undone": detached_when_undone,
+	})
+	if _undo_stack.size() > UNDO_LIMIT:
+		var dropped: Dictionary = _undo_stack.pop_front()
+		_free_detached_refs(dropped["detached_when_done"])
+	for entry: Dictionary in _redo_stack:
+		_free_detached_refs(entry["detached_when_undone"])
+	_redo_stack.clear()
+	_update_input_display()
+
+
+func undo() -> void:
+	if _undo_stack.is_empty():
+		return
+	var entry: Dictionary = _undo_stack.pop_back()
+	(entry["undo"] as Callable).call()
+	_redo_stack.append(entry)
+	Audio.play_sound("click")
+	_update_input_display()
+
+
+func redo() -> void:
+	if _redo_stack.is_empty():
+		return
+	var entry: Dictionary = _redo_stack.pop_back()
+	(entry["redo"] as Callable).call()
+	_undo_stack.append(entry)
+	Audio.play_sound("click")
+	_update_input_display()
+
+
+func clear_history() -> void:
+	_undo_stack.clear()
+	_redo_stack.clear()
+
+
+func _handle_history_input() -> void:
+	if _is_ui_open():
+		return
+	var undo_pressed := _is_action_just_pressed(&"undo")
+	var redo_pressed := not undo_pressed and _is_action_just_pressed(&"redo")
+	if not undo_pressed and not redo_pressed:
+		return
+	if undo_pressed and not vertices.is_empty():
+		vertices.clear()
+		_hide_ghost()
+		Audio.play_sound("click")
+		return
+	if not World.time_paused or GroupEntity.simulation_active:
+		Signals.ui_notification.emit("reset", tr(&"Rewind time to undo or redo"), 2.0)
+		return
+	if undo_pressed:
+		undo()
+	else:
+		redo()
+
+
+func _is_ui_open() -> bool:
+	for control: Control in tree.get_nodes_in_group(&"UI"):
+		if control.visible:
+			return true
+	return false
+
+
+func _find_shape(shape_name: String) -> CSGShape3D:
+	return geometry_root.find_child(shape_name, true, false) as CSGShape3D
+
+
+func _node_ref(node: Node3D) -> String:
+	if node is GroupEntity:
+		return "g:" + (node as GroupEntity).group_id
+	return "s:" + String(node.name)
+
+
+func _resolve_ref(ref: String) -> Node3D:
+	if ref.begins_with("g:"):
+		var entity: Variant = group_entities.get(ref.substr(2))
+		return entity if is_instance_valid(entity) else null
+	return _find_shape(ref.substr(2))
+
+
+func _group_chain(node: Node3D) -> Array[String]:
+	var chain: Array[String] = []
+	var group_id := get_group_of(node)
+	while group_id != "" and group_id not in chain:
+		chain.append(group_id)
+		var entity: Variant = group_entities.get(group_id)
+		if not is_instance_valid(entity):
+			break
+		group_id = get_group_of(entity)
+	return chain
+
+
+func _capture_group_state(group_ids: Array) -> Array:
+	var all_ids: Array[String] = []
+	for group_id: String in group_ids:
+		var entity: Variant = group_entities.get(group_id)
+		if not is_instance_valid(entity):
+			continue
+		if group_id not in all_ids:
+			all_ids.append(group_id)
+		for parent_id: String in _group_chain(entity):
+			if parent_id not in all_ids:
+				all_ids.append(parent_id)
+	all_ids.sort_custom(func(a: String, b: String) -> bool:
+		return _group_chain(group_entities[a]).size() > _group_chain(group_entities[b]).size())
+
+	var assignments := []
+	for group_id: String in all_ids:
+		for member: Node3D in get_group_members(group_id):
+			assignments.append([_node_ref(member), group_id])
+		assignments.append(["g:" + group_id, get_group_of(group_entities[group_id])])
+	return assignments
+
+
+func destroy_shapes(shapes: Array[CSGShape3D]) -> void:
+	var refs := []
+	var group_ids := []
+	for shape: CSGShape3D in shapes:
+		if shape.is_in_group(&"Undeletable"):
+			continue
+		refs.append(_node_ref(shape))
+		for group_id: String in _group_chain(shape):
+			if group_id not in group_ids:
+				group_ids.append(group_id)
+	if refs.is_empty():
+		return
+	var group_state := _capture_group_state(group_ids)
+	sync_detach.rpc(refs)
+	var undo_action := func() -> void:
+		sync_attach.rpc(refs)
+		sync_parent_groups.rpc(group_state)
+	var redo_action := func() -> void:
+		sync_detach.rpc(refs)
+	push_undo(undo_action, redo_action, refs)
+
+
+func _gadgets_attached_to(node: Node) -> Array[Gadget]:
+	var gadgets: Array[Gadget] = []
+	for child: Node in object_properties.logic_panel.get_children():
+		var gadget := child as Gadget
+		if gadget and is_instance_valid(gadget.node_3d) and node.is_ancestor_of(gadget.node_3d):
+			gadgets.append(gadget)
+	return gadgets
+
+
+func _set_gadgets_active(node: Node, active: bool) -> void:
+	for gadget: Gadget in _gadgets_attached_to(node):
+		if gadget.dormant == not active:
+			continue
+		gadget.dormant = not active
+		gadget.set_block_signals(not active)
+		gadget.process_mode = PROCESS_MODE_INHERIT if active else PROCESS_MODE_DISABLED
+		for controls: Array in gadget.output_controls:
+			for control: GadgetOutputControl in controls:
+				var target := control.target_gadget
+				if not is_instance_valid(target) or target.dormant:
+					continue
+				var input_port := target.input_controls[control.target_input] as GadgetInputPort
+				if active:
+					if control not in input_port.output_controls:
+						input_port.output_controls.append(control)
+						input_port.output_visuals.append(control.visual)
+				else:
+					input_port.output_controls.erase(control)
+					input_port.output_visuals.erase(control.visual)
+				target.input_pulse.emit.bind(control.target_input).call_deferred()
+
+
+func _detach_node(node: Node3D) -> void:
+	if not is_instance_valid(node) or not node.is_inside_tree() or node.is_queued_for_deletion():
+		return
+	var ref := _node_ref(node)
+	_detached[ref] = node
+	_detached_transforms[ref] = node.global_transform
+	if is_instance_valid(highlighted_geometry) \
+			and (highlighted_geometry == node or node.is_ancestor_of(highlighted_geometry)):
+		highlighted_geometry = null
+	var was_selected := false
+	for shape: CSGShape3D in selected_geometry.duplicate():
+		if shape == node or node.is_ancestor_of(shape):
+			selected_geometry.erase(shape)
+			var _erased := _outline_ids.erase(shape)
+			was_selected = true
+	if was_selected:
+		_reassign_outline_ids()
+	_set_gadgets_active(node, false)
+	node.get_parent().remove_child(node)
+
+
+func _attach_node(ref: String) -> Node3D:
+	var node: Variant = _detached.get(ref)
+	var _erased := _detached.erase(ref)
+	var saved_transform: Variant = _detached_transforms.get(ref)
+	_erased = _detached_transforms.erase(ref)
+	if not is_instance_valid(node):
+		return null
+	var node_3d := node as Node3D
+	if not node_3d.is_inside_tree():
+		geometry_root.add_child(node_3d)
+		if saved_transform is Transform3D:
+			node_3d.global_transform = saved_transform
+	if node_3d.has_meta(&"group"):
+		node_3d.remove_meta(&"group")
+	if node_3d is GroupEntity:
+		group_entities[(node_3d as GroupEntity).group_id] = node_3d
+	elif node_3d is CSGShape3D:
+		_apply_stencil_state(node_3d as CSGShape3D)
+	_set_gadgets_active(node_3d, true)
+	return node_3d
+
+
+func _free_detached(ref: String) -> void:
+	var node: Variant = _detached.get(ref)
+	var _erased := _detached.erase(ref)
+	_erased = _detached_transforms.erase(ref)
+	if not is_instance_valid(node) or (node as Node).is_inside_tree():
+		return
+	for gadget: Gadget in _gadgets_attached_to(node as Node):
+		gadget.dormant = false
+		gadget.set_block_signals(false)
+		gadget.queue_free()
+	(node as Node).queue_free()
+
+
+func _free_detached_refs(refs: Array) -> void:
+	if not refs.is_empty():
+		sync_free_detached.rpc(refs)
+
+
+@rpc("any_peer", "call_local")
+func sync_detach(refs: Array) -> void:
+	for ref: String in refs:
+		var node := _resolve_ref(ref)
+		if node and not node.is_in_group(&"Undeletable"):
+			_detach_node(node)
+	if not object_builder_active:
+		_update_input_display()
+
+
+@rpc("any_peer", "call_local")
+func sync_attach(refs: Array) -> void:
+	for ref: String in refs:
+		var _node := _attach_node(ref)
+
+
+@rpc("any_peer", "call_local")
+func sync_free_detached(refs: Array) -> void:
+	for ref: String in refs:
+		_free_detached(ref)
+
+
+@rpc("any_peer", "call_local")
+func sync_parent_groups(assignments: Array) -> void:
+	for assignment: Array in assignments:
+		var node := _resolve_ref(assignment[0])
+		var group_id: String = assignment[1]
+		if not node or get_group_of(node) == group_id:
+			continue
+		if group_id != "":
+			_add_to_group(group_id, node)
+		else:
+			_remove_from_group(node)
+	clear_selection()
+	_reassign_outline_ids()
+
+
+@rpc("any_peer", "call_local")
+func sync_group_refs(refs: Array, group_id: String) -> void:
+	var members: Array[Node3D] = []
+	for ref: String in refs:
+		var node := _resolve_ref(ref)
+		if node:
+			members.append(node)
+	_group_nodes(members, group_id)
+
+
+@rpc("any_peer", "call_local")
+func sync_shape_transforms(names: Array, transforms: Array) -> void:
+	for i in names.size():
+		var shape := _find_shape(names[i])
+		if shape:
+			shape.global_transform = transforms[i]
+			shape.set_meta(&"transform", transforms[i])
+
+
+@rpc("any_peer", "call_local")
+func sync_shape_materials(names: Array, material_paths: Array) -> void:
+	for i in names.size():
+		var shape := _find_shape(names[i])
+		if shape:
+			set_object_material(shape, load(material_paths[i]) as Material)
+	object_properties.selected_material_changed.emit()
+
+
+@rpc("any_peer", "call_local")
+func sync_shape_collisions(names: Array, values: Array) -> void:
+	for i in names.size():
+		var shape := _find_shape(names[i])
+		if shape:
+			shape.use_collision = values[i]
 
 
 func _apply_stencil_state(shape: CSGShape3D, force := false) -> void:
@@ -1364,6 +1763,16 @@ func _try_finish_shape() -> void:
 		current_scope if current_scope != "" else _saved_scope_before_builder
 	)
 	vertices.clear()
+	var shape := _find_shape(unique_node_name)
+	if shape:
+		var refs := [_node_ref(shape)]
+		var group_state := [[refs[0], get_group_of(shape)]]
+		var undo_action := func() -> void:
+			sync_detach.rpc(refs)
+		var redo_action := func() -> void:
+			sync_attach.rpc(refs)
+			sync_parent_groups.rpc(group_state)
+		push_undo(undo_action, redo_action, [], refs)
 
 
 static func _is_degenerate(size: Vector3) -> bool:
@@ -1446,9 +1855,6 @@ func construct_shape(
 	shape.set_meta(&"box_size", size)
 	shape.set_meta(&"box_center", pos)
 	shape.set_meta(&"uniform", uniform)
-
-	if shape.get_index() == 0:
-		shape.add_to_group(&"Undeletable")
 
 	if node_name.is_empty():
 		shape.name = str(shape.get_index())
@@ -1549,8 +1955,10 @@ func _update_input_display() -> void:
 	input_display.add_input_prompt([&"time_rewind"], &"Time Control", "", false, true) # TODO hide if rewound
 
 	# # # Tools
-	# TODO input_display.add_input_prompt([&"undo"], &"Tools") # TODO [COND UNDO >0]
-	# TODO input_display.add_input_prompt([&"redo"], &"Tools") # TODO [COND REDO >0]
+	if not _undo_stack.is_empty():
+		input_display.add_input_prompt([&"undo"], &"Tools", "Undo")
+	if not _redo_stack.is_empty():
+		input_display.add_input_prompt([&"redo"], &"Tools", "Redo")
 
 	if object_builder_active:
 		input_display.add_input_prompt([&"object_builder"], &"Tools", "Exit Object Builder")

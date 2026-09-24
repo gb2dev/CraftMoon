@@ -93,8 +93,11 @@ func toggle() -> void:
 		if camera.current:
 			return
 
+	if not visible:
+		_update_button_groups()
 	visible = not visible
 	background_dim.visible = visible
+	world.set_chat_visible(visible)
 	if not visible:
 		options_menu.close()
 	if visible:
@@ -126,7 +129,7 @@ func connect_gadgets(gadgets: Array[Gadget], gadget_properties_array: Array[Dict
 
 
 func save_level() -> void:
-	world.sync_time_rewind()
+	world.sync_time_rewind.rpc()
 	if player.editor.transforming:
 		player.editor.cancel_transform()
 	player.editor.scope_out_fully()
@@ -167,6 +170,7 @@ func save_level() -> void:
 				"uniform": target.get_meta(&"uniform", false),
 				"transform": target.get_meta(&"transform", null),
 				"group": target.get_meta(&"group", ""),
+				"undeletable": target.is_in_group(&"Undeletable"),
 				"gadgets": [],
 			})
 		elif target is GroupEntity:
@@ -192,9 +196,12 @@ func save_level() -> void:
 			for output_control: GadgetOutputControl in gadget.output_controls[output_index]:
 				if not is_instance_valid(output_control.target_gadget):
 					continue
+				var target_parent_index := target_nodes.find(output_control.target_gadget.node_3d.get_parent())
+				if target_parent_index == -1:
+					continue
 
 				connections[output_index].append({
-					"target_parent": target_nodes.find(output_control.target_gadget.node_3d.get_parent()),
+					"target_parent": target_parent_index,
 					"target_gadget": gadget_indexes[output_control.target_gadget.node_3d.get_parent()].find(
 						output_control.target_gadget.get_index()
 					),
@@ -281,20 +288,19 @@ func load_level(save_file_path := "") -> void:
 
 		var gadgets: Array[Gadget]
 		var gadget_properties_array: Array[Dictionary]
+		var is_first_shape := true
 		
 		for object_properties: Dictionary in save_data:
 			match object_properties.type:
 				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
-					player.editor.construction_material = load(object_properties.material)
-					player.editor.construction_collision = object_properties.collision
 					var uniform_mode: bool = object_properties.get("uniform", false)
 					var object = player.editor.construct_shape(
 						object_properties.type,
 						object_properties.position,
 						object_properties.rotation,
 						object_properties.size,
-						player.editor.construction_material.resource_path,
-						player.editor.construction_collision,
+						object_properties.material,
+						object_properties.collision,
 						uniform_mode
 					)
 					var saved_transform: Variant = object_properties.get("transform")
@@ -302,6 +308,9 @@ func load_level(save_file_path := "") -> void:
 						object.global_transform = saved_transform
 						object.set_meta(&"transform", saved_transform)
 					object_properties["_node"] = object
+					if object_properties.get("undeletable", is_first_shape):
+						object.add_to_group(&"Undeletable")
+					is_first_shape = false
 					var group_id: String = object_properties.get("group", "")
 					if not group_id.is_empty():
 						player.editor.register_loaded_group_member(group_id, object)
@@ -311,7 +320,7 @@ func load_level(save_file_path := "") -> void:
 				var child_id: String = object_properties.group_id
 				var parent_id: String = object_properties.get("group", "")
 				if not parent_id.is_empty() and not child_id.is_empty():
-					var child_entity = player.editor.group_entities.get(child_id)
+					var child_entity = Editor.group_entities.get(child_id)
 					if is_instance_valid(child_entity):
 						player.editor._add_to_group(parent_id, child_entity)
 		
@@ -322,7 +331,7 @@ func load_level(save_file_path := "") -> void:
 				"Level":
 					continue
 				"Group":
-					object = player.editor.group_entities.get(object_properties.group_id)
+					object = Editor.group_entities.get(object_properties.group_id)
 				"Cuboid", "Ellipsoid", "Cylinder", "Cone", "Torus", "Polygon":
 					object = object_properties.get("_node")
 			if not is_instance_valid(object):
@@ -392,7 +401,7 @@ func new_level(blank := true) -> void:
 		await get_tree().process_frame
 		_add_default_environment()
 		# Default floor
-		var _floor_object := player.editor.construct_shape(
+		var floor_object := player.editor.construct_shape(
 			"Cuboid",
 			Vector3(0, -0.5, 0),
 			Vector3.ZERO,
@@ -400,6 +409,7 @@ func new_level(blank := true) -> void:
 			DEFAULT_MATERIAL.resource_path,
 			true
 		)
+		floor_object.add_to_group(&"Undeletable")
 		respawn_player()
 		enter_edit_mode()
 	else:
@@ -529,6 +539,11 @@ func emit_wipe_out(signals_to_await: Array[Signal], signal_received: Signal) -> 
 func _on_save_button_pressed() -> void:
 	toggle()
 	save_level()
+
+
+func _update_button_groups() -> void:
+	for container: Control in [mode_button.get_parent(), save_button.get_parent()]:
+		container.visible = container.get_children().any(func(child: Node) -> bool: return (child as Control).visible)
 
 
 func _on_load_button_pressed() -> void:

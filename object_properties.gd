@@ -119,11 +119,29 @@ func sync_object_material(material_path: String, object_path: NodePath) -> void:
 
 func change_object_material(material_resource: BaseMaterial3D) -> void:
 	if is_instance_valid(object):
+		var names := []
+		var before := []
+		var changed := false
 		for target in _target_objects():
 			if target is CSGShape3D and editor:
-				editor.set_object_material(target, material_resource)
+				var old_material := editor.get_object_material(target)
+				names.append(String(target.name))
+				before.append(old_material.resource_path if old_material else material_resource.resource_path)
+				if old_material != material_resource:
+					changed = true
 			else:
 				target.material = material_resource
+		if not names.is_empty():
+			var after := []
+			var _resized := after.resize(names.size())
+			after.fill(material_resource.resource_path)
+			editor.sync_shape_materials.rpc(names, after)
+			if changed:
+				var undo_action := func() -> void:
+					editor.sync_shape_materials.rpc(names, before)
+				var redo_action := func() -> void:
+					editor.sync_shape_materials.rpc(names, after)
+				editor.push_undo(undo_action, redo_action)
 	else:
 		editor.construction_material = material_resource
 
@@ -179,7 +197,25 @@ func create_gadget(
 
 func _on_collision_check_box_toggled(toggled_on: bool) -> void:
 	if is_instance_valid(object):
+		var names := []
 		for target in _target_objects():
-			target.use_collision = toggled_on
+			if target is CSGShape3D and editor:
+				if target.use_collision != toggled_on:
+					names.append(String(target.name))
+			else:
+				target.use_collision = toggled_on
+		if not names.is_empty():
+			var before := []
+			var _resized := before.resize(names.size())
+			before.fill(not toggled_on)
+			var after := []
+			_resized = after.resize(names.size())
+			after.fill(toggled_on)
+			editor.sync_shape_collisions.rpc(names, after)
+			var undo_action := func() -> void:
+				editor.sync_shape_collisions.rpc(names, before)
+			var redo_action := func() -> void:
+				editor.sync_shape_collisions.rpc(names, after)
+			editor.push_undo(undo_action, redo_action)
 	else:
 		editor.construction_collision = toggled_on

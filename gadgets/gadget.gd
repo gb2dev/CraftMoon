@@ -34,6 +34,7 @@ var input_controls: Array
 var output_controls: Array
 var type: String
 var output_controls_created_count: int
+var dormant := false
 
 
 @abstract func start() -> void
@@ -205,6 +206,8 @@ func get_input_data(input_index: int) -> Variant:
 
 
 func output(output_index: int, data: Variant, pulse := false) -> void:
+	if dormant:
+		return
 	for output_control: GadgetOutputControl in output_controls[output_index]:
 		output_control.data = data
 		if pulse and data != null:
@@ -390,7 +393,7 @@ func attach_to_object(node_path: NodePath) -> void:
 	var _error := node_3d.tree_exited.connect(func() -> void:
 		var node_parent := node_3d.get_parent()
 		if not is_instance_valid(node_parent) or node_parent.is_queued_for_deletion():
-			if not World.destroyed_nodes.values().has(node_parent):
+			if not World.destroyed_nodes.has(node_parent):
 				queue_free()
 	)
 

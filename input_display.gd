@@ -138,7 +138,7 @@ func _add_common_prompts(show_customize_player := true) -> void:
 	add_input_prompt([&"move_forward", &"move_back", &"move_left", &"move_right"], &"Basic Movement", "Move")
 	add_input_prompt([&"look_up", &"look_down", &"look_left", &"look_right"], &"Basic Movement", "Look")
 	add_input_prompt([&"jump"], &"Basic Movement")
-	add_input_prompt([&"sprint"], &"Basic Movement")
+	add_input_prompt([&"move_forward"], &"Basic Movement", "(Double Tap) Sprint")
 	if show_customize_player:
 		add_input_prompt([&"customize_player"], &"UI")
 	add_input_prompt([&"pause_menu"], &"UI", "Pause Menu")
