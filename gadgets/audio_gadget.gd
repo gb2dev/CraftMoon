@@ -5,17 +5,25 @@ const SOUND_SELECT = preload("res://sound_select.tscn")
 
 var audio_player: Node
 var is_pulse: bool
+var play_on_resume := false
 
 
 func start() -> void:
 	change_property(&"ThreeD", false) # Initialize with standard AudioStreamPlayer
 
 	var _error := input_pulse.connect(func(_input_index: int) -> void:
+		if World.time_paused:
+			play_on_resume = is_input_data_powered(0, true)
+			return
 		if is_input_data_powered(0, true):
 			is_pulse = false
 			audio_player.play()
 			check_pulse.call_deferred()
 	)
+
+	_error = Signals.time_paused.connect(_on_time_paused)
+	_error = Signals.time_played.connect(_on_time_played)
+	_error = Signals.time_rewound.connect(_on_time_rewound)
 
 
 func tick(_delta: float) -> void:
@@ -142,6 +150,25 @@ func setup_properties(gadget_properties: GadgetProperties) -> void:
 func check_pulse() -> void:
 	if get_input_data(0) == false:
 		is_pulse = true
+
+
+func _on_time_paused() -> void:
+	audio_player.stream_paused = true
+
+
+func _on_time_played() -> void:
+	audio_player.stream_paused = false
+	if play_on_resume and is_input_data_powered(0, true):
+		is_pulse = false
+		audio_player.play()
+		check_pulse.call_deferred()
+	play_on_resume = false
+
+
+func _on_time_rewound() -> void:
+	audio_player.stop()
+	audio_player.stream_paused = false
+	play_on_resume = is_input_data_powered(0, true)
 
 
 func play_sound_looped() -> void:
