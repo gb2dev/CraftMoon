@@ -4,6 +4,7 @@ extends Control
 signal selected_material_changed
 
 const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
+const GRID_SIZES: Array[float] = [0.125, 0.25, 0.5, 1.0, 2.0, 4.0]
 
 @export var gadgets_panel: GadgetsPanel
 @export var gadget_properties: GadgetProperties
@@ -11,10 +12,19 @@ const GADGET_SCENE = preload("res://gadgets/gadget.tscn")
 @export var object_vbox: VBoxContainer
 @export var player_vbox: VBoxContainer
 @export var logic_panel: LogicPanel
+@export var grid_check_box: CheckBox
+@export var grid_size_option_button: OptionButton
+@export var cursor_distance_slider: HSlider
+@export var cursor_distance_value: Label
 
 var editor: Editor
 var object: Node3D
 var gadgets_created_count: int
+
+
+func _ready() -> void:
+	for grid_size in GRID_SIZES:
+		grid_size_option_button.add_item(String.num(grid_size))
 
 
 func _process(_delta: float) -> void:
@@ -39,18 +49,16 @@ func toggle(o: Node3D) -> void:
 			object_vbox.hide()
 			player_vbox.show()
 		else:
-			if is_instance_valid(object):
-				tab_container.tabs_visible = true
-				tab_container.position.y = 0
-				tab_container.size.y = tab_container.get_parent().size.y
-			else:
+			if not is_instance_valid(object) and tab_container.current_tab == 1:
 				tab_container.set_deferred(&"current_tab", 0)
-				tab_container.tabs_visible = false
-				tab_container.position.y = 28
-				tab_container.size.y = tab_container.get_parent().size.y - 28
+			tab_container.tabs_visible = true
+			tab_container.position.y = 0
+			tab_container.size.y = tab_container.get_parent().size.y
 			object_vbox.show()
 			player_vbox.hide()
-		tab_container.set_tab_hidden(1, not in_edit_mode)
+		tab_container.set_tab_hidden(1, not in_edit_mode or not is_instance_valid(object))
+		tab_container.set_tab_hidden(2, not in_edit_mode or object is Character)
+		_update_guides()
 		show()
 
 
@@ -219,3 +227,27 @@ func _on_collision_check_box_toggled(toggled_on: bool) -> void:
 			editor.push_undo(undo_action, redo_action)
 	else:
 		editor.construction_collision = toggled_on
+
+
+func _update_guides() -> void:
+	if not editor:
+		return
+	grid_check_box.set_pressed_no_signal(editor.grid_enabled)
+	grid_size_option_button.select(GRID_SIZES.find(editor.grid_size))
+	grid_size_option_button.disabled = not editor.grid_enabled
+	cursor_distance_slider.set_value_no_signal(-editor.cursor_distance)
+	cursor_distance_value.text = String.num(cursor_distance_slider.value)
+
+
+func _on_grid_check_box_toggled(toggled_on: bool) -> void:
+	editor.grid_enabled = toggled_on
+	grid_size_option_button.disabled = not toggled_on
+
+
+func _on_grid_size_option_button_item_selected(index: int) -> void:
+	editor.grid_size = GRID_SIZES[index]
+
+
+func _on_cursor_distance_slider_value_changed(value: float) -> void:
+	editor.cursor_distance = -value
+	cursor_distance_value.text = String.num(value)

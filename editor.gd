@@ -60,6 +60,8 @@ static var group_entities: Dictionary = {}
 var current_scope: String = ""
 var _saved_scope_before_builder := ""
 var cursor_distance := -3.0
+var grid_enabled := true
+var grid_size := 1.0
 var vertices: Array[Vector3]
 var _selected_shape := -1
 var selected_shape: int:
@@ -194,10 +196,7 @@ func _handle_editor_input() -> void:
 			object_properties.toggle(collider)
 
 	if _is_action_just_pressed(&"transform_objects", false, true):
-		var targets: Array[CSGShape3D] = selected_geometry.duplicate()
-		if collider is CSGShape3D and not is_selected(collider):
-			targets = resolve_group_shapes(collider)
-		if start_transform(targets):
+		if start_transform(_get_transform_candidates(collider)):
 			return
 
 	if _is_action_just_pressed(&"action"):
@@ -231,6 +230,18 @@ func _handle_editor_input() -> void:
 					Audio.play_sound("destroy")
 			return
 	highlighted_geometry = null
+
+
+func _get_transform_candidates(collider: Object) -> Array[CSGShape3D]:
+	if collider is CSGShape3D and not is_selected(collider):
+		return resolve_group_shapes(collider)
+	return selected_geometry.duplicate()
+
+
+func _has_deletable_shape(shapes: Array[CSGShape3D]) -> bool:
+	return shapes.any(func(shape: CSGShape3D) -> bool:
+		return is_instance_valid(shape) and not shape.is_in_group(&"Undeletable")
+	)
 
 
 func start_transform(shapes: Array[CSGShape3D]) -> bool:
@@ -268,6 +279,7 @@ func confirm_transform() -> void:
 	var transforms: Array[Transform3D] = []
 	var names := []
 	var before := []
+	var moved: Array[Node3D] = []
 	for shape: CSGShape3D in _transform_targets:
 		if is_instance_valid(shape):
 			shape.set_meta(&"transform", shape.global_transform)
@@ -275,7 +287,9 @@ func confirm_transform() -> void:
 			transforms.append(shape.global_transform)
 			names.append(String(shape.name))
 			before.append(_transform_start[shape])
+			moved.append(shape)
 	_end_transform()
+	Signals.objects_moved.emit(moved)
 	var after := transforms.duplicate()
 	var undo_action := func() -> void:
 		sync_shape_transforms.rpc(names, before)
@@ -352,7 +366,7 @@ func _handle_transform() -> void:
 	elif _is_action_just_pressed(&"pull_object", false, true):
 		_transform_local_position.z = clampf(_transform_local_position.z + CURSOR_STEP, -TRANSFORM_DISTANCE_MAX, CURSOR_MAX)
 
-	var pivot := _transform_pivot + (global_transform * _transform_local_position - _transform_pivot).snapped(Vector3.ONE)
+	var pivot := _transform_pivot + snap_to_grid(global_transform * _transform_local_position - _transform_pivot)
 	var rotation_basis := Basis.from_euler(_transform_angles, EULER_ORDER_YXZ)
 	var delta := Transform3D(rotation_basis.scaled(Vector3.ONE * _transform_scale), pivot) \
 		* Transform3D(Basis.IDENTITY, -_transform_pivot)
@@ -370,11 +384,14 @@ func _handle_transform() -> void:
 
 @rpc("any_peer")
 func sync_transform(paths: Array, transforms: Array) -> void:
+	var moved: Array[Node3D] = []
 	for i in paths.size():
 		var shape := get_node_or_null(paths[i] as NodePath) as CSGShape3D
 		if shape:
 			shape.global_transform = transforms[i]
 			shape.set_meta(&"transform", transforms[i])
+			moved.append(shape)
+	Signals.objects_moved.emit(moved)
 
 
 func is_selected(shape: CSGShape3D) -> bool:
@@ -917,9 +934,6 @@ func _handle_history_input() -> void:
 		_hide_ghost()
 		Audio.play_sound("click")
 		return
-	if not World.time_paused or GroupEntity.simulation_active:
-		Signals.ui_notification.emit("reset", tr(&"Rewind time to undo or redo"), 2.0)
-		return
 	if undo_pressed:
 		undo()
 	else:
@@ -1148,11 +1162,14 @@ func sync_group_refs(refs: Array, group_id: String) -> void:
 
 @rpc("any_peer", "call_local")
 func sync_shape_transforms(names: Array, transforms: Array) -> void:
+	var moved: Array[Node3D] = []
 	for i in names.size():
 		var shape := _find_shape(names[i])
 		if shape:
 			shape.global_transform = transforms[i]
 			shape.set_meta(&"transform", transforms[i])
+			moved.append(shape)
+	Signals.objects_moved.emit(moved)
 
 
 @rpc("any_peer", "call_local")
@@ -1255,10 +1272,13 @@ func _is_action_just_pressed(action: StringName, require_joypad_modifier: bool =
 	return true
 
 
+func snap_to_grid(point: Vector3) -> Vector3:
+	if grid_enabled:
+		return point.snapped(Vector3.ONE * grid_size)
+	return point
+
+
 func _update_cursor() -> void:
-	# TODO Expose cursor distance in UI
-		#cursor_distance -= CURSOR_STEP
-		#target_position.z -= CURSOR_STEP
 	cursor_distance = clampf(cursor_distance, CURSOR_MIN, CURSOR_MAX)
 	target_position.z = clampf(target_position.z, CURSOR_MIN, CURSOR_MAX)
 
@@ -1267,7 +1287,7 @@ func _update_cursor() -> void:
 	else:
 		cursor.position = Vector3(0, 0, cursor_distance)
 
-	cursor.global_position = cursor.global_position.snapped(Vector3.ONE)
+	cursor.global_position = snap_to_grid(cursor.global_position)
 	_draw_cursor_line()
 
 
@@ -1989,9 +2009,11 @@ func _update_input_display() -> void:
 		# # Default
 		if highlighted_geometry:
 			# # # Highlighted Object TODO or Selected Object(s) TODO Quantify
-			input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "Transform Object(s)", true)
+			if _has_deletable_shape(_get_transform_candidates(highlighted_geometry)):
+				input_display.add_input_prompt([&"transform_objects"], &"Highlighted Object", "Transform Object(s)", true)
 			input_display.add_input_prompt([&"object_properties"], &"Highlighted Object", "", true, true)
-			input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true) # TODO hide on undeletable objects
+			if _has_deletable_shape(resolve_group_shapes(highlighted_geometry as CSGShape3D)):
+				input_display.add_input_prompt([&"destroy"], &"Highlighted Object", "", true)
 			var highlighted_group := get_group_of(highlighted_geometry as CSGShape3D)
 			var select_label: String
 			if highlighted_geometry in selected_geometry:
@@ -2000,7 +2022,8 @@ func _update_input_display() -> void:
 				select_label = "Select Group" if highlighted_group != "" and highlighted_group != current_scope else "Select Object"
 			input_display.add_input_prompt([&"action"], &"Highlighted Object", select_label, true)
 		elif not selected_geometry.is_empty():
-			input_display.add_input_prompt([&"transform_objects"], &"Selected Objects", "Transform Object(s)", true)
+			if _has_deletable_shape(selected_geometry):
+				input_display.add_input_prompt([&"transform_objects"], &"Selected Objects", "Transform Object(s)", true)
 			input_display.add_input_prompt([&"action"], &"Selected Objects", "Deselect All", true)
 
 		if _single_selected_group() != "":

@@ -4,20 +4,8 @@ extends Node3D
 var group_id := ""
 var editor: Node
 
-static var simulation_active := false
-
 func _ready() -> void:
 	add_to_group(&"Persist")
-	if not Signals.time_played.is_connected(_on_time_played):
-		Signals.time_played.connect(_on_time_played)
-	if not Signals.time_rewound.is_connected(_on_time_rewound):
-		Signals.time_rewound.connect(_on_time_rewound)
-
-static func _on_time_played() -> void:
-	simulation_active = true
-
-static func _on_time_rewound() -> void:
-	simulation_active = false
 
 func get_affected_nodes() -> Array[Node3D]:
 	var affected: Array[Node3D] = []
@@ -54,7 +42,7 @@ func update_transform_from_members() -> void:
 			node.global_transform = child_transforms[node]
 
 func _process(_delta: float) -> void:
-	if is_instance_valid(editor) and World.time_paused and not simulation_active:
+	if is_instance_valid(editor) and World.time_paused and not World.simulation_active:
 		var scene = get_tree().current_scene
 		if is_instance_valid(scene) and scene.get("edit_mode") == true:
 			update_transform_from_members()

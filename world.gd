@@ -5,6 +5,7 @@ extends Node3D
 signal skin_changed(color: Color)
 
 static var time_paused := true
+static var simulation_active := false
 static var destroyed_nodes: Dictionary[Node, Node]
 
 @export var player_scene: PackedScene
@@ -35,6 +36,7 @@ static var destroyed_nodes: Dictionary[Node, Node]
 @onready var options_menu: OptionsMenu = $OptionsMenu
 
 var chat_visible := false
+var rest_transforms: Dictionary[Node3D, Transform3D]
 var time_elapsed := 0
 var time_start := 0
 var edit_mode := false:
@@ -46,6 +48,7 @@ static var modio_token: String
 
 
 func _ready() -> void:
+	var _error := Signals.objects_moved.connect(_on_objects_moved)
 	multiplayer_chat.hide()
 	main_menu.show()
 	multiplayer_chat.set_process_input(true)
@@ -56,7 +59,7 @@ func _ready() -> void:
 	if not multiplayer.is_server():
 		return
 
-	var _error := Network.player_connected.connect(_on_player_connected)
+	_error = Network.player_connected.connect(_on_player_connected)
 	_error = multiplayer.peer_disconnected.connect(_remove_player)
 
 	modio = ModIO.new()
@@ -151,6 +154,9 @@ func sync_time_pause(value: bool) -> void:
 		return
 
 	if time_paused and not value:
+		if not simulation_active:
+			_save_rest_transforms()
+		simulation_active = true
 		time_start = Time.get_ticks_msec()
 		time_paused = false
 		Signals.time_played.emit()
@@ -161,11 +167,33 @@ func sync_time_pause(value: bool) -> void:
 		Signals.time_paused.emit()
 
 
+func _save_rest_transforms() -> void:
+	rest_transforms.clear()
+	for node in get_tree().get_nodes_in_group(&"Persist"):
+		if node is CSGShape3D or node is GroupEntity:
+			rest_transforms[node as Node3D] = (node as Node3D).global_transform
+
+
+func _restore_rest_transforms() -> void:
+	for node in get_tree().get_nodes_in_group(&"Persist"):
+		if node is Node3D and rest_transforms.has(node):
+			(node as Node3D).global_transform = rest_transforms[node as Node3D]
+	rest_transforms.clear()
+
+
+func _on_objects_moved(objects: Array[Node3D]) -> void:
+	if not simulation_active:
+		return
+	for object in objects:
+		rest_transforms[object] = object.global_transform
+
+
 @rpc("authority", "call_local")
 func sync_time_rewind() -> void:
 	time_elapsed = 0
 	time_start = 0
 	time_paused = true
+	simulation_active = false
 	update_timer_paused_indicator()
 	for gadget: Gadget in object_properties.logic_panel.get_children():
 		gadget.reset_metas_to_initial()
@@ -175,6 +203,7 @@ func sync_time_rewind() -> void:
 			if is_instance_valid(parent):
 				parent.add_child(child)
 	destroyed_nodes.clear()
+	_restore_rest_transforms()
 	Signals.time_paused.emit()
 	Signals.time_rewound.emit()
 

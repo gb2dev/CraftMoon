@@ -4,6 +4,7 @@ extends Node
 signal time_played
 signal time_paused
 signal time_rewound
+signal objects_moved(objects: Array[Node3D])
 #endregion
 
 #region UI Notifications
